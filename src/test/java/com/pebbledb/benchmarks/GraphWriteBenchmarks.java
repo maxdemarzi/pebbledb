@@ -30,7 +30,7 @@ public class GraphWriteBenchmarks {
     @Param({"100"})
     private int likesCount;
 
-    @Setup(Level.Invocation)
+    @Setup(Level.Iteration)
     public void prepare() throws IOException {
         db = new Graph();
 

@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Graph {
 
@@ -138,8 +138,12 @@ public class Graph {
         return true;
     }
 
-    public Collection<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
-        return related.get(type).get(keys.getInt(from));
+    public Stream<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
+        return related.get(type).get(keys.getInt(from)).stream();
+    }
+
+    public Collection<Integer> getOutgoingRelationshipNodeIds2(String type, String from) {
+        return new HashSet<>(related.get(type).get(keys.getInt(from)));
     }
 
     public HashSet<Integer> getIncomingRelationshipNodeIds(String type, String to) {
@@ -156,16 +160,13 @@ public class Graph {
         return results;
     }
 
-    public Collection<HashMap<String, Object>> getOutgoingRelationshipNodesTwo(String type, String from) {
-        Collection<HashMap<String, Object>> results = new ArrayList<>(110);
-        for (int key : related.get(type).get(keys.getInt(from)) ) {
-            results.add(nodes.get(key));
+    public Object[] getOutgoingRelationshipNodesTwo(String type, String from) {
+        Object[] nodeIds = related.get(type).get(keys.getInt(from)).toArray();
+        for(int i = 0; i < nodeIds.length; i++) {
+            nodeIds[i] = nodes.get(i);
         }
-        return results;
-    }
 
-    public Collection<HashMap<String, Object>> getOutgoingRelationshipNodesThree(String type, String from) {
-        return related.get(type).get(keys.getInt(from)).stream().map(nodes::get).collect(Collectors.toCollection(ArrayList::new));
+        return nodeIds;
     }
 
     public Set<Object> getIncomingRelationshipNodes(String type, String from) {

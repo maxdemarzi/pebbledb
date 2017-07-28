@@ -65,7 +65,7 @@ public class GraphReadBenchmarks {
 
     @Benchmark
     @Warmup(iterations = 10)
-    @Measurement(iterations = 20)
+    @Measurement(iterations = 10)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
@@ -80,7 +80,7 @@ public class GraphReadBenchmarks {
 
     @Benchmark
     @Warmup(iterations = 10)
-    @Measurement(iterations = 20)
+    @Measurement(iterations = 10)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
@@ -95,26 +95,12 @@ public class GraphReadBenchmarks {
 
     @Benchmark
     @Warmup(iterations = 10)
-    @Measurement(iterations = 20)
-    @Fork(1)
-    @Threads(1)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public int measureTraverseAndGetNodesThree() throws IOException {
-        int person;
-        for (person = 0; person < personCount; person++) {
-            db.getOutgoingRelationshipNodesThree("LIKES", "person" + person);
-        }
-        return person;
-    }
-    @Benchmark
-    @Warmup(iterations = 10)
     @Measurement(iterations = 10)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public void measureRandomSingleTraversal() throws IOException {
+    public void measureRandomSingleTraversalIds() throws IOException {
         db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount));
     }
 
@@ -125,7 +111,7 @@ public class GraphReadBenchmarks {
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public void measureFixedSingleTraversal() throws IOException {
+    public void measureFixedSingleTraversalIds() throws IOException {
         db.getOutgoingRelationshipNodeIds("LIKES", "person0");
     }
 
@@ -149,5 +135,28 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureSingleTraversalAndGetNodes() throws IOException {
         db.getOutgoingRelationshipNodes("LIKES", "person" + rand.nextInt(personCount));
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureFixedSingleTraversalAndGetNodesTwo() throws IOException {
+        db.getOutgoingRelationshipNodesTwo("LIKES", "person0");
+    }
+
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureSingleTraversalAndGetNodesTwo() throws IOException {
+        db.getOutgoingRelationshipNodesTwo("LIKES", "person" + rand.nextInt(personCount));
     }
 }

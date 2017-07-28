@@ -135,11 +135,13 @@ public class GraphTests {
         db.addNode("three");
         db.addRelationship("FRIENDS", "one", "two");
         db.addRelationship("FRIENDS", "one", "three");
-        Collection<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
+        //Stream<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
+        Collection<Integer> actual = db.getOutgoingRelationshipNodeIds2("FRIENDS", "one");
 
         int node2key = db.getNodeId("two");
         int node3key = db.getNodeId("three");
 
+        //Assert.assertEquals(new HashSet<Integer>() {{ add(node2key); add(node3key); }}, actual.collect(Collectors.toCollection(HashSet::new)));
         Assert.assertEquals(new HashSet<Integer>() {{ add(node2key); add(node3key);}}, actual);
     }
 
