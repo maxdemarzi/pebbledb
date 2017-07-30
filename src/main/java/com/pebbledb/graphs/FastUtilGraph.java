@@ -49,9 +49,7 @@ public class FastUtilGraph implements Graph {
         return relationshipCounts.getInt(type);
     }
 
-
-
-
+    // Nodes
 
     public boolean addNode (String key) {
         if (keys.containsKey(key)) {
@@ -83,33 +81,46 @@ public class FastUtilGraph implements Graph {
         return keys.getInt(key);
     }
 
-    @Override
+    // Node Properties
+
     public Object getNodeProperty(String key, String property) {
-        return null;
+        int id = keys.getInt(key);
+        if (id == -1) { return null; }
+        return nodes.get(id).get(property);
     }
 
     @Override
     public boolean updateNodeProperties(String key, Map properties) {
-        return false;
+        int id = keys.getInt(key);
+        if (id == -1) { return false; }
+        nodes.add(id, properties);
+        return true;
     }
 
     @Override
     public boolean deleteNodeProperties(String key) {
-        return false;
+        int id = keys.getInt(key);
+        if (id == -1) { return false; }
+        nodes.add(id, new HashMap<>());
+        return true;
     }
 
     @Override
     public boolean updateNodeProperty(String key, String property, Object value) {
-        return false;
+        int id = keys.getInt(key);
+        if (id == -1) { return false; }
+        Map<String, Object> properties = nodes.get(id);
+        properties.put(property, value);
+        return true;
     }
 
     @Override
     public boolean deleteNodeProperty(String key, String property) {
-        return false;
-    }
-
-    public boolean updateNode(String key, Map properties) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+        int id = keys.getInt(key);
+        if (id == -1) { return false; }
+        Map<String, Object> properties = nodes.get(id);
+        properties.remove(property);
+        return true;
     }
 
     public boolean removeNode(String key) {
@@ -281,6 +292,7 @@ public class FastUtilGraph implements Graph {
 
     @Override
     public boolean removeRelationship(String type, String from, String to, int number) {
+        //throw new java.lang.UnsupportedOperationException("Not supported yet.");
         return false;
     }
 

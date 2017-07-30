@@ -22,14 +22,6 @@ public class NodesTest {
         db.addNode("existing", properties);
     }
 
-/*
-  boolean addNode(String key);
-    boolean addNode(String key, Map<String, Object> properties);
-    boolean removeNode(String key);
-    Map<String, Object> getNode(String key);
-    int getNodeId(String key);
- */
-
     @Test
     public void shouldAddNode() {
         boolean created = db.addNode("key");
