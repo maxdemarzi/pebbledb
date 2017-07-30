@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @State(Scope.Benchmark)
 public class GraphReadBenchmarks {
@@ -29,7 +30,7 @@ public class GraphReadBenchmarks {
     @Param({"100"})
     private int likesCount;
 
-    @Setup(Level.Trial)
+    @Setup(Level.Iteration)
     public void prepare() throws IOException {
         db = new Graph();
 
@@ -41,6 +42,7 @@ public class GraphReadBenchmarks {
         }
 
         for (int person = 0; person < personCount; person++) {
+            db.addNode("person" + person);
             for (int like = 0; like < likesCount; like++) {
                 db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
             }
@@ -73,6 +75,9 @@ public class GraphReadBenchmarks {
     public int measureTraverseAndGetNodes() throws IOException {
         int person;
         for (person = 0; person < personCount; person++) {
+//            System.out.println(db.getNode("person" + person));
+//            Collection likes = db.getOutgoingRelationshipNodes("LIKES", "person" + person);
+//            System.out.println( "likes: " + likes.size() + " " + likes.iterator().next());
             db.getOutgoingRelationshipNodes("LIKES", "person" + person);
         }
         return person;
@@ -100,8 +105,10 @@ public class GraphReadBenchmarks {
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public void measureRandomSingleTraversalIds() throws IOException {
-        db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount));
+    public int measureRandomSingleTraversalIds() throws IOException {
+        int person = 0;
+        person += db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount)).toArray().length;
+        return person;
     }
 
     @Benchmark
@@ -111,8 +118,23 @@ public class GraphReadBenchmarks {
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public void measureFixedSingleTraversalIds() throws IOException {
-        db.getOutgoingRelationshipNodeIds("LIKES", "person0");
+    public int measureRandomSingleTraversalIds2() throws IOException {
+        int person = 0;
+        person += db.getOutgoingRelationshipNodeIds2("LIKES", "person" + rand.nextInt(personCount)).size();
+        return person;
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public int measureFixedSingleTraversalIds() throws IOException {
+        AtomicInteger counter = new AtomicInteger(0);
+        db.getOutgoingRelationshipNodeIds("LIKES", "person0").forEach(like -> {counter.getAndIncrement();});
+        return counter.intValue();
     }
 
     @Benchmark
@@ -158,5 +180,27 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureSingleTraversalAndGetNodesTwo() throws IOException {
         db.getOutgoingRelationshipNodesTwo("LIKES", "person" + rand.nextInt(personCount));
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureGetRelationshipTypeCounts() throws IOException {
+       db.getRelationshipTypeCounts("LIKES");
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureGetRelationshipTypeCountsTwo() throws IOException {
+        db.getRelationshipTypeCountsTwo("LIKES");
     }
 }

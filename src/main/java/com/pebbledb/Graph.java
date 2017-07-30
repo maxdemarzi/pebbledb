@@ -1,6 +1,8 @@
 package com.pebbledb;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.*;
@@ -14,6 +16,8 @@ public class Graph {
     //private static BigList<HashMap<String, Object>> nodes;
     private static Object2ObjectOpenHashMap<String, HashMap<String, Object>> relationships;
     private static Object2ObjectOpenHashMap<String, ReversibleMultiMap<Integer>> related;
+    private static Object2LongArrayMap<String> relationshipCounts;
+    private static Object2LongOpenHashMap<String> relatedCounts;
 
     public Graph() {
         keys = new Object2IntOpenHashMap<>();
@@ -21,6 +25,8 @@ public class Graph {
         nodes = new ArrayList<>();
         relationships = new Object2ObjectOpenHashMap<>();
         related = new Object2ObjectOpenHashMap<>();
+        relationshipCounts = new Object2LongArrayMap<>();
+        relatedCounts = new Object2LongOpenHashMap<>();
     }
 
     public void clear() {
@@ -34,6 +40,14 @@ public class Graph {
         HashMap<String, Object> counts = new HashMap<>();
         if (related.containsKey(type)) {
             counts.put(type, related.get(type).size());
+        }
+        return counts;
+    }
+
+    public HashMap<String, Object> getRelationshipTypeCountsTwo(String type) {
+        HashMap<String, Object> counts = new HashMap<>();
+        if (related.containsKey(type)) {
+            counts.put(type, relationshipCounts.getLong(type));
         }
         return counts;
     }
@@ -93,16 +107,49 @@ public class Graph {
         }
     }
 
-    public boolean addRelationship (String type, String from, String to) {
+    public boolean addRelationship(String type, String from, String to) {
         related.putIfAbsent(type, new ReversibleMultiMap<>());
 
         return related.get(type).put(keys.getInt(from), keys.getInt(to));
     }
 
-    public boolean addRelationship (String type, String from, String to, HashMap properties) {
+    public boolean addRelationship(String type, String from, String to, HashMap<String, Object> properties) {
         relationships.put(from + "-" + to + type, properties);
         related.putIfAbsent(type, new ReversibleMultiMap<>());
         return related.get(type).put(keys.getInt(from), keys.getInt(to));
+    }
+
+    public boolean addRelationshipTwo(String type, String from, String to) {
+        related.putIfAbsent(type, new ReversibleMultiMap<>());
+        relationshipCounts.putIfAbsent(type, 0);
+        relationshipCounts.put(type, relationshipCounts.getLong(type) + 1);
+
+        long count = relatedCounts.getLong(from + "-" + to + type);
+        if (count == 0) {
+            relatedCounts.put(from + "-" + to + type,1);
+            related.get(type).put(keys.getInt(from), keys.getInt(to));
+        } else {
+            relatedCounts.put(from + "-" + to + type,count + 1);
+        }
+        return true;
+    }
+
+    public boolean addRelationshipTwo(String type, String from, String to, HashMap<String, Object> properties) {
+        related.putIfAbsent(type, new ReversibleMultiMap<>());
+        relationshipCounts.putIfAbsent(type, 0);
+        relationshipCounts.put(type, relationshipCounts.getLong(type) + 1);
+
+        long count = relatedCounts.getLong(from + "-" + to + type);
+        if ( count == 0) {
+            relatedCounts.put(from + "-" + to + type,1);
+            relationships.put(from + "-" + to + type, properties);
+            related.get(type).put(keys.getInt(from), keys.getInt(to));
+        } else {
+            relationships.put(from + "-" + to + type + (count + 1), properties);
+            relatedCounts.put(from + "-" + to + type,count + 1);
+        }
+
+        return true;
     }
 
     public HashMap<String, Object> getRelationship(String type, String from, String to) {
@@ -117,6 +164,31 @@ public class Graph {
         return rel;
     }
 
+    public HashMap<String, Object> getRelationshipTwo(String type, String from, String to) {
+            HashMap<String, Object> rel = relationships.get(from + "-" + to + type);
+        if (rel == null) {
+            if (related.get(type).get(keys.getInt(from)).contains(keys.getInt(to))) {
+                return new HashMap<>();
+            } else {
+                return null;
+            }
+        }
+        return rel;
+    }
+
+    public HashMap<String, Object> getRelationshipTwo(String type, String from, String to, Long number) {
+        HashMap<String, Object> rel = relationships.get(from + "-" + to + type + number);
+        if (rel == null) {
+            if (relatedCounts.getLong(from + "-" + to + type) >= number) {
+                return new HashMap<>();
+            } else {
+                return null;
+            }
+        }
+        return rel;
+    }
+
+    // TODO: 7/30/17 Continue adding capability of having multiple same type relationships between nodes 
     public boolean deleteRelationshipProperties(String type, String from, String to) {
         HashMap<String, Object> rel = relationships.get(from + "-" + to + type);
         if (rel == null) {

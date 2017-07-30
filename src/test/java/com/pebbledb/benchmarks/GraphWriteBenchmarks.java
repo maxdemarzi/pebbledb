@@ -42,6 +42,7 @@ public class GraphWriteBenchmarks {
         }
 
         for (int person = 0; person < personCount; person++) {
+            db.addNode("person" + person);
             for (int like = 0; like < likesCount; like++) {
                 db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
             }
@@ -128,6 +129,46 @@ public class GraphWriteBenchmarks {
             }
         }
         return user;
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public int measureCreateRelationships() throws IOException {
+        int count = 0;
+        for (int person = 0; person < personCount; person++) {
+            for (int like = 0; like < friendsCount; like++) {
+                db.addRelationship("FRIENDS", "person" + person, "person" + rand.nextInt(personCount));
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureCreateRandomRelationship() throws IOException {
+        db.addRelationship("LIKES", "person" + rand.nextInt(personCount), "person" + rand.nextInt(personCount));
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public void measureCreateRandomRelationshipTwo() throws IOException {
+        db.addRelationshipTwo("LIKES", "person" + rand.nextInt(personCount), "person" + rand.nextInt(personCount));
     }
 
 }
