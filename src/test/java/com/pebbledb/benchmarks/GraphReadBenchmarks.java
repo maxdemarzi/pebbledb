@@ -1,6 +1,6 @@
 package com.pebbledb.benchmarks;
 
-import com.pebbledb.Graph;
+import com.pebbledb.FastUtilGraph;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @State(Scope.Benchmark)
 public class GraphReadBenchmarks {
 
-    private Graph db;
+    private FastUtilGraph db;
     private Random rand = new Random();
 
     @Param({"1000"})
@@ -32,7 +32,7 @@ public class GraphReadBenchmarks {
 
     @Setup(Level.Iteration)
     public void prepare() throws IOException {
-        db = new Graph();
+        db = new FastUtilGraph();
 
         for (int item = 0; item < itemCount; item++) {
             HashMap<String, Object> properties = new HashMap<>();

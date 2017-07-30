@@ -1,6 +1,6 @@
 package com.pebbledb.tests;
 
-import com.pebbledb.Graph;
+import com.pebbledb.FastUtilGraph;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +8,13 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.*;
 
-public class GraphTests {
+public class FastUtilGraphTests {
 
-    private Graph db;
+    private FastUtilGraph db;
     
     @Before
     public void setup() throws IOException {
-        db = new Graph();
+        db = new FastUtilGraph();
     }
 
     @Test
