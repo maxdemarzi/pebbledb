@@ -1,6 +1,6 @@
 package com.pebbledb.benchmarks;
 
-import com.pebbledb.FastUtilGraph;
+import com.pebbledb.graphs.FastUtilGraph;
 import org.junit.Ignore;
 import org.openjdk.jmh.annotations.*;
 
@@ -158,17 +158,6 @@ public class GraphWriteBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureCreateRandomRelationship() throws IOException {
         db.addRelationship("LIKES", "person" + rand.nextInt(personCount), "person" + rand.nextInt(personCount));
-    }
-
-    @Benchmark
-    @Warmup(iterations = 10)
-    @Measurement(iterations = 10)
-    @Fork(1)
-    @Threads(1)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    public void measureCreateRandomRelationshipTwo() throws IOException {
-        db.addRelationshipTwo("LIKES", "person" + rand.nextInt(personCount), "person" + rand.nextInt(personCount));
     }
 
 }
