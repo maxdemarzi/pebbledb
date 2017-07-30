@@ -50,7 +50,6 @@ public class FastUtilGraph implements Graph {
     }
 
     // Nodes
-
     public boolean addNode (String key) {
         if (keys.containsKey(key)) {
             return false;
@@ -71,6 +70,42 @@ public class FastUtilGraph implements Graph {
         }
     }
 
+    public boolean removeNode(String key) {
+        int id = keys.getInt(key);
+        if(keys.containsKey(key)) {
+            nodes.remove(id);
+            for (String type : related.keySet()) {
+                ReversibleMultiMap<Integer> rels = related.get(type);
+                int outgoingCount = 0;
+                int incomingCount = 0;
+                for (Integer value : rels.get(id)) {
+                    outgoingCount = relatedCounts.getInt(id + "-" + value + type);
+                    if(outgoingCount > 1) {
+                        for (int i = 2; i <= outgoingCount; i++) {
+                            relationships.remove(id + "-" + value + type, i);
+                        }
+                    }
+                    relationships.remove(id + "-" + value + type);
+                }
+                for (Integer value : rels.getKeysByValue(id)) {
+                    incomingCount = relatedCounts.getInt(value + "-" + id + type);
+                    if(incomingCount > 1) {
+                        for (int i = 2; i <= incomingCount; i++) {
+                            relationships.remove(value + "-" + id + type, i);
+                        }
+                    }
+                    relationships.remove(value + "-" + id + type);
+                }
+                rels.removeAll(id);
+                relationshipCounts.put(type, relationshipCounts.getInt(type) - (outgoingCount + incomingCount));
+            }
+            keys.removeInt(key);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Map<String, Object> getNode(String key) {
         int id = keys.getInt(key);
         if (id == -1) { return null; }
@@ -82,14 +117,12 @@ public class FastUtilGraph implements Graph {
     }
 
     // Node Properties
-
     public Object getNodeProperty(String key, String property) {
         int id = keys.getInt(key);
         if (id == -1) { return null; }
         return nodes.get(id).get(property);
     }
 
-    @Override
     public boolean updateNodeProperties(String key, Map properties) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
@@ -97,7 +130,6 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    @Override
     public boolean deleteNodeProperties(String key) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
@@ -105,7 +137,6 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    @Override
     public boolean updateNodeProperty(String key, String property, Object value) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
@@ -114,7 +145,6 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    @Override
     public boolean deleteNodeProperty(String key, String property) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
@@ -123,41 +153,21 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean removeNode(String key) {
-        int id = keys.getInt(key);
-        if(keys.containsKey(key)) {
-            nodes.remove(id);
-            for (String type : related.keySet()) {
-                ReversibleMultiMap<Integer> rels = related.get(type);
-                for (Integer value : rels.get(id)) {
-                    relationships.remove(id + "-" + value + type);
-                }
-                for (Integer value : rels.getKeysByValue(id)) {
-                    relationships.remove(value + "-" + id + type);
-                }
-                rels.removeAll(id);
-            }
-            keys.removeInt(key);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+    // Relationships
     public boolean addRelationship(String type, String from, String to) {
         related.putIfAbsent(type, new ReversibleMultiMap<>());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
-        // TODO: 7/30/17 Should I check if the nodes exist first?
-        // Are the relationships independent from the nodes?
+       int node1 = keys.getInt(from);
+       int node2 = keys.getInt(to);
 
-        int count = relatedCounts.getInt(from + "-" + to + type);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
         if (count == 0) {
-            relatedCounts.put(from + "-" + to + type,1);
+            relatedCounts.put(node1 + "-" + node2 + type,1);
             related.get(type).put(keys.getInt(from), keys.getInt(to));
         } else {
-            relatedCounts.put(from + "-" + to + type,count + 1);
+            relatedCounts.put(node1 + "-" + node2 + type,count + 1);
         }
         return true;
     }
@@ -283,11 +293,13 @@ public class FastUtilGraph implements Graph {
         if(!related.containsKey(type)) {
             return false;
         }
-        related.get(type).remove(keys.getInt(from), keys.getInt(to));
-        relationships.remove(keys.getInt(from) + "-" + keys.getInt(to) + type);
-        relationshipCounts.putIfAbsent(type, 0);
-        relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
-        return true;
+
+        if (related.get(type).remove(keys.getInt(from), keys.getInt(to))) {
+            relationships.remove(keys.getInt(from) + "-" + keys.getInt(to) + type);
+            relationshipCounts.put(type, relationshipCounts.getInt(type) - 1);
+            return true;
+        }
+        return false;
     }
 
     @Override

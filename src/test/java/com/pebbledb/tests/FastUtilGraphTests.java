@@ -18,56 +18,6 @@ public class FastUtilGraphTests {
     }
 
     @Test
-    public void shouldAddRelationship() {
-        boolean created = db.addRelationship("FRIENDS", "one", "two");
-        Assert.assertTrue(created);
-    }
-
-    @Test
-    public void shouldAddRelationshipWithProperties() {
-        HashMap<String, Object> properties = new HashMap<String, Object>() {{ put("stars", 5); }};
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("RATED", "one", "two", properties);
-        Object actual = db.getRelationship("RATED", "one", "two");
-        Assert.assertEquals(properties, actual);
-        Integer expected = 1;
-        Assert.assertEquals(expected, db.getRelationshipTypeCount("RATED"));
-    }
-
-    @Test
-    public void shouldRemoveRelationship() {
-        db.addRelationship("HATES", "one", "two");
-        Integer expected = 1;
-        Assert.assertEquals(expected, db.getRelationshipTypeCount("HATES"));
-        db.removeRelationship("HATES", "one", "two");
-        expected = 0;
-        Assert.assertEquals(expected, db.getRelationshipTypeCount("HATES"));
-    }
-
-
-
-    @Test
-    public void shouldRemoveNodeRelationships() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("FRIENDS", "three", "one");
-
-        boolean result = db.removeNode("one");
-        Assert.assertTrue(result);
-        Integer expected = 0;
-        Assert.assertEquals(expected, db.getRelationshipTypeCount("FRIENDS"));
-
-        Assert.assertEquals(null, db.getRelationship("FRIENDS", "one", "two"));
-        Assert.assertEquals(null, db.getRelationship("FRIENDS", "three", "one"));
-    }
-
-
-
-
-    @Test
     public void shouldGetNodeOutgoingRelationshipNodeIds() {
         db.addNode("one");
         db.addNode("two");
