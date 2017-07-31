@@ -49,6 +49,23 @@ public class NodesTest {
     }
 
     @Test
+    public void shouldRemoveNodeRelationships() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("FRIENDS", "three", "one");
+
+        boolean result = db.removeNode("one");
+        Assert.assertTrue(result);
+        Integer expected = 0;
+        Assert.assertEquals(expected, db.getRelationshipTypeCount("FRIENDS"));
+
+        Assert.assertEquals(null, db.getRelationship("FRIENDS", "one", "two"));
+        Assert.assertEquals(null, db.getRelationship("FRIENDS", "three", "one"));
+    }
+
+    @Test
     public void shouldAddNodeWithObjectProperties() {
         HashMap<String, Object> address = new HashMap<>();
         address.put("Country", "USA");

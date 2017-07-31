@@ -30,13 +30,13 @@ public class NodePropertiesTest {
     }
 
     @Test
-    public void shouldNotGetNodePropertyNotTHere() {
+    public void shouldNotGetNodePropertyNotThere() {
         Object property = db.getNodeProperty("existing", "eman");
         Assert.assertEquals(null, property);
     }
 
     @Test
-    public void shouldNotGetNodePropertyNodeNotTHere() {
+    public void shouldNotGetNodePropertyNodeNotThere() {
         Object property = db.getNodeProperty("not-existing", "name");
         Assert.assertEquals(null, property);
     }
@@ -82,5 +82,5 @@ public class NodePropertiesTest {
         Assert.assertEquals("this", node.get("property"));
         Assert.assertTrue(node.get("other") == null);
     }
-    //// TODO: 7/30/17 Negative Tests 
+    //// TODO: 7/30/17 Negative Tests
 }
