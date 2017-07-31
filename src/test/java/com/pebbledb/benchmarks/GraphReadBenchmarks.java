@@ -140,19 +140,6 @@ public class GraphReadBenchmarks {
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public int measureSingleTraversalAndGetNodesTwo() throws IOException {
-        int person = 0;
-        person += db.getOutgoingRelationshipNodesTwo("LIKES", "person" + rand.nextInt(personCount)).toArray().length;
-        return person;
-    }
-
-    @Benchmark
-    @Warmup(iterations = 10)
-    @Measurement(iterations = 10)
-    @Fork(1)
-    @Threads(1)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureGetRelationshipTypeCounts() throws IOException {
        db.getRelationshipTypeCount("LIKES");
     }

@@ -2,10 +2,11 @@ package com.pebbledb.graphs;
 
 import com.pebbledb.Graph;
 import com.pebbledb.ReversibleMultiMap;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class FastUtilGraph implements Graph {
 
@@ -169,6 +170,7 @@ public class FastUtilGraph implements Graph {
             related.get(type).put(node1, node2);
         } else {
             relatedCounts.put(node1 + "-" + node2 + type,count + 1);
+            related.get(type).put(node1, node2);
         }
         return true;
     }
@@ -293,7 +295,6 @@ public class FastUtilGraph implements Graph {
         }
         return relationships.get(node1 + "-" + node2 + type + number).get(property);
     }
-
     
     public boolean updateRelationshipProperties(String type, String from, String to, Map<String, Object> properties) {
         int node1 = keys.getInt(from);
@@ -329,7 +330,6 @@ public class FastUtilGraph implements Graph {
         relationships.remove(node1 + "-" + node2 + type);
         return true;
     }
-
     
     public boolean deleteRelationshipProperties(String type, String from, String to, int number) {
         int node1 = keys.getInt(from);
@@ -368,7 +368,6 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    
     public boolean deleteRelationshipProperty(String type, String from, String to, String property) {
         int node1 = keys.getInt(from);
         int node2 = keys.getInt(to);
@@ -377,7 +376,6 @@ public class FastUtilGraph implements Graph {
         relationships.get(node1 + "-" + node2 + type).remove(property);
         return true;
     }
-
     
     public boolean deleteRelationshipProperty(String type, String from, String to, int number, String property) {
         int node1 = keys.getInt(from);
@@ -392,7 +390,41 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
+    // Degrees
+    public int getNodeDegree(String key) {
+        return getNodeDegree(key, "all", new ArrayList<>());
+    }
 
+    public int getNodeDegree(String key, String direction) {
+        return getNodeDegree(key, direction, new ArrayList<>());
+    }
+
+    public int getNodeDegree(String key, String direction, List<String> types) {
+        int id = keys.getInt(key);
+        if (id == -1) { return -1; }
+
+        int count = 0;
+        List<String> relTypes;
+        if (types.size() == 0) {
+            relTypes = new ArrayList<>(related.keySet());
+        } else {
+            types.retainAll(related.keySet());
+            relTypes = types;
+        }
+
+        for (String type : relTypes) {
+            ReversibleMultiMap<Integer> rels = related.get(type);
+            if (direction.equals("all") || direction.equals("out")) {
+                count += rels.get(id).size();
+                //rels.get(id).stream().distinct().forEach(node2 -> count[0] += relatedCounts.getInt(id + "-" + node2 + type));
+            }
+            if (direction.equals("all") || direction.equals("in")) {
+                //rels.getKeysByValue(id).stream().distinct().forEach(node2 -> count[0] += relatedCounts.getInt(node2 + "-" + id + type));
+                count += rels.getKeysByValue(id).size();
+            }
+        }
+        return count;
+    }
 
     // Traversing
     public Object[] getOutgoingRelationshipNodeIds(String type, String from) {
@@ -410,11 +442,7 @@ public class FastUtilGraph implements Graph {
         }
         return nodeIds;
     }
-
-    public Stream<Object> getOutgoingRelationshipNodesTwo(String type, String from) {
-        return related.get(type).get(keys.getInt(from)).stream().map(i -> nodes.get(i));
-    }
-
+    
     public Object[] getIncomingRelationshipNodes(String type, String from) {
         Object[] nodeIds = related.get(type).getKeysByValue(keys.getInt(from)).toArray();
         for(int i = 0; i < nodeIds.length; i++) {

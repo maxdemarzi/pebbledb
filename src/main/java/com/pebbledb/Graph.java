@@ -1,5 +1,6 @@
 package com.pebbledb;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +46,11 @@ public interface Graph {
     boolean updateRelationshipProperty(String type, String from, String to, int number, String property, Object value);
     boolean deleteRelationshipProperty(String type, String from, String to, String property);
     boolean deleteRelationshipProperty(String type, String from, String to, int number, String property);
+
+    // Node Degree
+    int getNodeDegree(String key);
+    int getNodeDegree(String key, String direction);
+    int getNodeDegree(String key, String direction, List<String> types);
 
     // Traversing
     Object[] getOutgoingRelationshipNodeIds(String type, String from);
