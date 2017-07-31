@@ -54,6 +54,7 @@ public interface Graph {
 
     // Traversing
     Object[] getOutgoingRelationshipNodeIds(String type, String from);
-    Object[] getIncomingRelationshipNodeIds(String type, String from);
-
+    Object[] getIncomingRelationshipNodeIds(String type, String to);
+    Object[] getOutgoingRelationshipNodes(String type, String from);
+    Object[] getIncomingRelationshipNodes(String type, String to);
 }

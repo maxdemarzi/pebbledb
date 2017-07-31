@@ -431,8 +431,8 @@ public class FastUtilGraph implements Graph {
         return related.get(type).get(keys.getInt(from)).toArray();
     }
 
-    public Object[] getIncomingRelationshipNodeIds(String type, String from) {
-        return related.get(type).getKeysByValue(keys.getInt(from)).toArray();
+    public Object[] getIncomingRelationshipNodeIds(String type, String to) {
+        return related.get(type).getKeysByValue(keys.getInt(to)).toArray();
     }
 
     public Object[] getOutgoingRelationshipNodes(String type, String from) {
@@ -442,9 +442,9 @@ public class FastUtilGraph implements Graph {
         }
         return nodeIds;
     }
-    
-    public Object[] getIncomingRelationshipNodes(String type, String from) {
-        Object[] nodeIds = related.get(type).getKeysByValue(keys.getInt(from)).toArray();
+
+    public Object[] getIncomingRelationshipNodes(String type, String to) {
+        Object[] nodeIds = related.get(type).getKeysByValue(keys.getInt(to)).toArray();
         for(int i = 0; i < nodeIds.length; i++) {
             nodeIds[i] = nodes.get((int)nodeIds[i]);
         }
