@@ -41,3 +41,14 @@
     GraphWriteBenchmarks.measureCreateEmptyNodesAndRelationships             100        20000           100            100         1000  thrpt   10       30.166 ±      1.902  ops/s
     GraphWriteBenchmarks.measureCreateNodeWithProperties                     100        20000           100            100         1000  thrpt   10   935777.229 ± 622202.214  ops/s
     GraphWriteBenchmarks.measureCreateNodesWithProperties                    100        20000           100            100         1000  thrpt   10     1054.875 ±    518.271  ops/s
+
+
+    Benchmark                                                (itemCount)  (likesCount)  (personCount)   Mode  Cnt     Score     Error  Units
+    GraphTraversalBenchmarks.measureRecommendationTraversal          200            10           1000  thrpt   10  1695.320 ±  77.257  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal          200            10          10000  thrpt   10   164.601 ±   5.097  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal          200           100           1000  thrpt   10     3.635 ±   0.111  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal          200           100          10000  thrpt   10     0.385 ±   0.046  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal         2000            10           1000  thrpt   10  9033.580 ± 418.925  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal         2000            10          10000  thrpt   10  1035.752 ±  13.313  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100           1000  thrpt   10    19.120 ±   0.816  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100          10000  thrpt   10     2.012 ±   0.085  ops/s

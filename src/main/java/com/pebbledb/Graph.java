@@ -57,4 +57,8 @@ public interface Graph {
     Object[] getIncomingRelationshipNodeIds(String type, String to);
     Object[] getOutgoingRelationshipNodes(String type, String from);
     Object[] getIncomingRelationshipNodes(String type, String to);
+    Object[] getOutgoingRelationshipNodeIds(String type, Integer from);
+    Object[] getIncomingRelationshipNodeIds(String type, Integer to);
+    Object[] getOutgoingRelationshipNodes(String type, Integer from);
+    Object[] getIncomingRelationshipNodes(String type, Integer to);
 }
