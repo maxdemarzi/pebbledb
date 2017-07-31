@@ -427,52 +427,60 @@ public class FastUtilGraph implements Graph {
     }
 
     // Traversing
-    public Object[] getOutgoingRelationshipNodeIds(String type, String from) {
-        //return related.get(type).get(keys.getInt(from)).toArray(new Integer[related.get(type).get(keys.getInt(from)).size()]);
-        return related.get(type).get(keys.getInt(from)).toArray();
-    }
-
-    public Object[] getIncomingRelationshipNodeIds(String type, String to) {
-        return related.get(type).getKeysByValue(keys.getInt(to)).toArray();
-    }
-
     public Object[] getOutgoingRelationshipNodes(String type, String from) {
-        Object[] nodeIds = related.get(type).get(keys.getInt(from)).toArray();
-        for(int i = 0; i < nodeIds.length; i++) {
-            nodeIds[i] = nodes.get((int)nodeIds[i]);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).get(keys.getInt(from));
+        int size = nodeIds.size();
+        Object[] nodeArray = new Object[size];
+        for(int i=-1; ++i < size;) {
+            nodeArray[i] = nodes.get(nodeIds.get(i));
         }
-        return nodeIds;
+        return nodeArray;
     }
 
     public Object[] getIncomingRelationshipNodes(String type, String to) {
-        Object[] nodeIds = related.get(type).getKeysByValue(keys.getInt(to)).toArray();
-        for(int i = 0; i < nodeIds.length; i++) {
-            nodeIds[i] = nodes.get((int)nodeIds[i]);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(keys.getInt(to));
+        int size = nodeIds.size();
+        Object[] nodeArray = new Object[size];
+        for(int i=-1; ++i < size;) {
+            nodeArray[i] = nodes.get(nodeIds.get(i));
         }
-        return nodeIds;
-    }
-
-    public Object[] getOutgoingRelationshipNodeIds(String type, Integer from) {
-        return related.get(type).get(from).toArray();
-    }
-
-    public Object[] getIncomingRelationshipNodeIds(String type, Integer to) {
-        return related.get(type).getKeysByValue(to).toArray();
+        return nodeArray;
     }
 
     public Object[] getOutgoingRelationshipNodes(String type, Integer from) {
-        Object[] nodeIds = related.get(type).get(from).toArray();
-        for(int i = 0; i < nodeIds.length; i++) {
-            nodeIds[i] = nodes.get((int)nodeIds[i]);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).get(from);
+        int size = nodeIds.size();
+        Object[] nodeArray = new Object[size];
+        for(int i=-1; ++i < size;) {
+            nodeArray[i] = nodes.get(nodeIds.get(i));
         }
-        return nodeIds;
+        return nodeArray;
     }
 
     public Object[] getIncomingRelationshipNodes(String type, Integer to) {
-        Object[] nodeIds = related.get(type).getKeysByValue(to).toArray();
-        for(int i = 0; i < nodeIds.length; i++) {
-            nodeIds[i] = nodes.get((int)nodeIds[i]);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(to);
+        int size = nodeIds.size();
+        Object[] nodeArray = new Object[size];
+        for(int i=-1; ++i < size;) {
+            nodeArray[i] = nodes.get(nodeIds.get(i));
         }
-        return nodeIds;
+        return nodeArray;
     }
+
+    public Collection<Integer> getOutgoingRelationshipNodeIds(String type, Integer from) {
+        return related.get(type).get(from);
+    }
+
+    public Collection<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
+        return related.get(type).get(keys.getInt(from));
+    }
+
+    public Collection<Integer> getIncomingRelationshipNodeIds(String type, Integer to) {
+        return related.get(type).getKeysByValue(to);
+    }
+
+    public Collection<Integer> getIncomingRelationshipNodeIds(String type, String to) {
+        return related.get(type).getKeysByValue(keys.getInt(to));
+    }
+
 }

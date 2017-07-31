@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class TraversingTest {
@@ -24,12 +26,11 @@ public class TraversingTest {
         db.addNode("three");
         db.addRelationship("FRIENDS", "one", "two");
         db.addRelationship("FRIENDS", "one", "three");
-        Object[] actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
-        Object[] expected = new Object[2];
-        expected[0] = db.getNodeId("two");
-        expected[1] = db.getNodeId("three");
-
-        Assert.assertArrayEquals(expected, actual);
+        Collection<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
+        Collection<Integer> expected = new ArrayList<>();
+        expected.add(db.getNodeId("two"));
+        expected.add(db.getNodeId("three"));
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
@@ -39,12 +40,12 @@ public class TraversingTest {
         db.addNode("three");
         db.addRelationship("FRIENDS", "two", "one");
         db.addRelationship("FRIENDS", "three", "one");
-        Object[] actual = db.getIncomingRelationshipNodeIds("FRIENDS", "one");
-        Object[] expected = new Object[2];
-        expected[0] = db.getNodeId("two");
-        expected[1] = db.getNodeId("three");
+        Collection<Integer> actual = db.getIncomingRelationshipNodeIds("FRIENDS", "one");
+        Collection<Integer> expected = new ArrayList<>();
+        expected.add(db.getNodeId("two"));
+        expected.add(db.getNodeId("three"));
 
-        Assert.assertArrayEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test

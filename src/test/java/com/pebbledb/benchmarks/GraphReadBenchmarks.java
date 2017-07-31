@@ -74,9 +74,6 @@ public class GraphReadBenchmarks {
     public int measureTraverseAndGetNodes() throws IOException {
         int person;
         for (person = 0; person < personCount; person++) {
-//            System.out.println(db.getNode("person" + person));
-//            Collection likes = db.getOutgoingRelationshipNodes("LIKES", "person" + person);
-//            System.out.println( "likes: " + likes.size() + " " + likes.iterator().next());
             db.getOutgoingRelationshipNodes("LIKES", "person" + person);
         }
         return person;
@@ -92,7 +89,7 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public int measureRandomSingleTraversalIds() throws IOException {
         int person = 0;
-        person += db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount)).length;
+        person += db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount)).size();
         return person;
     }
 
@@ -105,7 +102,7 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public int measureFixedSingleTraversalIds() throws IOException {
         int person = 0;
-        person += db.getOutgoingRelationshipNodeIds("LIKES", "person0").length;
+        person += db.getOutgoingRelationshipNodeIds("LIKES", "person0").size();
         return person;
     }
 

@@ -21,19 +21,15 @@
 
 ### Benchmarks
 
-    Benchmark                                                      (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt         Score         Error  Units
-    GraphReadBenchmarks.measureFixedSingleTraversalAndGetNodes                100        20000           100            100         1000  thrpt   10    427352.070 ±    7236.334  ops/s
-    GraphReadBenchmarks.measureFixedSingleTraversalAndGetNodesTwo             100        20000           100            100         1000  thrpt   10   2239232.743 ±   40433.968  ops/s
-    GraphReadBenchmarks.measureFixedSingleTraversalIds                        100        20000           100            100         1000  thrpt   10    841944.337 ±   17699.521  ops/s
-    GraphReadBenchmarks.measureGetRelationshipTypeCounts                      100        20000           100            100         1000  thrpt   10  26631245.864 ± 1003750.147  ops/s
-    GraphReadBenchmarks.measureRandomSingleTraversalIds                       100        20000           100            100         1000  thrpt   10   1785571.669 ±   55685.241  ops/s
-    GraphReadBenchmarks.measureRandomSingleTraversalIds2                      100        20000           100            100         1000  thrpt   10    342575.348 ±   25010.224  ops/s
-    GraphReadBenchmarks.measureSingleTraversalAndGetNodes                     100        20000           100            100         1000  thrpt   10    783197.953 ±   65303.831  ops/s
-    GraphReadBenchmarks.measureSingleTraversalAndGetNodesTwo                  100        20000           100            100         1000  thrpt   10   1783393.543 ±   65442.713  ops/s
-    GraphReadBenchmarks.measureTraverse                                       100        20000           100            100         1000  thrpt   10     71618.164 ±    1717.757  ops/s
-    GraphReadBenchmarks.measureTraverseAndGetNodes                            100        20000           100            100         1000  thrpt   10      7760.404 ±     476.626  ops/s
-    GraphReadBenchmarks.measureTraverseAndGetNodesTwo                         100        20000           100            100         1000  thrpt   10     18436.220 ±     566.005  ops/s
-        
+    Benchmark                                                   (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt          Score          Error  Units
+    GraphReadBenchmarks.measureFixedSingleTraversalAndGetNodes             100        20000           100            100         1000  thrpt   10    2454065.793 ±    58106.632  ops/s
+    GraphReadBenchmarks.measureFixedSingleTraversalIds                     100        20000           100            100         1000  thrpt   10   10697736.498 ±   441124.693  ops/s
+    GraphReadBenchmarks.measureGetRelationshipTypeCounts                   100        20000           100            100         1000  thrpt   10  366589920.294 ± 12827830.607  ops/s
+    GraphReadBenchmarks.measureRandomSingleTraversalIds                    100        20000           100            100         1000  thrpt   10    5669644.824 ±   256630.630  ops/s
+    GraphReadBenchmarks.measureSingleTraversalAndGetNodes                  100        20000           100            100         1000  thrpt   10    1529085.651 ±   277345.581  ops/s
+    GraphReadBenchmarks.measureTraverse                                    100        20000           100            100         1000  thrpt   10      76809.970 ±     2813.943  ops/s
+    GraphReadBenchmarks.measureTraverseAndGetNodes                         100        20000           100            100         1000  thrpt   10      15688.782 ±     2492.089  ops/s        
+
         
     Benchmark                                                     (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt        Score        Error  Units
     GraphWriteBenchmarks.measureCreateEmptyNode                              100        20000           100            100         1000  thrpt   10  1497050.946 ± 113563.892  ops/s

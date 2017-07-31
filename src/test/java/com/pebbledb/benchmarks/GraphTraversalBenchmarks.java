@@ -15,12 +15,15 @@ public class GraphTraversalBenchmarks {
     private Random rand = new Random();
 
     @Param({"1000", "10000"})
+    //@Param({"10000"})
     private int personCount;
 
     @Param({"200", "2000"})
+    //@Param({"200"})
     private int itemCount;
 
     @Param({"10", "100"})
+    //@Param({"100"})
     private int likesCount;
 
     @Setup
@@ -50,18 +53,18 @@ public class GraphTraversalBenchmarks {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public List measureRecommendationTraversal() throws IOException {
-        HashSet<Object> itemsYouLike = new HashSet<>(Arrays.asList(db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount))));
-        Map<Object, LongAdder> occurrences = new HashMap<>();
-        for (Object item : itemsYouLike) {
-            for (Object person : db.getIncomingRelationshipNodeIds("LIKES", (Integer) item)) {
-                Set<Object> itemsYouMightLike = new HashSet<>(Arrays.asList(db.getOutgoingRelationshipNodeIds("LIKES", (Integer) person)));
-                itemsYouMightLike.removeAll(itemsYouLike);
-                for (Object unlikeditem : itemsYouMightLike) {
-                    occurrences.computeIfAbsent(unlikeditem, (t) -> new LongAdder()).increment();
-                }
+        Collection<Integer> itemsYouLike = db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount));
+        Map<Integer, LongAdder> occurrences = new HashMap<>();
+        for (Integer item : itemsYouLike) {
+            for (Integer person : db.getIncomingRelationshipNodeIds("LIKES", item)) {
+                db.getOutgoingRelationshipNodeIds("LIKES", person)
+                        .forEach(i-> occurrences.computeIfAbsent(i, (t) -> new LongAdder())
+                                .increment());
+
             }
         }
-        List<Map.Entry<Object, LongAdder>> itemList = new ArrayList<>(occurrences.entrySet());
+        occurrences.remove(itemsYouLike);
+        List<Map.Entry<Integer, LongAdder>> itemList = new ArrayList<>(occurrences.entrySet());
         Collections.sort(itemList, (a, b) -> ( b.getValue().intValue() - a.getValue().intValue() ));
         return itemList.subList(0, Math.min(itemList.size(), 10));
     }
