@@ -281,7 +281,7 @@ public class FastUtilGraph implements Graph {
 
         return relationships.get(node1 + "-" + node2 + type).get(property);
     }
-    
+
     public Object getRelationshipProperty(String type, String from, String to, int number, String property) {
         int node1 = keys.getInt(from);
         int node2 = keys.getInt(to);
@@ -296,49 +296,100 @@ public class FastUtilGraph implements Graph {
 
     
     public boolean updateRelationshipProperties(String type, String from, String to, Map<String, Object> properties) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        relationships.put(node1 + "-" + node2 + type,properties);
+        return true;
     }
 
     
     public boolean updateRelationshipProperties(String type, String from, String to, int number, Map<String, Object> properties) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+        if ( count == 0 || count < number) {
+            return false;
+        }
+        relationships.put(node1 + "-" + node2 + type + number, properties);
+        return true;
     }
     
     public boolean deleteRelationshipProperties(String type, String from, String to) {
-        Map<String, Object> rel = relationships.get(from + "-" + to + type);
-        if (rel == null) {
-            if (!related.get(type).get(keys.getInt(from)).contains(to)) {
-                return false;
-            }
-        } else {
-            relationships.remove(from + "-" + to + type);
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+        if ( count == 0 ) {
+            return false;
         }
+        relationships.remove(node1 + "-" + node2 + type);
         return true;
     }
 
     
     public boolean deleteRelationshipProperties(String type, String from, String to, int number) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+        if ( count == 0 || count < number) {
+            return false;
+        }
+
+        relationships.remove(node1 + "-" + node2 + type + count);
+        return true;
     }
 
-    
     public boolean updateRelationshipProperty(String type, String from, String to, String property, Object value) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+        relationships.computeIfAbsent(node1 + "-" + node2 + type, k -> new HashMap<>());
+        relationships.get(node1 + "-" + node2 + type).put(property, value);
+        return true;
     }
-
     
     public boolean updateRelationshipProperty(String type, String from, String to, int number, String property, Object value) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+        if ( count == 0 || count < number) {
+            return false;
+        }
+        relationships.computeIfAbsent(node1 + "-" + node2 + type + number, k -> new HashMap<>());
+        relationships.get(node1 + "-" + node2 + type + number).put(property, value);
+        return true;
     }
 
     
     public boolean deleteRelationshipProperty(String type, String from, String to, String property) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        relationships.get(node1 + "-" + node2 + type).remove(property);
+        return true;
     }
 
     
     public boolean deleteRelationshipProperty(String type, String from, String to, int number, String property) {
-        return false;
+        int node1 = keys.getInt(from);
+        int node2 = keys.getInt(to);
+        if (node1 == -1 || node2 == -1) { return false; }
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+        if ( count == 0 || count < number) {
+            return false;
+        }
+        relationships.get(node1 + "-" + node2 + type + number).remove(property);
+        return true;
     }
 
 

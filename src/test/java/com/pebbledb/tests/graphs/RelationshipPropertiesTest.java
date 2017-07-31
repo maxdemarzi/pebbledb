@@ -101,5 +101,134 @@ public class RelationshipPropertiesTest {
         Assert.assertEquals(null, property);
     }
 
-    
+    @Test
+    public void shouldUpdateRelationshipProperties() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.updateRelationshipProperties("LOVES", "one", "two", rel2Properties);
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two");
+        Assert.assertEquals(rel2Properties, actual);
+    }
+
+    @Test
+    public void shouldUpdateMultipleRelationshipProperties() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+        Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key", "rel3");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.addRelationship("LOVES", "one", "two", rel2Properties);
+        db.updateRelationshipProperties("LOVES", "one", "two", 2, rel3Properties);
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two", 2);
+        Assert.assertEquals(rel3Properties, actual);
+    }
+
+    @Test
+    public void shouldDeleteRelationshipProperties() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.deleteRelationshipProperties("LOVES", "one", "two");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two");
+        Assert.assertEquals(new HashMap<>(), actual);
+    }
+
+    @Test
+    public void shouldDeleteMultipleRelationshipProperties() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.addRelationship("LOVES", "one", "two", rel2Properties);
+        db.deleteRelationshipProperties("LOVES", "one", "two", 2);
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two", 2);
+        Assert.assertEquals(new HashMap<>(), actual);
+    }
+
+    @Test
+    public void shouldUpdateRelationshipProperty() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.updateRelationshipProperty("LOVES", "one", "two", "key", "rel2");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two");
+        Assert.assertEquals(rel2Properties, actual);
+    }
+
+    @Test
+    public void shouldUpdateMultipleRelationshipProperty() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.addRelationship("LOVES", "one", "two", rel2Properties);
+        db.updateRelationshipProperty("LOVES", "one", "two", 2,"key", "rel2");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two", 2);
+        Assert.assertEquals(rel2Properties, actual);
+    }
+
+    @Test
+    public void shouldDeleteRelationshipProperty() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1"); put("key2", "rel2"); }};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key2", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.deleteRelationshipProperty("LOVES", "one", "two", "key");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two");
+        Assert.assertEquals(rel2Properties, actual);
+    }
+
+    @Test
+    public void shouldDeleteMultipleRelationshipProperty() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1"); put("key2", "rel2"); }};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2"); put("key2", "rel2"); }};
+        Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key2", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two", rel1Properties);
+        db.addRelationship("LOVES", "one", "two", rel2Properties);
+        db.deleteRelationshipProperty("LOVES", "one", "two", 2, "key");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two", 2);
+        Assert.assertEquals(rel3Properties, actual);
+    }
+
+    @Test
+    public void shouldUpdateRelationshipPropertyNotThere() {
+        db.addNode("one");
+        db.addNode("two");
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+
+        db.addRelationship("LOVES", "one", "two");
+        db.updateRelationshipProperty("LOVES", "one", "two", "key", "rel2");
+
+        Map<String, Object> actual = db.getRelationship("LOVES", "one", "two");
+        Assert.assertEquals(rel2Properties, actual);
+    }
+
 }
