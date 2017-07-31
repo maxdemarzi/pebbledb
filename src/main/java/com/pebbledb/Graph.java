@@ -1,9 +1,6 @@
 package com.pebbledb;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface Graph {
 
@@ -54,13 +51,13 @@ public interface Graph {
     int getNodeDegree(String key, String direction, List<String> types);
 
     // Traversing
-    Collection<Integer> getOutgoingRelationshipNodeIds(String type, String from);
-    Collection<Integer> getOutgoingRelationshipNodeIds(String type, Integer from);
+    List<Integer> getOutgoingRelationshipNodeIds(String type, String from);
+    List<Integer> getOutgoingRelationshipNodeIds(String type, Integer from);
     Object[] getOutgoingRelationshipNodes(String type, String from);
     Object[] getIncomingRelationshipNodes(String type, String to);
 
-    Collection<Integer> getIncomingRelationshipNodeIds(String type, String to);
-    Collection<Integer> getIncomingRelationshipNodeIds(String type, Integer to);
+    List<Integer> getIncomingRelationshipNodeIds(String type, String to);
+    List<Integer> getIncomingRelationshipNodeIds(String type, Integer to);
     Object[] getOutgoingRelationshipNodes(String type, Integer from);
     Object[] getIncomingRelationshipNodes(String type, Integer to);
 

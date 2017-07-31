@@ -467,20 +467,20 @@ public class FastUtilGraph implements Graph {
         return nodeArray;
     }
 
-    public Collection<Integer> getOutgoingRelationshipNodeIds(String type, Integer from) {
-        return related.get(type).get(from);
+    public List<Integer> getOutgoingRelationshipNodeIds(String type, Integer from) {
+        return (List<Integer>)related.get(type).get(from);
     }
 
-    public Collection<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
-        return related.get(type).get(keys.getInt(from));
+    public List<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
+        return (List<Integer>)related.get(type).get(keys.getInt(from));
     }
 
-    public Collection<Integer> getIncomingRelationshipNodeIds(String type, Integer to) {
-        return related.get(type).getKeysByValue(to);
+    public List<Integer> getIncomingRelationshipNodeIds(String type, Integer to) {
+        return (List<Integer>)related.get(type).getKeysByValue(to);
     }
 
-    public Collection<Integer> getIncomingRelationshipNodeIds(String type, String to) {
-        return related.get(type).getKeysByValue(keys.getInt(to));
+    public List<Integer> getIncomingRelationshipNodeIds(String type, String to) {
+        return (List<Integer>)related.get(type).getKeysByValue(keys.getInt(to));
     }
 
 }

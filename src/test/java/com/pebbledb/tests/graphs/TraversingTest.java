@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class TraversingTest {
     private Graph db;
@@ -26,8 +26,8 @@ public class TraversingTest {
         db.addNode("three");
         db.addRelationship("FRIENDS", "one", "two");
         db.addRelationship("FRIENDS", "one", "three");
-        Collection<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
-        Collection<Integer> expected = new ArrayList<>();
+        List<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
+        ArrayList<Integer> expected = new ArrayList<>();
         expected.add(db.getNodeId("two"));
         expected.add(db.getNodeId("three"));
         Assert.assertEquals(expected, actual);
@@ -40,8 +40,8 @@ public class TraversingTest {
         db.addNode("three");
         db.addRelationship("FRIENDS", "two", "one");
         db.addRelationship("FRIENDS", "three", "one");
-        Collection<Integer> actual = db.getIncomingRelationshipNodeIds("FRIENDS", "one");
-        Collection<Integer> expected = new ArrayList<>();
+        List<Integer> actual = db.getIncomingRelationshipNodeIds("FRIENDS", "one");
+        ArrayList<Integer> expected = new ArrayList<>();
         expected.add(db.getNodeId("two"));
         expected.add(db.getNodeId("three"));
 
