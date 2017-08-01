@@ -5,13 +5,14 @@ import com.pebbledb.ReversibleMultiMap;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.*;
 
 public class FastUtilGraph implements Graph {
 
     private static Object2IntOpenHashMap<String> keys;
-    private static ArrayList<Map<String, Object>> nodes;
+    private static ObjectArrayList<Map<String, Object>> nodes;
     private static Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
     private static Object2ObjectOpenHashMap<String, ReversibleMultiMap<Integer>> related;
     private static Object2IntArrayMap<String> relationshipCounts;
@@ -20,7 +21,7 @@ public class FastUtilGraph implements Graph {
     public FastUtilGraph() {
         keys = new Object2IntOpenHashMap<>();
         keys.defaultReturnValue(-1);
-        nodes = new ArrayList<>();
+        nodes = new ObjectArrayList<>();
         relationships = new Object2ObjectOpenHashMap<>();
         related = new Object2ObjectOpenHashMap<>();
         relationshipCounts = new Object2IntArrayMap<>();

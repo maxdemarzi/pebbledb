@@ -9,9 +9,6 @@ import java.util.Map.Entry;
 
 public class ReversibleMultiMap<Integer> implements Multimap<Integer, Integer> {
 
-    //private ListMultimap<Integer, Integer> key2Value = MultimapBuilder.treeKeys().arrayListValues().build();
-    //private ListMultimap<Integer, Integer> key2Value = Multimaps.newListMultimap(new TreeMap<>(), ArrayList::new);
-    //private ListMultimap<Integer, Integer> value2key = Multimaps.newListMultimap(new TreeMap<>(), ArrayList::new);
         private Multimap<Integer, Integer> key2Value = ArrayListMultimap.create();
         private Multimap<Integer, Integer> value2key = ArrayListMultimap.create();
 
