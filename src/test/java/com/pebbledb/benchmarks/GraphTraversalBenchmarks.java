@@ -1,6 +1,6 @@
 package com.pebbledb.benchmarks;
 
-import com.pebbledb.Graph;
+import com.pebbledb.graphs.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
 import org.openjdk.jmh.annotations.*;
 

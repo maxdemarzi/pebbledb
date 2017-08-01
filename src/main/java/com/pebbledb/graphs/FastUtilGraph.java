@@ -1,7 +1,5 @@
 package com.pebbledb.graphs;
 
-import com.pebbledb.Graph;
-import com.pebbledb.ReversibleMultiMap;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;

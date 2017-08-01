@@ -1,7 +1,7 @@
 package com.pebbledb.tests.graphs;
 
-import com.pebbledb.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
+import com.pebbledb.graphs.Graph;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

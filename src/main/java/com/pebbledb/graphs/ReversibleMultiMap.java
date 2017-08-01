@@ -1,4 +1,4 @@
-package com.pebbledb;
+package com.pebbledb.graphs;
 
 import com.google.common.collect.*;
 

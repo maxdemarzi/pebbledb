@@ -1,4 +1,4 @@
-package com.pebbledb;
+package com.pebbledb.graphs;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ public interface Graph {
     // Relationship Types
     Set<String> getRelationshipTypes();
     Map<String, Integer> getRelationshipTypesCount();
-    Integer getRelationshipTypeCount(String relType);
+    Integer getRelationshipTypeCount(String type);
 
     // Nodes
     boolean addNode(String key);
