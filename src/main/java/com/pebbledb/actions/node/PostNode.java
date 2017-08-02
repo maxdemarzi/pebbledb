@@ -1,8 +1,12 @@
-package com.pebbledb.actions;
+package com.pebbledb.actions.node;
 
 import com.jsoniter.JsonIterator;
+import com.jsoniter.output.JsonStream;
 import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
 
 import java.util.Map;
 
@@ -23,5 +27,11 @@ public class PostNode {
                 graphs[i].addNode((String)exchangeEvent.getParameters().get("key"), properties);
             }
         }
+
+        HttpServerExchange exchange = exchangeEvent.get();
+        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+        exchange.setStatusCode(StatusCodes.CREATED);
+        exchange.getResponseSender().send(
+                JsonStream.serialize(graphs[0].getNode((String)exchangeEvent.getParameters().get("key"))));
     }
 }

@@ -1,8 +1,8 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
-import com.pebbledb.actions.GetNode;
-import com.pebbledb.actions.PostNode;
+import com.pebbledb.actions.node.GetNode;
+import com.pebbledb.actions.node.PostNode;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
