@@ -12,11 +12,11 @@
     
 ### Todos
      
-    - [] Build Graph
-    - [] Finish Graph Tests
-    - [] Add Server
-    - [] Add Query Language (Cypher, Graphql)
-    - [] Compare Search Capabilities (Lucene and http://mg4j.di.unimi.it/)
+- [] Build Graph
+- [] Finish Graph Tests
+- [] Add Server
+- [] Add Query Language (Cypher, Graphql)
+- [] Compare Search Capabilities (Lucene and http://mg4j.di.unimi.it/)
     
 
 ### Benchmarks

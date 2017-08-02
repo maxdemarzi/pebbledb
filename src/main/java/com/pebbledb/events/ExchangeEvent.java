@@ -39,6 +39,10 @@ public class ExchangeEvent {
         return body;
     }
 
+    public boolean getWrite() {
+        return write;
+    }
+
     public void clear() {
         exchange.endExchange();
         exchange = null;

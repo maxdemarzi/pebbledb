@@ -10,8 +10,6 @@ import com.pebbledb.events.DatabaseEventHandler;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.events.PersistenceHandler;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -36,20 +34,15 @@ public class Server {
 
         Undertow server = Undertow.builder()
                 .addHttpListener(8080, "localhost")
-                .setHandler(new HttpHandler() {
-                    @Override
-                    public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        final long seq = ringBuffer.next();
-                        //System.out.println("in handle request " + seq);
-                        //System.out.println(exchange.getRequestURL());
-                        final ExchangeEvent exchangeEvent = ringBuffer.get(seq);
-                        exchangeEvent.set(exchange);
-                        ringBuffer.publish(seq);
-                        // This is deprecated but it works...
-                        exchange.dispatch();
-                        // Otherwise try this, but it creates a runnable.
-                        //exchange.dispatch(null, () -> {});
-                    }
+                .setBufferSize(1024 * 16)
+                .setIoThreads(Runtime.getRuntime().availableProcessors() * 2) //this seems slightly faster in some configurations
+                .setHandler(exchange -> {
+                    final long seq = ringBuffer.next();
+                    final ExchangeEvent exchangeEvent = ringBuffer.get(seq);
+                    exchangeEvent.set(exchange);
+                    ringBuffer.publish(seq);
+                    // This is deprecated but it works...
+                    exchange.dispatch();
                 }).build();
         server.start();
 
