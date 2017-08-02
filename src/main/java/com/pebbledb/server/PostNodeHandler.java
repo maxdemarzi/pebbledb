@@ -16,10 +16,13 @@ public class PostNodeHandler implements HttpHandler {
         final long seq = Server.ringBuffer.next();
         final ExchangeEvent exchangeEvent = Server.ringBuffer.get(seq);
 
-        String key = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY )
-                .getParameters().get( "key" );
+        String id = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY )
+                .getParameters().get( Constants.ID );
 
-        exchangeEvent.setRequest(true, Action.POST_NODE, new HashMap<String, Object>() {{put("key", key);}});
+        exchangeEvent.setRequest(true, Action.POST_NODE,
+                new HashMap<String, Object>() {{
+                    put(Constants.ID, id);
+        }});
 
         exchangeEvent.set(exchange);
         Server.ringBuffer.publish(seq);

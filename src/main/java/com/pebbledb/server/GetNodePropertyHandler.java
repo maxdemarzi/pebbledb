@@ -7,8 +7,9 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class DeleteNodeHandler implements HttpHandler {
+public class GetNodePropertyHandler implements HttpHandler {
 
     @Override
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -16,13 +17,13 @@ public class DeleteNodeHandler implements HttpHandler {
         final long seq = Server.ringBuffer.next();
         final ExchangeEvent exchangeEvent = Server.ringBuffer.get(seq);
 
-        String id = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY )
-                .getParameters().get( Constants.ID );
+        Map<String, String> parameters = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY ).getParameters();
 
-        exchangeEvent.setRequest(true, Action.DELETE_NODE,
+        exchangeEvent.setRequest(false, Action.GET_NODE_PROPERTY,
                 new HashMap<String, Object>() {{
-                    put(Constants.ID, id);
-        }});
+                    put(Constants.ID, parameters.get( Constants.ID ));
+                    put(Constants.KEY, parameters.get( Constants.KEY ));
+                }});
 
         exchangeEvent.set(exchange);
         Server.ringBuffer.publish(seq);

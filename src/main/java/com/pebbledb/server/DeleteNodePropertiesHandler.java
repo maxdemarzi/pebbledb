@@ -8,7 +8,7 @@ import io.undertow.util.PathTemplateMatch;
 
 import java.util.HashMap;
 
-public class DeleteNodeHandler implements HttpHandler {
+public class DeleteNodePropertiesHandler implements HttpHandler {
 
     @Override
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -19,7 +19,7 @@ public class DeleteNodeHandler implements HttpHandler {
         String id = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY )
                 .getParameters().get( Constants.ID );
 
-        exchangeEvent.setRequest(true, Action.DELETE_NODE,
+        exchangeEvent.setRequest(true, Action.DELETE_NODE_PROPERTIES,
                 new HashMap<String, Object>() {{
                     put(Constants.ID, id);
         }});

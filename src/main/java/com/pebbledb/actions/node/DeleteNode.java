@@ -1,18 +1,19 @@
 package com.pebbledb.actions.node;
 
-import com.jsoniter.output.JsonStream;
 import com.pebbledb.events.ExchangeEvent;
+import com.pebbledb.server.Constants;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
 public class DeleteNode {
 
     public static void handle(ExchangeEvent exchangeEvent) {
+        for (int i = -1; ++i < graphs.length; ) {
+            graphs[i].removeNode((String)exchangeEvent.getParameters().get(Constants.ID));
+        }
         HttpServerExchange exchange = exchangeEvent.get();
-        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send(
-                JsonStream.serialize(graphs[0].removeNode((String)exchangeEvent.getParameters().get("key"))));
+        exchange.setStatusCode(StatusCodes.NO_CONTENT);
     }
 }

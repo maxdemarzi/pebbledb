@@ -1,8 +1,7 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
-import com.pebbledb.actions.node.GetNode;
-import com.pebbledb.actions.node.PostNode;
+import com.pebbledb.actions.node.*;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
@@ -28,6 +27,18 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 break;
             case POST_NODE:
                 PostNode.handle(event);
+                break;
+            case DELETE_NODE:
+                DeleteNode.handle(event);
+                break;
+            case PUT_NODE_PROPERTIES:
+                PutNodeProperties.handle(event);
+                break;
+            case DELETE_NODE_PROPERTIES:
+                DeleteNodeProperties.handle(event);
+                break;
+            case GET_NODE_PROPERTY:
+                GetNodeProperty.handle(event);
                 break;
         }
 
