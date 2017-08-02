@@ -12,6 +12,7 @@ import com.pebbledb.events.PersistenceHandler;
 import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
+import io.undertow.server.RoutingHandler;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
@@ -19,6 +20,7 @@ import java.util.concurrent.ThreadFactory;
 public class Server {
 
     public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
+    public static RingBuffer<ExchangeEvent> ringBuffer;
 
     public static void main(final String[] args) throws InterruptedException {
         Arrays.fill(graphs, new FastUtilGraph());
@@ -37,20 +39,17 @@ public class Server {
                 .then(new ClearingEventHandler());
 
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
-        RingBuffer<ExchangeEvent> ringBuffer = disruptor.start();
+        ringBuffer = disruptor.start();
 
         Undertow server = Undertow.builder()
                 .addHttpListener(8080, "localhost")
                 .setBufferSize(1024 * 16)
                 .setIoThreads(Runtime.getRuntime().availableProcessors() * 2) //this seems slightly faster in some configurations
-                .setHandler(exchange -> {
-                    final long seq = ringBuffer.next();
-                    final ExchangeEvent exchangeEvent = ringBuffer.get(seq);
-                    exchangeEvent.set(exchange);
-                    ringBuffer.publish(seq);
-                    // This is deprecated but it works...
-                    exchange.dispatch();
-                }).build();
+                .setHandler(new RoutingHandler()
+                    .add("GET", "/db/node/{key}", new GetNodeHandler())
+                    .add("POST", "/db/node/{key}", new PostNodeHandler())
+                )
+                .build();
         server.start();
 
     }

@@ -61,3 +61,15 @@
       1681519 requests in 30.10s, 234.13MB read
     Requests/sec:  55859.02
     Transfer/sec:      7.78MB
+
+
+    wrk -t1 -c100 -d30s http://127.0.0.1:8080/db/node/max
+    Running 30s test @ http://127.0.0.1:8080/db/node/max
+      1 threads and 100 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.67ms  341.09us  13.85ms   81.09%
+        Req/Sec    57.23k     3.31k   68.50k    68.33%
+      1708257 requests in 30.01s, 237.85MB read
+      Socket errors: connect 0, read 1, write 0, timeout 0
+    Requests/sec:  56931.39
+    Transfer/sec:      7.93MB

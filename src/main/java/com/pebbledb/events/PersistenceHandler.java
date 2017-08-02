@@ -2,7 +2,6 @@ package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Methods;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
@@ -18,14 +17,12 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch)
     {
-        HttpServerExchange exchange = event.get();
-        String path = exchange.getRequestPath();
-        String body = null;
+        if(event.getWrite()) {
 
-        boolean write = exchange.getRequestMethod().equals(Methods.POST);
-        if (write) {
             BufferedReader reader = null;
             StringBuilder builder = new StringBuilder();
+
+            HttpServerExchange exchange = event.get();
 
             try {
                 exchange.startBlocking();
@@ -46,17 +43,14 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
                     }
                 }
             }
-            body = builder.toString();
 
-            // Only add write requests to logging queue
+            event.setBody(builder.toString());
+
             try (final DocumentContext dc = appender.writingDocument()) {
-                dc.wire().write("path").text(path)
-                        .write("body").text(body);
+                dc.wire().write("action").text(event.getAction().name())
+                        .write("body").text(event.getBody());
                 System.out.println("Data was stored to index: "+ dc.index());
             }
-
         }
-        event.setRequest(write, path, body);
-
     }
 }

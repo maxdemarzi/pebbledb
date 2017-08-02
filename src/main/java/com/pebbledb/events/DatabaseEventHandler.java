@@ -1,7 +1,8 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
-import com.pebbledb.server.NodeHandler;
+import com.pebbledb.actions.GetNode;
+import com.pebbledb.actions.PostNode;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
@@ -21,16 +22,14 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
          */
 
-        if (event.getPath().startsWith("/db/node")){
-            NodeHandler.handle(event);
-        } else {
-           // RelationshipHandler.handle(event);
+        switch (event.getAction()) {
+            case GET_NODE:
+                GetNode.handle(event);
+                break;
+            case POST_NODE:
+                PostNode.handle(event);
+                break;
         }
 
-//
-//        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-//        exchange.getResponseSender().send("Hello World " + sequence
-//                + " path: " + event.getPath()
-//                + " body: " + event.getBody());
     }
 }

@@ -1,12 +1,16 @@
 package com.pebbledb.events;
 
+import com.pebbledb.actions.Action;
 import io.undertow.server.HttpServerExchange;
+
+import java.util.Map;
 
 public class ExchangeEvent {
 
     private HttpServerExchange exchange;
     private boolean write;
-    private String path;
+    private Action action;
+    private Map parameters;
     private String body;
 
     public void set(HttpServerExchange exchange) {
@@ -17,14 +21,22 @@ public class ExchangeEvent {
         return this.exchange;
     }
 
-    void setRequest(boolean write, String path, String body) {
+    public void setRequest(boolean write, Action action, Map parameters) {
         this.write = write;
-        this.path = path;
+        this.action = action;
+        this.parameters = parameters;
+    }
+
+    public void setBody(String body) {
         this.body = body;
     }
 
-    public String getPath() {
-        return path;
+    public Action getAction() {
+        return action;
+    }
+
+    public Map getParameters() {
+        return parameters;
     }
 
     public String getBody() {
