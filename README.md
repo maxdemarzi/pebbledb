@@ -48,3 +48,16 @@
     GraphTraversalBenchmarks.measureRecommendationTraversal         2000            10          10000  thrpt   10  1035.752 ±  13.313  ops/s
     GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100           1000  thrpt   10    19.120 ±   0.816  ops/s
     GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100          10000  thrpt   10     2.012 ±   0.085  ops/s
+
+
+### Server Benchmarks
+
+    wrk -t4 -c100 -d30s http://127.0.0.1:8080/db/node/max
+    Running 30s test @ http://127.0.0.1:8080/db/node/max
+      4 threads and 100 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.79ms  271.05us  12.05ms   87.64%
+        Req/Sec    14.04k     1.04k   16.46k    77.33%
+      1681519 requests in 30.10s, 234.13MB read
+    Requests/sec:  55859.02
+    Transfer/sec:      7.78MB

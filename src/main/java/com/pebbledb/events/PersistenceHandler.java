@@ -11,7 +11,6 @@ import net.openhft.chronicle.wire.DocumentContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
 
 public class PersistenceHandler implements EventHandler<ExchangeEvent> {
     private static final ChronicleQueue queue = SingleChronicleQueueBuilder.binary("events").build();
@@ -21,7 +20,6 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
     {
         HttpServerExchange exchange = event.get();
         String path = exchange.getRequestPath();
-        Map params = exchange.getQueryParameters();
         String body = null;
 
         boolean write = exchange.getRequestMethod().equals(Methods.POST);
@@ -48,16 +46,17 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
                     }
                 }
             }
-            body = builder.toString( );
-        }
-        event.setRequest(write, path, params, body);
+            body = builder.toString();
 
-        try (final DocumentContext dc = appender.writingDocument()) {
-            dc.wire().write("path").text(path)
-                    .write("parameters").object(params)
-                    .write("body").text(body);
-            System.out.println("Data was stored to index="+ dc.index());
+            // Only add write requests to logging queue
+            try (final DocumentContext dc = appender.writingDocument()) {
+                dc.wire().write("path").text(path)
+                        .write("body").text(body);
+                System.out.println("Data was stored to index: "+ dc.index());
+            }
+
         }
+        event.setRequest(write, path, body);
 
     }
 }

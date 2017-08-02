@@ -13,6 +13,7 @@
         <javac.target>1.8</javac.target>
         <junit.version>4.12</junit.version>
         <restassured.version>3.0.1</restassured.version>
+        <jsoniter.version>0.9.15</jsoniter.version>
         <fastutil.version>8.1.0</fastutil.version>
         <brownies.version>0.9.13</brownies.version>
         <guava.version>20.0</guava.version>
@@ -24,6 +25,13 @@
     </properties>
 
     <dependencies>
+
+        <!-- Jsoniter -->
+        <dependency>
+            <groupId>com.jsoniter</groupId>
+            <artifactId>jsoniter</artifactId>
+            <version>${jsoniter.version}</version>
+        </dependency>
 
         <!-- Guava -->
         <dependency>

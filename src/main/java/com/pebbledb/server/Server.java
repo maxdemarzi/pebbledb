@@ -9,13 +9,20 @@ import com.pebbledb.events.ClearingEventHandler;
 import com.pebbledb.events.DatabaseEventHandler;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.events.PersistenceHandler;
+import com.pebbledb.graphs.FastUtilGraph;
+import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
 
 public class Server {
 
+    public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
+
     public static void main(final String[] args) throws InterruptedException {
+        Arrays.fill(graphs, new FastUtilGraph());
+
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024;
 
