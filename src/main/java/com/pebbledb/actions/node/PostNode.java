@@ -17,15 +17,16 @@ public class PostNode {
 
     public static void handle(ExchangeEvent exchangeEvent) {
         String body = exchangeEvent.getBody();
+        String id = (String)exchangeEvent.getParameters().get(Constants.ID);
         if (body.isEmpty()) {
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].addNode((String)exchangeEvent.getParameters().get(Constants.ID));
+                graphs[i].addNode(id);
             }
         } else {
             Map<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<Map<String, Object>>(){});
 
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].addNode((String)exchangeEvent.getParameters().get(Constants.ID), properties);
+                graphs[i].addNode(id, properties);
             }
         }
 
@@ -33,6 +34,6 @@ public class PostNode {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.setStatusCode(StatusCodes.CREATED);
         exchange.getResponseSender().send(
-                JsonStream.serialize(graphs[0].getNode((String)exchangeEvent.getParameters().get(Constants.ID))));
+                JsonStream.serialize(new TypeLiteral<Map<String, Object>> (){} , graphs[0].getNode(id)));
     }
 }

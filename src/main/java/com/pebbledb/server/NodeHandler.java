@@ -6,13 +6,11 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 
-import java.util.HashMap;
-
 public class NodeHandler implements HttpHandler {
     private boolean write;
-    Action action;
+    private Action action;
 
-    public NodeHandler(boolean write, Action action) {
+    NodeHandler(boolean write, Action action) {
         this.write = write;
         this.action = action;
     }
@@ -23,13 +21,7 @@ public class NodeHandler implements HttpHandler {
         final long seq = Server.ringBuffer.next();
         final ExchangeEvent exchangeEvent = Server.ringBuffer.get(seq);
 
-        String id = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-                .getParameters().get(Constants.ID);
-
-        exchangeEvent.setRequest(write, action,
-                new HashMap<String, Object>() {{
-                    put(Constants.ID, id);
-                }});
+        exchangeEvent.setRequest(write, action, exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters());
 
         exchangeEvent.set(exchange);
         Server.ringBuffer.publish(seq);

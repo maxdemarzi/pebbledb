@@ -49,7 +49,6 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
             try (final DocumentContext dc = appender.writingDocument()) {
                 dc.wire().write("action").text(event.getAction().name())
                         .write("body").text(event.getBody());
-                System.out.println("Data was stored to index: "+ dc.index());
             }
         }
     }

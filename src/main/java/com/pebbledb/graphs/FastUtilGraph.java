@@ -9,12 +9,12 @@ import java.util.*;
 
 public class FastUtilGraph implements Graph {
 
-    private static Object2IntOpenHashMap<String> keys;
-    private static ObjectArrayList<Map<String, Object>> nodes;
-    private static Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
-    private static Object2ObjectOpenHashMap<String, ReversibleMultiMap<Integer>> related;
-    private static Object2IntArrayMap<String> relationshipCounts;
-    private static Object2IntOpenHashMap<String> relatedCounts;
+    private Object2IntOpenHashMap<String> keys;
+    private ObjectArrayList<Map<String, Object>> nodes;
+    private Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
+    private Object2ObjectOpenHashMap<String, ReversibleMultiMap<Integer>> related;
+    private Object2IntArrayMap<String> relationshipCounts;
+    private Object2IntOpenHashMap<String> relatedCounts;
 
     public FastUtilGraph() {
         keys = new Object2IntOpenHashMap<>();

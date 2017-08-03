@@ -15,16 +15,18 @@ import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
 
-import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
 
 public class Server {
 
     public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
-    public static RingBuffer<ExchangeEvent> ringBuffer;
+    static RingBuffer<ExchangeEvent> ringBuffer;
+    private Undertow server;
 
-    public static void main(final String[] args) throws InterruptedException {
-        Arrays.fill(graphs, new FastUtilGraph());
+    public Server() {
+        for (int i = -1; ++i < graphs.length; ) {
+            graphs[i]= new FastUtilGraph();
+        }
 
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024;
@@ -41,21 +43,37 @@ public class Server {
 
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
         ringBuffer = disruptor.start();
+    }
 
-        Undertow server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
+    public static void main(final String[] args) throws InterruptedException {
+
+        Server pebbleServer = new Server();
+        pebbleServer.buildAndStartServer(8080, "localhost");
+    }
+
+    public void buildAndStartServer(int port, String host) {
+        server = Undertow.builder()
+                .addHttpListener(port, host)
                 .setBufferSize(1024 * 16)
                 .setIoThreads(Runtime.getRuntime().availableProcessors() * 2) //this seems slightly faster in some configurations
                 .setHandler(new RoutingHandler()
-                    .add("GET", "/db/node/{id}", new NodeHandler(false, Action.GET_NODE))
-                    .add("POST", "/db/node/{id}", new NodeHandler(true, Action.POST_NODE))
-                    .add("PUT", "/db/node/{id}", new PutNodeHandler())
-                    .add("DELETE", "/db/node/{id}", new DeleteNodeHandler())
-                    .add("GET", "/db/node/{id}/property/{key}", new GetNodePropertyHandler())
+                        .add("GET", "/db/node/{id}", new NodeHandler(false, Action.GET_NODE))
+                        .add("POST", "/db/node/{id}", new NodeHandler(true, Action.POST_NODE))
+                        .add("PUT", "/db/node/{id}", new NodeHandler(true, Action.PUT_NODE_PROPERTIES))
+                        .add("DELETE", "/db/node/{id}", new NodeHandler(true, Action.DELETE_NODE))
+                        .add("DELETE", "/db/node/{id}/properties", new NodeHandler(true, Action.DELETE_NODE_PROPERTIES))
+                        .add("GET", "/db/node/{id}/property/{key}", new NodeHandler(false, Action.GET_NODE_PROPERTY))
+                        .add("PUT", "/db/node/{id}/property/{key}", new NodeHandler(true, Action.PUT_NODE_PROPERTY))
+                        .add("DELETE", "/db/node/{id}/property/{key}", new NodeHandler(true, Action.DELETE_NODE_PROPERTY))
                 )
                 .build();
         server.start();
+    }
 
+    public void stopServer() {
+        if (server != null) {
+            server.stop();
+        }
     }
 
 }

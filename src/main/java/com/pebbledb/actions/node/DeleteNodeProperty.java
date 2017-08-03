@@ -7,18 +7,13 @@ import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class DeleteNode {
-
+public class DeleteNodeProperty {
     public static void handle(ExchangeEvent exchangeEvent) {
-        boolean succeeded = false;
-        for (int i = -1; ++i < graphs.length; ) {
-            succeeded = graphs[i].removeNode((String)exchangeEvent.getParameters().get(Constants.ID));
-        }
         HttpServerExchange exchange = exchangeEvent.get();
-        if (succeeded) {
-            exchange.setStatusCode(StatusCodes.NO_CONTENT);
-        } else {
-            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        exchange.setStatusCode(StatusCodes.NO_CONTENT);
+        for (int i = -1; ++i < graphs.length; ) {
+            graphs[i].deleteNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
+                    (String)exchangeEvent.getParameters().get(Constants.KEY));
         }
     }
 }

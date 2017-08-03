@@ -18,22 +18,28 @@ public class PutNodeProperties {
 
     public static void handle(ExchangeEvent exchangeEvent) {
         String body = exchangeEvent.getBody();
+        String id = (String)exchangeEvent.getParameters().get(Constants.ID);
+        boolean succeeded = false;
         if (body.isEmpty()) {
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].updateNodeProperties((String)exchangeEvent.getParameters().get(Constants.ID), new HashMap());
+                succeeded = graphs[i].updateNodeProperties(id, new HashMap());
             }
         } else {
             Map<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<Map<String, Object>>(){});
 
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].updateNodeProperties((String)exchangeEvent.getParameters().get(Constants.ID), properties);
+                succeeded = graphs[i].updateNodeProperties(id, properties);
             }
         }
 
         HttpServerExchange exchange = exchangeEvent.get();
-        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.setStatusCode(StatusCodes.CREATED);
-        exchange.getResponseSender().send(
-                JsonStream.serialize(graphs[0].getNode((String)exchangeEvent.getParameters().get(Constants.ID))));
+        if (succeeded) {
+            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            exchange.setStatusCode(StatusCodes.CREATED);
+            exchange.getResponseSender().send(
+                    JsonStream.serialize(new TypeLiteral<Map<String, Object>>(){}, graphs[0].getNode(id)));
+        } else {
+            exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
+        }
     }
 }

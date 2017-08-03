@@ -6,7 +6,7 @@ import com.pebbledb.actions.node.*;
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
-       // HttpServerExchange exchange = event.get();
+
         /*
             Paths:
             /db/node/:id
@@ -40,6 +40,13 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
             case GET_NODE_PROPERTY:
                 GetNodeProperty.handle(event);
                 break;
+            case PUT_NODE_PROPERTY:
+                PutNodeProperty.handle(event);
+                break;
+            case DELETE_NODE_PROPERTY:
+                DeleteNodeProperty.handle(event);
+                break;
+
         }
 
     }
