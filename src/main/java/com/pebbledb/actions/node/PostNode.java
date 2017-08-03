@@ -9,6 +9,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
@@ -23,10 +24,10 @@ public class PostNode {
                 graphs[i].addNode(id);
             }
         } else {
-            Map<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<Map<String, Object>>(){});
+            HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
 
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].addNode(id, properties);
+                graphs[i].addNode(id, (HashMap<String, Object>)properties.clone());
             }
         }
 

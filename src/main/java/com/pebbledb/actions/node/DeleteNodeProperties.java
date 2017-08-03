@@ -10,10 +10,15 @@ import static com.pebbledb.server.Server.graphs;
 public class DeleteNodeProperties {
 
     public static void handle(ExchangeEvent exchangeEvent) {
+        boolean succeeded = false;
         for (int i = -1; ++i < graphs.length; ) {
-            graphs[i].deleteNodeProperties((String)exchangeEvent.getParameters().get(Constants.ID));
+            succeeded = graphs[i].deleteNodeProperties((String)exchangeEvent.getParameters().get(Constants.ID));
         }
         HttpServerExchange exchange = exchangeEvent.get();
-        exchange.setStatusCode(StatusCodes.NO_CONTENT);
+        if (succeeded) {
+            exchange.setStatusCode(StatusCodes.NO_CONTENT);
+        } else {
+            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        }
     }
 }

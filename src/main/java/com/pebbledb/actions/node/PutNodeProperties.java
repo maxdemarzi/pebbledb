@@ -25,9 +25,8 @@ public class PutNodeProperties {
                 succeeded = graphs[i].updateNodeProperties(id, new HashMap());
             }
         } else {
-            Map<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<Map<String, Object>>(){});
-
             for (int i = -1; ++i < graphs.length; ) {
+                HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
                 succeeded = graphs[i].updateNodeProperties(id, properties);
             }
         }

@@ -126,7 +126,8 @@ public class FastUtilGraph implements Graph {
     public boolean updateNodeProperties(String key, Map properties) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
-        nodes.add(id, properties);
+        Map<String, Object> current = nodes.get(id);
+        current.putAll(properties);
         return true;
     }
 

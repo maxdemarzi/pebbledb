@@ -9,11 +9,16 @@ import static com.pebbledb.server.Server.graphs;
 
 public class DeleteNodeProperty {
     public static void handle(ExchangeEvent exchangeEvent) {
-        HttpServerExchange exchange = exchangeEvent.get();
-        exchange.setStatusCode(StatusCodes.NO_CONTENT);
+        boolean succeeded = false;
         for (int i = -1; ++i < graphs.length; ) {
-            graphs[i].deleteNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
+            succeeded = graphs[i].deleteNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
                     (String)exchangeEvent.getParameters().get(Constants.KEY));
+        }
+        HttpServerExchange exchange = exchangeEvent.get();
+        if (succeeded) {
+            exchange.setStatusCode(StatusCodes.NO_CONTENT);
+        } else {
+            exchange.setStatusCode(StatusCodes.NOT_FOUND);
         }
     }
 }

@@ -14,17 +14,21 @@ public class PutNodeProperty {
     public static void handle(ExchangeEvent exchangeEvent) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
+        boolean succeeded = false;
         if (body.isEmpty()) {
             exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
         } else {
-            Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
-
             for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].updateNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
+                Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
+                succeeded = graphs[i].updateNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
                         (String)exchangeEvent.getParameters().get(Constants.KEY),
                         property);
             }
-            exchange.setStatusCode(StatusCodes.NO_CONTENT);
+            if (succeeded) {
+                exchange.setStatusCode(StatusCodes.NO_CONTENT);
+            } else {
+                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+            }
         }
     }
 }
