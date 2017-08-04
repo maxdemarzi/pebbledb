@@ -301,7 +301,7 @@ public class FastUtilGraph implements Graph {
         int node2 = keys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        relationships.put(node1 + "-" + node2 + type,properties);
+        relationships.put(node1 + "-" + node2 + type, properties);
         return true;
     }
 
@@ -372,9 +372,12 @@ public class FastUtilGraph implements Graph {
         int node1 = keys.getInt(from);
         int node2 = keys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-
-        relationships.get(node1 + "-" + node2 + type).remove(property);
-        return true;
+        Map<String, Object> properties = relationships.get(node1 + "-" + node2 + type);
+        if (properties.containsKey(property)) {
+            properties.remove(property);
+            return true;
+        }
+        return false;
     }
     
     public boolean deleteRelationshipProperty(String type, String from, String to, int number, String property) {

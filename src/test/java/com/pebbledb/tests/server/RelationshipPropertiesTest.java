@@ -65,7 +65,7 @@ public class RelationshipPropertiesTest {
                 assertThat().
                 body(equalTo("\"2017-01-07\"")).
                 statusCode(200).
-                contentType("application/json;charset=UTF-8");
+                contentType("application/json");
     }
 
     @Test
@@ -76,11 +76,14 @@ public class RelationshipPropertiesTest {
                 assertThat().
                 body(equalTo("5")).
                 statusCode(200).
-                contentType("application/json;charset=UTF-8");
+                contentType("application/json");
     }
 
     @Test
     public void integrationTestPutRelationshipPropertyNotThere() {
+        given().
+                contentType("application/json").
+                body(2).
         when().
                 put("/db/relationship/FOLLOWS/node0/node3/property/stars").
                 then().
@@ -105,9 +108,7 @@ public class RelationshipPropertiesTest {
                 put("/db/relationship/FOLLOWS/node1/node3/property/archived").
                 then().
                 assertThat().
-                body("$", equalTo(properties)).
-                statusCode(201).
-                contentType("application/json;charset=UTF-8");
+                statusCode(204);
     }
 
     @Test
@@ -128,9 +129,9 @@ public class RelationshipPropertiesTest {
                 put("/db/relationship/FOLLOWS/node1/node3/properties").
                 then().
                 assertThat().
-                body("$", equalTo(properties)).
+                body("$", equalTo(prop)).
                 statusCode(201).
-                contentType("application/json;charset=UTF-8");
+                contentType("application/json");
     }
 
     @Test
@@ -157,7 +158,7 @@ public class RelationshipPropertiesTest {
                 delete("/db/relationship/FOLLOWS/node1/node3/property/not_there").
                 then().
                 assertThat().
-                statusCode(304);
+                statusCode(404);
     }
 
     @Test

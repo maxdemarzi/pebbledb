@@ -20,8 +20,8 @@ public class PutNodeProperty {
         } else {
             for (int i = -1; ++i < graphs.length; ) {
                 Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
-                succeeded = graphs[i].updateNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
-                        (String)exchangeEvent.getParameters().get(Constants.KEY),
+                succeeded = graphs[i].updateNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
+                        exchangeEvent.getParameters().get(Constants.KEY),
                         property);
             }
             if (succeeded) {

@@ -11,8 +11,8 @@ public class DeleteNodeProperty {
     public static void handle(ExchangeEvent exchangeEvent) {
         boolean succeeded = false;
         for (int i = -1; ++i < graphs.length; ) {
-            succeeded = graphs[i].deleteNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
-                    (String)exchangeEvent.getParameters().get(Constants.KEY));
+            succeeded = graphs[i].deleteNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
+                    exchangeEvent.getParameters().get(Constants.KEY));
         }
         HttpServerExchange exchange = exchangeEvent.get();
         if (succeeded) {

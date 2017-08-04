@@ -1,12 +1,14 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
-import com.pebbledb.actions.NotImplementedYet;
-import com.pebbledb.actions.node.*;
+import com.pebbledb.actions.node.DeleteNode;
+import com.pebbledb.actions.node.GetNode;
+import com.pebbledb.actions.node.PostNode;
 import com.pebbledb.actions.node_properties.*;
-import com.pebbledb.actions.relationship.*;
-import com.pebbledb.actions.relationship_properties.DeleteRelationshipProperties;
-import com.pebbledb.actions.relationship_properties.GetRelationshipProperty;
+import com.pebbledb.actions.relationship.DeleteRelationship;
+import com.pebbledb.actions.relationship.GetRelationship;
+import com.pebbledb.actions.relationship.PostRelationship;
+import com.pebbledb.actions.relationship_properties.*;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
@@ -14,20 +16,6 @@ import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
-
-        /*
-            Paths:
-            /db/node/:id
-            /db/node/:id/degree/:direction
-            /db/node/:id/property/:key
-            /db/node/:id/properties
-            /db/relationship/:type/:from/:to/:number
-            /db/relationship/:type/:from/:to/property/:key
-            /db/relationship/:type/:from/:to/properties
-            /db/relationship/:type/:from/:to/:number/property/:key
-            /db/relationship/:type/:from/:to/:number/properties
-
-         */
 
         switch (event.getAction()) {
 
@@ -76,8 +64,7 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 DeleteRelationship.handle(event);
                 break;
             case PUT_RELATIONSHIP_PROPERTIES:
-                //PutRelationshipProperties.handle(event);
-                NotImplementedYet.handle(event);
+                PutRelationshipProperties.handle(event);
                 break;
             case DELETE_RELATIONSHIP_PROPERTIES:
                 DeleteRelationshipProperties.handle(event);
@@ -86,12 +73,10 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 GetRelationshipProperty.handle(event);
                 break;
             case PUT_RELATIONSHIP_PROPERTY:
-                //PutRelationshipProperty.handle(event);
-                NotImplementedYet.handle(event);
+                PutRelationshipProperty.handle(event);
                 break;
             case DELETE_RELATIONSHIP_PROPERTY:
-                //DeleteRelationshipProperty.handle(event);
-                NotImplementedYet.handle(event);
+                DeleteRelationshipProperty.handle(event);
                 break;
 
         }
