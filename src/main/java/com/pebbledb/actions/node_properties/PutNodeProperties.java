@@ -16,35 +16,37 @@ import static com.pebbledb.server.Server.graphs;
 
 public class PutNodeProperties {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
         String id = exchangeEvent.getParameters().get(Constants.ID);
-        boolean succeeded = false;
+        boolean succeeded;
 
-        if (graphs[0].getNode(id) == null) {
-            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        if (graphs[number].getNode(id) == null) {
+            if (respond) {
+                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+                exchangeEvent.clear();
+            }
             return;
         }
 
         if (body.isEmpty()) {
-            for (int i = -1; ++i < graphs.length; ) {
-                succeeded = graphs[i].updateNodeProperties(id, new HashMap());
-            }
+             succeeded = graphs[number].updateNodeProperties(id, new HashMap());
         } else {
-            for (int i = -1; ++i < graphs.length; ) {
-                HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
-                succeeded = graphs[i].updateNodeProperties(id, properties);
-            }
+            HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
+            succeeded = graphs[number].updateNodeProperties(id, properties);
         }
-
-        if (succeeded) {
-            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.setStatusCode(StatusCodes.CREATED);
-            exchange.getResponseSender().send(
-                    JsonStream.serialize(new TypeLiteral<Map<String, Object>>(){}, graphs[0].getNode(id)));
-        } else {
-            exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
+        if (respond) {
+            if (succeeded) {
+                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                exchange.setStatusCode(StatusCodes.CREATED);
+                exchange.getResponseSender().send(
+                        JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
+                        }, graphs[number].getNode(id)));
+            } else {
+                exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
+            }
+            exchangeEvent.clear();
         }
     }
 }

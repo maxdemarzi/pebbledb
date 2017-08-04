@@ -16,25 +16,23 @@ import static com.pebbledb.server.Server.graphs;
 
 public class PostNode {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         String body = exchangeEvent.getBody();
         String id = exchangeEvent.getParameters().get(Constants.ID);
         if (body.isEmpty()) {
-            for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].addNode(id);
-            }
+                graphs[number].addNode(id);
         } else {
             HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
-
-            for (int i = -1; ++i < graphs.length; ) {
-                graphs[i].addNode(id, (HashMap<String, Object>)properties.clone());
-            }
+            graphs[number].addNode(id, properties);
         }
-
-        HttpServerExchange exchange = exchangeEvent.get();
-        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.setStatusCode(StatusCodes.CREATED);
-        exchange.getResponseSender().send(
-                JsonStream.serialize(new TypeLiteral<Map<String, Object>> (){} , graphs[0].getNode(id)));
+        if (respond) {
+            HttpServerExchange exchange = exchangeEvent.get();
+            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            exchange.setStatusCode(StatusCodes.CREATED);
+            exchange.getResponseSender().send(
+                    JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
+                    }, graphs[number].getNode(id)));
+            exchangeEvent.clear();
+        }
     }
 }

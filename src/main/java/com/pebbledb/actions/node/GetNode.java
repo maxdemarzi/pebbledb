@@ -15,10 +15,10 @@ import static com.pebbledb.server.Server.graphs;
 
 public class GetNode {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
 
-        Map<String, Object> node = graphs[0].getNode((String)exchangeEvent.getParameters().get(Constants.ID));
+        Map<String, Object> node = graphs[number].getNode(exchangeEvent.getParameters().get(Constants.ID));
         if (node == null) {
             exchange.setStatusCode(StatusCodes.NOT_FOUND);
         } else {
@@ -26,7 +26,7 @@ public class GetNode {
             exchange.getResponseSender().send(
                     JsonStream.serialize(new TypeLiteral<HashMap<String, Object>>(){}, node));
         }
-
+        exchangeEvent.clear();
     }
 
 }

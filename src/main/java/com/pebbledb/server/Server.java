@@ -6,7 +6,6 @@ import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.pebbledb.actions.Action;
-import com.pebbledb.events.ClearingEventHandler;
 import com.pebbledb.events.DatabaseEventHandler;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.events.PersistenceHandler;
@@ -19,7 +18,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class Server {
 
-    public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
+    public static final Graph[] graphs = new Graph[4];
     static RingBuffer<ExchangeEvent> ringBuffer;
     private Undertow server;
 
@@ -36,10 +35,14 @@ public class Server {
         Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, bufferSize, (ThreadFactory) Thread::new,
                 ProducerType.MULTI, waitStrategy);
 
+        DatabaseEventHandler[] handlers = new DatabaseEventHandler[4];
+        for (int i = -1; ++i < 4; ) {
+            handlers[i] = new DatabaseEventHandler(i);
+        }
+
         // Connect the handlers
         disruptor.handleEventsWith(new PersistenceHandler())
-                .then(new DatabaseEventHandler())
-                .then(new ClearingEventHandler());
+                .then(handlers);
 
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
         ringBuffer = disruptor.start();

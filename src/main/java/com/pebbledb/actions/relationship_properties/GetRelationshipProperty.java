@@ -12,20 +12,20 @@ import java.util.Map;
 import static com.pebbledb.server.Server.graphs;
 
 public class GetRelationshipProperty {
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
 
         Object property;
         if(parameters.containsKey(Constants.NUMBER)) {
-            property = graphs[0].getRelationshipProperty(
+            property = graphs[number].getRelationshipProperty(
                     parameters.get(Constants.TYPE),
                     parameters.get(Constants.FROM),
                     parameters.get(Constants.TO),
                     Integer.parseInt(parameters.get(Constants.NUMBER)),
                     parameters.get(Constants.KEY));
         } else {
-            property = graphs[0].getRelationshipProperty(
+            property = graphs[number].getRelationshipProperty(
                     parameters.get(Constants.TYPE),
                     parameters.get(Constants.FROM),
                     parameters.get(Constants.TO),
@@ -39,6 +39,6 @@ public class GetRelationshipProperty {
             exchange.getResponseSender().send(
                     JsonStream.serialize(property));
         }
-
+        exchangeEvent.clear();
     }
 }

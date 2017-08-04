@@ -15,19 +15,19 @@ import static com.pebbledb.server.Server.graphs;
 
 public class GetRelationship {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
         Map<String, Object> relationship;
 
         if(parameters.containsKey(Constants.NUMBER)) {
-            relationship = graphs[0].getRelationship(
+            relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
                     parameters.get(Constants.FROM),
                     parameters.get(Constants.TO),
                     Integer.parseInt(parameters.get(Constants.NUMBER)));
         } else {
-            relationship = graphs[0].getRelationship(
+            relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
                     parameters.get(Constants.FROM),
                     parameters.get(Constants.TO));
@@ -40,7 +40,7 @@ public class GetRelationship {
             exchange.getResponseSender().send(
                     JsonStream.serialize(new TypeLiteral<HashMap<String, Object>>(){}, relationship));
         }
-
+        exchangeEvent.clear();
     }
 
 }

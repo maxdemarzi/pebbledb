@@ -11,31 +11,30 @@ import static com.pebbledb.server.Server.graphs;
 
 public class DeleteRelationshipProperties {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
-        boolean succeeded = false;
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+        boolean succeeded;
         Map<String, String> parameters = exchangeEvent.getParameters();
-        if(parameters.containsKey(Constants.NUMBER)) {
-            for (int i = -1; ++i < graphs.length; ) {
-                succeeded = graphs[i].deleteRelationshipProperties(
-                        parameters.get(Constants.TYPE),
-                        parameters.get(Constants.FROM),
-                        parameters.get(Constants.TO),
-                        Integer.parseInt(parameters.get(Constants.NUMBER)));
-            }
+        if (parameters.containsKey(Constants.NUMBER)) {
+            succeeded = graphs[number].deleteRelationshipProperties(
+                    parameters.get(Constants.TYPE),
+                    parameters.get(Constants.FROM),
+                    parameters.get(Constants.TO),
+                    Integer.parseInt(parameters.get(Constants.NUMBER)));
         } else {
-            for (int i = -1; ++i < graphs.length; ) {
-                succeeded = graphs[i].deleteRelationshipProperties(
-                        parameters.get(Constants.TYPE),
-                        parameters.get(Constants.FROM),
-                        parameters.get(Constants.TO));
-            }
+            succeeded = graphs[number].deleteRelationshipProperties(
+                    parameters.get(Constants.TYPE),
+                    parameters.get(Constants.FROM),
+                    parameters.get(Constants.TO));
         }
 
-        HttpServerExchange exchange = exchangeEvent.get();
-        if (succeeded) {
-            exchange.setStatusCode(StatusCodes.NO_CONTENT);
-        } else {
-            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        if (respond) {
+            HttpServerExchange exchange = exchangeEvent.get();
+            if (succeeded) {
+                exchange.setStatusCode(StatusCodes.NO_CONTENT);
+            } else {
+                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+            }
+            exchangeEvent.clear();
         }
     }
 }

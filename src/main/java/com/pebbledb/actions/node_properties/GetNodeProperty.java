@@ -10,10 +10,10 @@ import io.undertow.util.StatusCodes;
 import static com.pebbledb.server.Server.graphs;
 
 public class GetNodeProperty {
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
 
-        Object property = graphs[0].getNodeProperty(
+        Object property = graphs[number].getNodeProperty(
                 exchangeEvent.getParameters().get(Constants.ID),
                 exchangeEvent.getParameters().get(Constants.KEY));
         if (property == null) {
@@ -23,5 +23,6 @@ public class GetNodeProperty {
         exchange.getResponseSender().send(
                 JsonStream.serialize(property));
         }
+        exchangeEvent.clear();
     }
 }

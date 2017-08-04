@@ -11,31 +11,31 @@ import static com.pebbledb.server.Server.graphs;
 
 public class DeleteRelationship {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
 
-        boolean succeeded = false;
+        boolean succeeded;
 
         if(parameters.containsKey(Constants.NUMBER)) {
-            for (int i = -1; ++i < graphs.length; ) {
-                succeeded = graphs[i].removeRelationship(parameters.get(Constants.TYPE),
+                succeeded = graphs[number].removeRelationship(parameters.get(Constants.TYPE),
                         parameters.get(Constants.FROM),
                         parameters.get(Constants.TO),
                         Integer.parseInt(parameters.get(Constants.NUMBER)));
-            }
+
         } else {
-            for (int i = -1; ++i < graphs.length; ) {
-                succeeded = graphs[i].removeRelationship(parameters.get(Constants.TYPE),
+                succeeded = graphs[number].removeRelationship(parameters.get(Constants.TYPE),
                         parameters.get(Constants.FROM),
                         parameters.get(Constants.TO));
-            }
-        }
 
-        if (succeeded) {
-            exchange.setStatusCode(StatusCodes.NO_CONTENT);
-        } else {
-            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        }
+        if (respond) {
+            if (succeeded) {
+                exchange.setStatusCode(StatusCodes.NO_CONTENT);
+            } else {
+                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+            }
+            exchangeEvent.clear();
         }
     }
 

@@ -11,23 +11,27 @@ import static com.pebbledb.server.Server.graphs;
 
 public class PutNodeProperty {
 
-    public static void handle(ExchangeEvent exchangeEvent) {
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
-        boolean succeeded = false;
+        boolean succeeded ;
         if (body.isEmpty()) {
-            exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
-        } else {
-            for (int i = -1; ++i < graphs.length; ) {
-                Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
-                succeeded = graphs[i].updateNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
-                        exchangeEvent.getParameters().get(Constants.KEY),
-                        property);
+            if(respond) {
+                exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
+                exchangeEvent.clear();
             }
-            if (succeeded) {
-                exchange.setStatusCode(StatusCodes.NO_CONTENT);
-            } else {
-                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+        } else {
+            Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
+            succeeded = graphs[number].updateNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
+                    exchangeEvent.getParameters().get(Constants.KEY),
+                    property);
+            if (respond) {
+                if (succeeded) {
+                    exchange.setStatusCode(StatusCodes.NO_CONTENT);
+                } else {
+                    exchange.setStatusCode(StatusCodes.NOT_FOUND);
+                }
+                exchangeEvent.clear();
             }
         }
     }

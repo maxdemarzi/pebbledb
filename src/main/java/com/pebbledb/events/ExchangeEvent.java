@@ -12,6 +12,7 @@ public class ExchangeEvent {
     private Action action;
     private Map<String, String> parameters;
     private String body;
+    private int responder;
 
     public void set(HttpServerExchange exchange) {
         this.exchange = exchange;
@@ -25,6 +26,14 @@ public class ExchangeEvent {
         this.write = write;
         this.action = action;
         this.parameters = parameters;
+    }
+
+    public void setResponder(int responder) {
+        this.responder = responder;
+    }
+
+    public boolean isResponder(int responder) {
+        return this.responder == responder;
     }
 
     public void setBody(String body) {
@@ -47,7 +56,7 @@ public class ExchangeEvent {
         return write;
     }
 
-    void clear() {
+    public void clear() {
         exchange.endExchange();
         exchange = null;
     }
