@@ -53,16 +53,11 @@
 
 ### Server Benchmarks
 
-    wrk -t4 -c100 -d30s http://127.0.0.1:8080/db/node/max
-    Running 30s test @ http://127.0.0.1:8080/db/node/max
-      4 threads and 100 connections
-      Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     1.79ms  271.05us  12.05ms   87.64%
-        Req/Sec    14.04k     1.04k   16.46k    77.33%
-      1681519 requests in 30.10s, 234.13MB read
-    Requests/sec:  55859.02
-    Transfer/sec:      7.78MB
+First Create some data:
 
+    curl -H "Content-Type: application/json" -X POST -d '{"name":"Max"}' http://localhost:8080/db/node/max
+
+Then query it:  
 
     wrk -t1 -c100 -d30s http://127.0.0.1:8080/db/node/max
     Running 30s test @ http://127.0.0.1:8080/db/node/max
@@ -74,3 +69,19 @@
       Socket errors: connect 0, read 1, write 0, timeout 0
     Requests/sec:  56931.39
     Transfer/sec:      7.93MB
+
+Shouldn't 4 worker threads get more r/s? 
+What am I doing wrong?
+    
+    wrk -t4 -c100 -d30s http://127.0.0.1:8080/db/node/max
+    Running 30s test @ http://127.0.0.1:8080/db/node/max
+      4 threads and 100 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.79ms  271.05us  12.05ms   87.64%
+        Req/Sec    14.04k     1.04k   16.46k    77.33%
+      1681519 requests in 30.10s, 234.13MB read
+    Requests/sec:  55859.02
+    Transfer/sec:      7.78MB
+
+
+
