@@ -57,14 +57,38 @@ public class Server {
                 .setBufferSize(1024 * 16)
                 .setIoThreads(Runtime.getRuntime().availableProcessors() * 2) //this seems slightly faster in some configurations
                 .setHandler(new RoutingHandler()
-                        .add("GET", "/db/node/{id}", new NodeHandler(false, Action.GET_NODE))
-                        .add("POST", "/db/node/{id}", new NodeHandler(true, Action.POST_NODE))
-                        .add("DELETE", "/db/node/{id}", new NodeHandler(true, Action.DELETE_NODE))
-                        .add("PUT", "/db/node/{id}/properties", new NodeHandler(true, Action.PUT_NODE_PROPERTIES))
-                        .add("DELETE", "/db/node/{id}/properties", new NodeHandler(true, Action.DELETE_NODE_PROPERTIES))
-                        .add("GET", "/db/node/{id}/property/{key}", new NodeHandler(false, Action.GET_NODE_PROPERTY))
-                        .add("PUT", "/db/node/{id}/property/{key}", new NodeHandler(true, Action.PUT_NODE_PROPERTY))
-                        .add("DELETE", "/db/node/{id}/property/{key}", new NodeHandler(true, Action.DELETE_NODE_PROPERTY))
+
+                        .add("GET", "/db/relationship_types", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
+                        .add("GET", "/db/relationship_types/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
+                        .add("GET", "/db/relationship_types/{type}/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
+
+                        .add("GET", "/db/node/{id}", new RequestHandler(false, Action.GET_NODE))
+                        .add("POST", "/db/node/{id}", new RequestHandler(true, Action.POST_NODE))
+                        .add("DELETE", "/db/node/{id}", new RequestHandler(true, Action.DELETE_NODE))
+                        .add("PUT", "/db/node/{id}/properties", new RequestHandler(true, Action.PUT_NODE_PROPERTIES))
+                        .add("DELETE", "/db/node/{id}/properties", new RequestHandler(true, Action.DELETE_NODE_PROPERTIES))
+                        .add("GET", "/db/node/{id}/property/{key}", new RequestHandler(false, Action.GET_NODE_PROPERTY))
+                        .add("PUT", "/db/node/{id}/property/{key}", new RequestHandler(true, Action.PUT_NODE_PROPERTY))
+                        .add("DELETE", "/db/node/{id}/property/{key}", new RequestHandler(true, Action.DELETE_NODE_PROPERTY))
+
+                        .add("GET","/db/relationship/{type}/{from}/{to}", new RequestHandler(false, Action.GET_RELATIONSHIP))
+                        .add("POST","/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.POST_RELATIONSHIP))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.DELETE_RELATIONSHIP))
+                        .add("PUT","/db/relationship/{type}/{from}/{to}/properties", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}/properties", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
+                        .add("GET","/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
+                        .add("PUT","/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
+                        // Additional Relationships
+                        .add("GET","/db/relationship/{type}/{from}/{to}/{number}", new RequestHandler(false, Action.GET_RELATIONSHIP))
+                        .add("POST","/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.POST_RELATIONSHIP))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}/{number}", new RequestHandler(true, Action.DELETE_RELATIONSHIP))
+                        .add("PUT","/db/relationship/{type}/{from}/{to}/{number}/properties", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}/{number}/properties", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
+                        .add("GET","/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
+                        .add("PUT","/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
+                        .add("DELETE","/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
+
                 )
                 .build();
         server.start();

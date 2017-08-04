@@ -6,11 +6,11 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 
-public class NodeHandler implements HttpHandler {
+public class RequestHandler implements HttpHandler {
     private boolean write;
     private Action action;
 
-    NodeHandler(boolean write, Action action) {
+    RequestHandler(boolean write, Action action) {
         this.write = write;
         this.action = action;
     }

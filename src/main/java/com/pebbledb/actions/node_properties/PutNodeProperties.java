@@ -1,4 +1,4 @@
-package com.pebbledb.actions.node;
+package com.pebbledb.actions.node_properties;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
@@ -17,9 +17,16 @@ import static com.pebbledb.server.Server.graphs;
 public class PutNodeProperties {
 
     public static void handle(ExchangeEvent exchangeEvent) {
+        HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
-        String id = (String)exchangeEvent.getParameters().get(Constants.ID);
+        String id = exchangeEvent.getParameters().get(Constants.ID);
         boolean succeeded = false;
+
+        if (graphs[0].getNode(id) == null) {
+            exchange.setStatusCode(StatusCodes.NOT_FOUND);
+            return;
+        }
+
         if (body.isEmpty()) {
             for (int i = -1; ++i < graphs.length; ) {
                 succeeded = graphs[i].updateNodeProperties(id, new HashMap());
@@ -31,7 +38,6 @@ public class PutNodeProperties {
             }
         }
 
-        HttpServerExchange exchange = exchangeEvent.get();
         if (succeeded) {
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.setStatusCode(StatusCodes.CREATED);

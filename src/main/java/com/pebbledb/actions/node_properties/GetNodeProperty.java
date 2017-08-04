@@ -1,4 +1,4 @@
-package com.pebbledb.actions.node;
+package com.pebbledb.actions.node_properties;
 
 import com.jsoniter.output.JsonStream;
 import com.pebbledb.events.ExchangeEvent;
@@ -14,8 +14,8 @@ public class GetNodeProperty {
         HttpServerExchange exchange = exchangeEvent.get();
 
         Object property = graphs[0].getNodeProperty(
-                (String)exchangeEvent.getParameters().get(Constants.ID),
-                (String)exchangeEvent.getParameters().get(Constants.KEY));
+                exchangeEvent.getParameters().get(Constants.ID),
+                exchangeEvent.getParameters().get(Constants.KEY));
         if (property == null) {
             exchange.setStatusCode(StatusCodes.NOT_FOUND);
         } else {

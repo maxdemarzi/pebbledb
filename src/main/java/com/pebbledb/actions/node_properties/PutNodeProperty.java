@@ -1,4 +1,4 @@
-package com.pebbledb.actions.node;
+package com.pebbledb.actions.node_properties;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.spi.TypeLiteral;

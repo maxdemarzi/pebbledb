@@ -146,27 +146,25 @@ public class NodeTest {
     @Test
     public void integrationTestPutNodeNotThere() {
         when().
-                put("/db/node/notThere").
+                put("/db/node/notThere/properties").
                 then().
                 assertThat().
-                statusCode(304);
+                statusCode(404);
     }
 
     @Test
     public void integrationTestUpdateSinglePropertyNode() {
         HashMap<String, Object> prop =  new HashMap<>();
-        prop.put("property", "Value2");
+        prop.put("name", "Value2");
 
         given().
                 contentType("application/json;charset=UTF-8").
                 body(prop).
                 when().
-                put("/db/node/singlePropertyNode").
+                put("/db/node/singlePropertyNode/property/name").
                 then().
                 assertThat().
-                body("$", equalTo(prop)).
-                statusCode(201).
-                contentType("application/json");
+                statusCode(204);
     }
 
     @Test

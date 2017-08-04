@@ -18,7 +18,7 @@ public class PostNode {
 
     public static void handle(ExchangeEvent exchangeEvent) {
         String body = exchangeEvent.getBody();
-        String id = (String)exchangeEvent.getParameters().get(Constants.ID);
+        String id = exchangeEvent.getParameters().get(Constants.ID);
         if (body.isEmpty()) {
             for (int i = -1; ++i < graphs.length; ) {
                 graphs[i].addNode(id);

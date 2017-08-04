@@ -47,7 +47,7 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
             event.setBody(builder.toString());
 
             try (final DocumentContext dc = appender.writingDocument()) {
-                dc.wire().write("action").text(event.getAction().name())
+                dc.wire().write("path").text(exchange.getRequestPath())
                         .write("body").text(event.getBody());
             }
         }

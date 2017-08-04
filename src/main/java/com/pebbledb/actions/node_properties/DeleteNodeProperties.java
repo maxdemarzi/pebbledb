@@ -1,4 +1,4 @@
-package com.pebbledb.actions.node;
+package com.pebbledb.actions.node_properties;
 
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
@@ -7,12 +7,12 @@ import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class DeleteNodeProperty {
+public class DeleteNodeProperties {
+
     public static void handle(ExchangeEvent exchangeEvent) {
         boolean succeeded = false;
         for (int i = -1; ++i < graphs.length; ) {
-            succeeded = graphs[i].deleteNodeProperty((String)exchangeEvent.getParameters().get(Constants.ID),
-                    (String)exchangeEvent.getParameters().get(Constants.KEY));
+            succeeded = graphs[i].deleteNodeProperties(exchangeEvent.getParameters().get(Constants.ID));
         }
         HttpServerExchange exchange = exchangeEvent.get();
         if (succeeded) {

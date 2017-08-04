@@ -1,7 +1,15 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
+import com.pebbledb.actions.NotImplementedYet;
 import com.pebbledb.actions.node.*;
+import com.pebbledb.actions.node_properties.*;
+import com.pebbledb.actions.relationship.*;
+import com.pebbledb.actions.relationship_properties.DeleteRelationshipProperties;
+import com.pebbledb.actions.relationship_properties.GetRelationshipProperty;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
@@ -22,6 +30,17 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
          */
 
         switch (event.getAction()) {
+
+            case GET_RELATIONSHIP_TYPES:
+                GetRelationshipTypes.handle(event);
+                break;
+            case GET_RELATIONSHIP_TYPES_COUNT:
+                GetRelationshipTypesCount.handle(event);
+                break;
+            case GET_RELATIONSHIP_TYPE_COUNT:
+                GetRelationshipTypeCount.handle(event);
+                break;
+
             case GET_NODE:
                 GetNode.handle(event);
                 break;
@@ -45,6 +64,34 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 break;
             case DELETE_NODE_PROPERTY:
                 DeleteNodeProperty.handle(event);
+                break;
+
+            case GET_RELATIONSHIP:
+                GetRelationship.handle(event);
+                break;
+            case POST_RELATIONSHIP:
+                PostRelationship.handle(event);
+                break;
+            case DELETE_RELATIONSHIP:
+                DeleteRelationship.handle(event);
+                break;
+            case PUT_RELATIONSHIP_PROPERTIES:
+                //PutRelationshipProperties.handle(event);
+                NotImplementedYet.handle(event);
+                break;
+            case DELETE_RELATIONSHIP_PROPERTIES:
+                DeleteRelationshipProperties.handle(event);
+                break;
+            case GET_RELATIONSHIP_PROPERTY:
+                GetRelationshipProperty.handle(event);
+                break;
+            case PUT_RELATIONSHIP_PROPERTY:
+                //PutRelationshipProperty.handle(event);
+                NotImplementedYet.handle(event);
+                break;
+            case DELETE_RELATIONSHIP_PROPERTY:
+                //DeleteRelationshipProperty.handle(event);
+                NotImplementedYet.handle(event);
                 break;
 
         }

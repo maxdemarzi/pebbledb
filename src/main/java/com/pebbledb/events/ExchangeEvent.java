@@ -10,7 +10,7 @@ public class ExchangeEvent {
     private HttpServerExchange exchange;
     private boolean write;
     private Action action;
-    private Map parameters;
+    private Map<String, String> parameters;
     private String body;
 
     public void set(HttpServerExchange exchange) {
@@ -21,7 +21,7 @@ public class ExchangeEvent {
         return this.exchange;
     }
 
-    public void setRequest(boolean write, Action action, Map parameters) {
+    public void setRequest(boolean write, Action action, Map<String, String> parameters) {
         this.write = write;
         this.action = action;
         this.parameters = parameters;
@@ -35,7 +35,7 @@ public class ExchangeEvent {
         return action;
     }
 
-    public Map getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 
