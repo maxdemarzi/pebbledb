@@ -2,7 +2,7 @@ package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
 import com.pebbledb.actions.node.DeleteNode;
-import com.pebbledb.actions.node.GetNode;
+import com.pebbledb.actions.node.*;
 import com.pebbledb.actions.node.PostNode;
 import com.pebbledb.actions.node_properties.*;
 import com.pebbledb.actions.relationship.DeleteRelationship;
@@ -67,6 +67,9 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
             }
         } else if (respond) {
             switch (event.getAction()) {
+                case NOOP:
+                    NoOp.handle(event, number);
+                    break;
                 case GET_RELATIONSHIP_TYPES:
                     GetRelationshipTypes.handle(event, number);
                     break;

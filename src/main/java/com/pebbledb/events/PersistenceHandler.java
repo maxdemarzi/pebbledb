@@ -6,6 +6,7 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import net.openhft.chronicle.wire.DocumentContext;
+import com.pebbledb.server.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
 //      System.out.println("Persistence Handler:" + sequence);
-        event.setResponder((int) (sequence % 4));
+        event.setResponder((int) (sequence % Server.THREADS));
 
         if(event.getWrite()) {
 
