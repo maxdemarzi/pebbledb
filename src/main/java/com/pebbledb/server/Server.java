@@ -1,6 +1,6 @@
 package com.pebbledb.server;
 
-import com.lmax.disruptor.BlockingWaitStrategy;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -13,12 +13,15 @@ import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
-
+import io.undertow.util.StatusCodes;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class Server {
 
-    public static final Graph[] graphs = new Graph[4];
+	public final static int THREADS = Runtime.getRuntime().availableProcessors();
+    public static final Graph[] graphs = new Graph[THREADS];
     static RingBuffer<ExchangeEvent> ringBuffer;
     private Undertow server;
 
@@ -28,15 +31,15 @@ public class Server {
         }
 
         // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024;
-
+        int bufferSize = 1024;//*1024;
+        Executor executor = Executors.newCachedThreadPool();
         // Construct the Disruptor
-        WaitStrategy waitStrategy = new BlockingWaitStrategy();
-        Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, bufferSize, (ThreadFactory) Thread::new,
-                ProducerType.MULTI, waitStrategy);
+        WaitStrategy waitStrategy = new YieldingWaitStrategy();
+        Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, bufferSize, executor,
+                ProducerType.SINGLE, waitStrategy);
 
-        DatabaseEventHandler[] handlers = new DatabaseEventHandler[4];
-        for (int i = -1; ++i < 4; ) {
+        DatabaseEventHandler[] handlers = new DatabaseEventHandler[THREADS];
+        for (int i = -1; ++i < THREADS; ) {
             handlers[i] = new DatabaseEventHandler(i);
         }
 
@@ -57,14 +60,17 @@ public class Server {
     public void buildAndStartServer(int port, String host) {
         server = Undertow.builder()
                 .addHttpListener(port, host)
-                .setBufferSize(1024 * 16)
-                .setIoThreads(Runtime.getRuntime().availableProcessors() * 2) //this seems slightly faster in some configurations
+                .setBufferSize(16 * 1024)
+                .setWorkerThreads(1)
+                .setIoThreads(1)
                 .setHandler(new RoutingHandler()
 
                         .add("GET", "/db/relationship_types", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
                         .add("GET", "/db/relationship_types/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
                         .add("GET", "/db/relationship_types/{type}/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
 
+                        .add("GET", "/db/test", (e) -> {e.setStatusCode(StatusCodes.OK);})
+                        .add("GET", "/db/test2", new RequestHandler(false, Action.NOOP))
                         .add("GET", "/db/node/{id}", new RequestHandler(false, Action.GET_NODE))
                         .add("POST", "/db/node/{id}", new RequestHandler(true, Action.POST_NODE))
                         .add("DELETE", "/db/node/{id}", new RequestHandler(true, Action.DELETE_NODE))
