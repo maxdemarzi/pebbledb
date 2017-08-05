@@ -12,14 +12,9 @@ import com.pebbledb.actions.relationship_properties.*;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
-import net.openhft.chronicle.queue.ChronicleQueue;
-import net.openhft.chronicle.queue.ExcerptAppender;
-import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
     private final int number;
-    private static final ChronicleQueue queue = SingleChronicleQueueBuilder.binary("events").build();
-    private static final ExcerptAppender appender = queue.acquireAppender();
 
     public DatabaseEventHandler(int number) {
         this.number = number;

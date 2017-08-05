@@ -59,5 +59,8 @@ public class ExchangeEvent {
     public void clear() {
         exchange.endExchange();
         exchange = null;
+        action = null;
+        parameters = null;
+        body = null;
     }
 }
