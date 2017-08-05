@@ -85,3 +85,5 @@ What am I doing wrong?
 
 
 
+max.json = {"name":"Tim"}
+ab -n 100000 -c 32 -T "application/json"  -u max.json http://127.0.0.1:8080/db/node/max/properties

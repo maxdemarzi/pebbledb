@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 public class PersistenceHandler implements EventHandler<ExchangeEvent> {
     private static final ChronicleQueue queue = SingleChronicleQueueBuilder.binary("events").build();
     private static final ExcerptAppender appender = queue.acquireAppender();
-    private static int x = 0;
+
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
 //      System.out.println("Persistence Handler:" + sequence);
         event.setResponder((int) (sequence % 4));
