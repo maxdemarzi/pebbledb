@@ -1,6 +1,7 @@
 package com.pebbledb.events;
 
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.WorkHandler;
 import com.pebbledb.actions.node.DeleteNode;
 import com.pebbledb.actions.node.*;
 import com.pebbledb.actions.node.PostNode;
@@ -13,14 +14,15 @@ import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
 import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
 
-public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
+public class DatabaseEventHandler implements WorkHandler<ExchangeEvent>, EventHandler<ExchangeEvent> {
     private final int number;
 
     public DatabaseEventHandler(int number) {
         this.number = number;
     }
 
-    public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
+    @Override
+    public void onEvent(ExchangeEvent event) throws Exception {
         boolean respond = event.isResponder(number);
         //System.out.println("number: " + number +  " write: " + event.getWrite() + " Thread id:" + Thread.currentThread().getId() + " this: " + this.hashCode()  + " sequence: " + sequence + " action: " + event.getAction().name() + " respond: " + respond);
         if (event.getWrite() ) {
@@ -94,8 +96,11 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                     break;
 
             }
-
         }
+    }
 
+    @Override
+    public void onEvent(ExchangeEvent exchangeEvent, long l, boolean b) throws Exception {
+        onEvent(exchangeEvent);
     }
 }

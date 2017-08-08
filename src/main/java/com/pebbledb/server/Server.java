@@ -6,15 +6,27 @@ import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.pebbledb.actions.Action;
+import com.pebbledb.actions.node.GetNode;
+import com.pebbledb.actions.node.NoOp;
+import com.pebbledb.actions.node_properties.*;
+import com.pebbledb.actions.relationship.GetRelationship;
+import com.pebbledb.actions.relationship_properties.*;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
+import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
 import com.pebbledb.events.DatabaseEventHandler;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.events.PersistenceHandler;
 import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
+import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
-import java.util.concurrent.ThreadFactory;
+
+import io.undertow.server.HttpHandler;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -53,7 +65,6 @@ public class Server {
     }
 
     public static void main(final String[] args) throws InterruptedException {
-
         Server pebbleServer = new Server();
         pebbleServer.buildAndStartServer(8080, "localhost");
     }
@@ -63,7 +74,7 @@ public class Server {
                 .addHttpListener(port, host)
                 .setBufferSize(16 * 1024)
                 .setWorkerThreads(1)
-                .setIoThreads(1)
+                .setIoThreads(4) // NOTE the bump here
                 .setHandler(new RoutingHandler()
 
                         .add("GET", "/db/relationship_types", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
@@ -72,7 +83,11 @@ public class Server {
 
                         .add("GET", "/db/test", (e) -> {e.setStatusCode(StatusCodes.OK);})
                         .add("GET", "/db/test2", new RequestHandler(false, Action.NOOP))
-                        .add("GET", "/db/node/{id}", new RequestHandler(false, Action.GET_NODE))
+
+                        // NOTE the different event handler here - we're executing the read directly inside the IO worker thread,
+                        // removing the overhead of dispatching to a separate thread.
+                        .add("GET", "/db/node/{id}", new DirectDatabaseEventHandler(Action.GET_NODE))
+
                         .add("POST", "/db/node/{id}", new RequestHandler(true, Action.POST_NODE))
                         .add("DELETE", "/db/node/{id}", new RequestHandler(true, Action.DELETE_NODE))
                         .add("PUT", "/db/node/{id}/properties", new RequestHandler(true, Action.PUT_NODE_PROPERTIES))
@@ -110,4 +125,62 @@ public class Server {
         }
     }
 
+}
+
+class DirectDatabaseEventHandler implements HttpHandler {
+
+    private final Action action;
+
+    DirectDatabaseEventHandler(Action action) {
+        this.action = action;
+    }
+
+    @Override
+    public void handleRequest(final HttpServerExchange exchange) throws Exception {
+        // Use the IO thread ids to multiplex against which graph; gives us sticky sessions per connection
+        int number = exchange.getConnection().getIoThread().getNumber() % Server.graphs.length;
+
+        // Stack allocated because it never escapes "below" this stack frame
+        final ExchangeEvent exchangeEvent = new ExchangeEvent();
+        exchangeEvent.setRequest(false, action, exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters());
+        exchangeEvent.set(exchange);
+
+        handle(number, exchangeEvent);
+    }
+
+    public void handle(int number, ExchangeEvent event) {
+        // Note that JVM does not optimize case well - it'd be faster to have these as method dispatch
+        // eg. the Action enum declares an abstract `handle(..)` method that each enum implements and this block
+        // becomes
+        //   action.handle(event, number);
+        //
+        switch (action) {
+            case NOOP:
+                NoOp.handle(event, number);
+                break;
+            case GET_RELATIONSHIP_TYPES:
+                GetRelationshipTypes.handle(event, number);
+                break;
+            case GET_RELATIONSHIP_TYPES_COUNT:
+                GetRelationshipTypesCount.handle(event, number);
+                break;
+            case GET_RELATIONSHIP_TYPE_COUNT:
+                GetRelationshipTypeCount.handle(event, number);
+                break;
+
+            case GET_NODE:
+                GetNode.handle(event, number);
+                break;
+            case GET_NODE_PROPERTY:
+                GetNodeProperty.handle(event, number);
+                break;
+            case GET_RELATIONSHIP:
+                GetRelationship.handle(event, number);
+                break;
+            case GET_RELATIONSHIP_PROPERTY:
+                GetRelationshipProperty.handle(event, number);
+                break;
+
+        }
+    }
 }
