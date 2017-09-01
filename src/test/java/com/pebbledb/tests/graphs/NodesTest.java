@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class NodesTest {
     private Graph db;
@@ -133,5 +135,29 @@ public class NodesTest {
     public void shouldNotGetNodeIdOfNodeNotThere() {
         int actual = db.getNodeId("not-empty");
         Assert.assertEquals(-1, actual);
+    }
+
+    @Test
+    public void shouldGetAllNodes() {
+        int count = 0;
+
+        Iterator<Map<String, Object>> iterator = db.getAllNodes();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        Assert.assertEquals(2, count);
+    }
+
+    @Test
+    public void shouldClearGraph() {
+        db.clear();
+        int count = 0;
+        Iterator<Map<String, Object>> iterator = db.getAllNodes();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        Assert.assertEquals(0, count);
     }
 }

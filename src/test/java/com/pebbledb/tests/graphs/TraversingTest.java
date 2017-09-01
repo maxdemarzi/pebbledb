@@ -94,4 +94,44 @@ public class TraversingTest {
         Assert.assertArrayEquals(expected, actual);
     }
 
+    @Test
+    public void shouldGetNodeOutgoingRelationshipNodesByID() {
+        HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
+        HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
+
+        db.addNode("one");
+        db.addNode("two", node2props);
+        db.addNode("three", node3props);
+
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("FRIENDS", "one", "three");
+        int one = db.getNodeId("one");
+        Object[] actual = db.getOutgoingRelationshipNodes("FRIENDS", one);
+        Object[] expected = new Object[2];
+        expected[0] = node2props;
+        expected[1] = node3props;
+
+        Assert.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeIncomingRelationshipNodesByID() {
+        HashMap<String, Object> node1props = new HashMap<String, Object> (){{ put("one", 1); }};
+        HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
+        HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
+
+        db.addNode("one", node1props);
+        db.addNode("two", node2props);
+        db.addNode("three", node3props);
+
+        db.addRelationship("FRIENDS", "two", "one");
+        db.addRelationship("FRIENDS", "three", "one");
+        int one = db.getNodeId("one");
+        Object[] actual = db.getIncomingRelationshipNodes("FRIENDS", one);
+        Object[] expected = new Object[2];
+        expected[0] = node2props;
+        expected[1] = node3props;
+
+        Assert.assertArrayEquals(expected, actual);
+    }
 }
