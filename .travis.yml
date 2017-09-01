@@ -11,7 +11,6 @@ jdk:
 - oraclejdk8
 script:
 - mvn test -B -q
-- sonar-scanner
 cache:
   directories:
     - '$HOME/.m2/repository'
@@ -25,6 +24,7 @@ env:
   - secure: tw73i55bCqDFt8Rn58o0P53RvnDrjnGnmtvpnA7MoJbLtZ1EIkCXfyPIHRT3hZD9Lfjdv6xLI9dUO3Efb7PNjzoVh5OL9323udlNxJNXwvAOb2cyyOuSr43jO/rjdWAb80iJ1XGehPG33vUVbNqbIJRP3gb8Yz9VpJGJ0xPp8/6P8QM86f7lS0zm9yqJ/H2EzeZjiL2MDBtmpH7K/nUEg568PBU+dhTvU/2lBoaU+rtTndza2n5ECbkTrTie5WUmlg7icBHMGRf2yF8I6nsvAj3/gWaxD9HnoEknEcZvfEv679lkse098AlOEjC+4OG0SrLHD4ztGXmv1AS1V3YfEjbEjGElHH9CTwrlcd40T9GY8AoAmdo7A0LtDd5Nenhn6EFWJU4xEBDDvWHE4yOgp/cufOyhai674M39IyznN2/JXvlfIfyOtSFvq73Ut270u86EpYJIfHFUFAQHNmb1Q5XipjNU9hTsnn1ruXNlx8I5IunE0Q13l+8mlMCltomG8qBeDBHtuGaELmeC7rqofZswwSfP4bOAdV5Xc80yTNj1kgspj/pnHXKshTtoYL3DiQNE+FrvYKoc+2tklOHz0mt3U9dky0EpP7vPmRTTQEZivJ2tf89wvw1p6B3479OaB5MQ7rQHVF4dvXn8OaQQaqcglrzLkpVk5OcUf5LqTmg=
 after_success:
 - mvn test jacoco:report coveralls:report
+- sonar-scanner
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - export REPO=maxdemarzi/pebbledb
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
