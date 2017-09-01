@@ -71,39 +71,32 @@ public class FastUtilGraph implements Graph {
     }
 
     public boolean removeNode(String key) {
-        int id = keys.getInt(key);
-        if(keys.containsKey(key)) {
-            nodes.remove(id);
-            for (String type : related.keySet()) {
-                ReversibleMultiMap rels = related.get(type);
-                int outgoingCount = 0;
-                int incomingCount = 0;
-                for (Integer value : rels.get(id)) {
-                    outgoingCount = relatedCounts.getInt(id + "-" + value + type);
-                    if(outgoingCount > 1) {
-                        for (int i = 2; i <= outgoingCount; i++) {
-                            relationships.remove(id + "-" + value + type, i);
-                        }
-                    }
-                    relationships.remove(id + "-" + value + type);
-                }
-                for (Integer value : rels.getKeysByValue(id)) {
-                    incomingCount = relatedCounts.getInt(value + "-" + id + type);
-                    if(incomingCount > 1) {
-                        for (int i = 2; i <= incomingCount; i++) {
-                            relationships.remove(value + "-" + id + type, i);
-                        }
-                    }
-                    relationships.remove(value + "-" + id + type);
-                }
-                rels.removeAll(id);
-                relationshipCounts.put(type, relationshipCounts.getInt(type) - (outgoingCount + incomingCount));
-            }
-            keys.removeInt(key);
-            return true;
-        } else {
+        if(!keys.containsKey(key)) {
             return false;
         }
+
+        int id = keys.getInt(key);
+        nodes.remove(id);
+
+        for (String type : related.keySet()) {
+            ReversibleMultiMap rels = related.get(type);
+            int outgoingCount = 0;
+            int incomingCount = 0;
+            for (Integer value : rels.get(id)) {
+                outgoingCount = relatedCounts.getInt(id + "-" + value + type);
+                relationships.remove(id + "-" + value + type);
+            }
+            for (Integer value : rels.getKeysByValue(id)) {
+                incomingCount = relatedCounts.getInt(value + "-" + id + type);
+                relationships.remove(value + "-" + id + type);
+            }
+            rels.removeAll(id);
+            relationshipCounts.put(type, relationshipCounts.getInt(type) - (outgoingCount + incomingCount));
+        }
+        keys.removeInt(key);
+
+
+        return true;
     }
 
     public Map<String, Object> getNode(String key) {
