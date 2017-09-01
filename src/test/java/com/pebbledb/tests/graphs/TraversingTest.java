@@ -2,6 +2,7 @@ package com.pebbledb.tests.graphs;
 
 import com.pebbledb.graphs.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,12 @@ public class TraversingTest {
     public void setup() throws IOException {
         db = new FastUtilGraph();
     }
+
+    @After
+    public void tearDown() {
+        db = null;
+    }
+
 
     @Test
     public void shouldGetNodeOutgoingRelationshipNodeIds() {

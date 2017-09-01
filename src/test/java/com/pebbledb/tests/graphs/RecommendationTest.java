@@ -2,6 +2,7 @@ package com.pebbledb.tests.graphs;
 
 import com.pebbledb.graphs.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +36,11 @@ public class RecommendationTest {
                 db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
             }
         }
+    }
+
+    @After
+    public void tearDown() {
+        db = null;
     }
 
     @Test

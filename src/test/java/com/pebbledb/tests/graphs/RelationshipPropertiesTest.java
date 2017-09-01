@@ -2,6 +2,7 @@ package com.pebbledb.tests.graphs;
 
 import com.pebbledb.graphs.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,11 @@ public class RelationshipPropertiesTest {
         HashMap<String, Object> relProperties = new HashMap<>();
         relProperties.put("weight", 5);
         db.addRelationship("RELATED", "empty", "existing", relProperties);
+    }
+
+    @After
+    public void tearDown() {
+        db = null;
     }
 
     @Test

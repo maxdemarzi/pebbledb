@@ -2,6 +2,7 @@ package com.pebbledb.tests.graphs;
 
 import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,11 @@ public class NodesTest {
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
         db.addNode("existing", properties);
+    }
+
+    @After
+    public void tearDown() {
+        db = null;
     }
 
     @Test
