@@ -486,4 +486,7 @@ public class FastUtilGraph implements Graph {
         return (List<Integer>)related.get(type).getKeysByValue(keys.getInt(to));
     }
 
+    public Iterator<Map<String, Object>> getAllNodes() {
+        return nodes.iterator();
+    }
 }

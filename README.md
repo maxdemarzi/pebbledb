@@ -22,6 +22,8 @@
 
 ### Benchmarks
 
+Reads:
+
     Benchmark                                                   (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt          Score          Error  Units
     GraphReadBenchmarks.measureFixedSingleTraversalAndGetNodes             100        20000           100            100         1000  thrpt   10    2454065.793 ±    58106.632  ops/s
     GraphReadBenchmarks.measureFixedSingleTraversalIds                     100        20000           100            100         1000  thrpt   10   10697736.498 ±   441124.693  ops/s
@@ -31,7 +33,9 @@
     GraphReadBenchmarks.measureTraverse                                    100        20000           100            100         1000  thrpt   10      76809.970 ±     2813.943  ops/s
     GraphReadBenchmarks.measureTraverseAndGetNodes                         100        20000           100            100         1000  thrpt   10      15688.782 ±     2492.089  ops/s        
 
-        
+
+Writes:
+
     Benchmark                                                     (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt        Score        Error  Units
     GraphWriteBenchmarks.measureCreateEmptyNode                              100        20000           100            100         1000  thrpt   10  1497050.946 ± 113563.892  ops/s
     GraphWriteBenchmarks.measureCreateEmptyNodes                             100        20000           100            100         1000  thrpt   10    19459.899 ±    551.819  ops/s
@@ -39,6 +43,7 @@
     GraphWriteBenchmarks.measureCreateNodeWithProperties                     100        20000           100            100         1000  thrpt   10   935777.229 ± 622202.214  ops/s
     GraphWriteBenchmarks.measureCreateNodesWithProperties                    100        20000           100            100         1000  thrpt   10     1054.875 ±    518.271  ops/s
 
+Traversal:
 
     Benchmark                                                (itemCount)  (likesCount)  (personCount)   Mode  Cnt     Score     Error  Units
     GraphTraversalBenchmarks.measureRecommendationTraversal          200            10           1000  thrpt   10  1695.320 ±  77.257  ops/s
@@ -50,6 +55,11 @@
     GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100           1000  thrpt   10    19.120 ±   0.816  ops/s
     GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100          10000  thrpt   10     2.012 ±   0.085  ops/s
 
+Aggregation:
+
+    Benchmark                                (personCount)   Mode  Cnt       Score       Error  Units
+    AggregationBenchmark.measureAggregation            100  thrpt   10  310148.180 ± 17152.734  ops/s
+    AggregationBenchmark.measureAggregation        1632803  thrpt   10      17.588 ±     1.178  ops/s
 
 ### Server Benchmarks
 

@@ -61,5 +61,7 @@ public interface Graph {
     Object[] getOutgoingRelationshipNodes(String type, Integer from);
     Object[] getIncomingRelationshipNodes(String type, Integer to);
 
+    // Extras
+    Iterator<Map<String, Object>> getAllNodes();
 
 }
