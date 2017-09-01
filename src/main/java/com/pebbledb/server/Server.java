@@ -31,7 +31,7 @@ public class Server {
         }
 
         // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024 * 1024;
+        int bufferSize = 1024 * 2;
         Executor executor = Executors.newCachedThreadPool();
 
         // Construct the Disruptor
