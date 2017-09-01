@@ -1,5 +1,6 @@
 before_install: echo "MAVEN_OPTS='-Xmx3072m'" > ~/.mavenrc
 sudo: required
+install: true
 language: java
 addons:
   sonarcloud:
