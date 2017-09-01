@@ -13,9 +13,9 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class GetRelationship {
+public interface GetRelationship {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number) {
+    static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
         Map<String, Object> relationship;

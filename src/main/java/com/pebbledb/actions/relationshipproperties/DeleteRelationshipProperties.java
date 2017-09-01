@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class DeleteRelationshipProperties {
+public interface DeleteRelationshipProperties {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         boolean succeeded;
         Map<String, String> parameters = exchangeEvent.getParameters();
         if (parameters.containsKey(Constants.NUMBER)) {

@@ -10,8 +10,9 @@ import java.util.Set;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class GetRelationshipTypes {
-    public static void handle(ExchangeEvent exchangeEvent, int number) {
+public interface GetRelationshipTypes {
+
+    static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.getResponseSender().send(

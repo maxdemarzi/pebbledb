@@ -84,7 +84,7 @@ public class ReversibleMultiMapTest {
 
     @Test
     public void shouldCheckRMMKeys() {
-        Assert.assertArrayEquals(new Integer[] { 1,3 } , reversibleMultiMap.keySet().toArray());
+        Assert.assertArrayEquals(new Integer[] { 1, 1, 3 } , reversibleMultiMap.keys().toArray());
     }
 
     @Test

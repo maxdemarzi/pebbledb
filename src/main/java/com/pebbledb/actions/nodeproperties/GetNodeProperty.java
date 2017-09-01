@@ -9,8 +9,9 @@ import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class GetNodeProperty {
-    public static void handle(ExchangeEvent exchangeEvent, int number) {
+public interface GetNodeProperty {
+
+    static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
 
         Object property = graphs[number].getNodeProperty(

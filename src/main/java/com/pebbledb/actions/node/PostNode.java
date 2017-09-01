@@ -14,9 +14,9 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class PostNode {
+public interface PostNode {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         String body = exchangeEvent.getBody();
         String id = exchangeEvent.getParameters().get(Constants.ID);
         if (body.isEmpty()) {

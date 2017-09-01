@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class DeleteRelationship {
+public interface DeleteRelationship {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
 

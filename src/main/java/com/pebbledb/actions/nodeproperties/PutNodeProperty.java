@@ -9,9 +9,9 @@ import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class PutNodeProperty {
+public interface PutNodeProperty {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
         boolean succeeded ;
