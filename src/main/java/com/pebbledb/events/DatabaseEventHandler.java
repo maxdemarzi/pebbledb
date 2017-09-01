@@ -22,7 +22,7 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
         boolean respond = event.isResponder(number);
-        //System.out.println("number: " + number +  " write: " + event.getWrite() + " Thread id:" + Thread.currentThread().getId() + " this: " + this.hashCode()  + " sequence: " + sequence + " action: " + event.getAction().name() + " respond: " + respond);
+
         if (event.getWrite() ) {
             switch (event.getAction()) {
                 case POST_NODE:
