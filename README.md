@@ -7,7 +7,7 @@
     
     It is meant to handle small graphs or lots of small isolated sub-graphs (like those found in SaaS Applications).
 
-
+[![Coverage Status](https://coveralls.io/repos/github/maxdemarzi/pebbledb/badge.svg?branch=master)](https://coveralls.io/github/maxdemarzi/pebbledb?branch=master)
 
     
 ### Todos
