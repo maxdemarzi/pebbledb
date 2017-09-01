@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 
 public class Server {
 
-	public final static int THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int THREADS = Runtime.getRuntime().availableProcessors();
     public static final Graph[] graphs = new Graph[THREADS];
     static RingBuffer<ExchangeEvent> ringBuffer;
     private Undertow server;
@@ -52,7 +52,7 @@ public class Server {
         ringBuffer = disruptor.start();
     }
 
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) {
 
         Server pebbleServer = new Server();
         pebbleServer.buildAndStartServer(8080, "localhost");
@@ -70,7 +70,7 @@ public class Server {
                         .add("GET", "/db/relationship_types/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
                         .add("GET", "/db/relationship_types/{type}/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
 
-                        .add("GET", "/db/test", (e) -> {e.setStatusCode(StatusCodes.OK);})
+                        .add("GET", "/db/test", e -> e.setStatusCode(StatusCodes.OK))
                         .add("GET", "/db/test2", new RequestHandler(false, Action.NOOP))
                         .add("GET", "/db/node/{id}", new RequestHandler(false, Action.GET_NODE))
                         .add("POST", "/db/node/{id}", new RequestHandler(true, Action.POST_NODE))

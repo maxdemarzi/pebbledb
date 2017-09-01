@@ -1,4 +1,4 @@
-package com.pebbledb.actions.relationship_properties;
+package com.pebbledb.actions.relationshipproperties;
 
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;

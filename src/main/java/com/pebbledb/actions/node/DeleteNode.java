@@ -7,9 +7,9 @@ import io.undertow.util.StatusCodes;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class DeleteNode {
+public interface DeleteNode {
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         boolean succeeded = graphs[number].removeNode(exchangeEvent.getParameters().get(Constants.ID));
 
         if (respond) {

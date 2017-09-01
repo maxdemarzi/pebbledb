@@ -1,4 +1,4 @@
-package com.pebbledb.actions.node_properties;
+package com.pebbledb.actions.nodeproperties;
 
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;

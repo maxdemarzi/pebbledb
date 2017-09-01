@@ -1,4 +1,4 @@
-package com.pebbledb.actions.relationship_properties;
+package com.pebbledb.actions.relationshipproperties;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;

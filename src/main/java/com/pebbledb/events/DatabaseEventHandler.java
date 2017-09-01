@@ -4,14 +4,14 @@ import com.lmax.disruptor.EventHandler;
 import com.pebbledb.actions.node.DeleteNode;
 import com.pebbledb.actions.node.*;
 import com.pebbledb.actions.node.PostNode;
-import com.pebbledb.actions.node_properties.*;
+import com.pebbledb.actions.nodeproperties.*;
 import com.pebbledb.actions.relationship.DeleteRelationship;
 import com.pebbledb.actions.relationship.GetRelationship;
 import com.pebbledb.actions.relationship.PostRelationship;
-import com.pebbledb.actions.relationship_properties.*;
-import com.pebbledb.actions.relationship_type.GetRelationshipTypeCount;
-import com.pebbledb.actions.relationship_type.GetRelationshipTypes;
-import com.pebbledb.actions.relationship_type.GetRelationshipTypesCount;
+import com.pebbledb.actions.relationshipproperties.*;
+import com.pebbledb.actions.relationshiptype.GetRelationshipTypeCount;
+import com.pebbledb.actions.relationshiptype.GetRelationshipTypes;
+import com.pebbledb.actions.relationshiptype.GetRelationshipTypesCount;
 
 public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
     private final int number;

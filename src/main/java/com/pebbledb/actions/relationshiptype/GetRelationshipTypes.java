@@ -1,28 +1,21 @@
-package com.pebbledb.actions.node_properties;
+package com.pebbledb.actions.relationshiptype;
 
 import com.jsoniter.output.JsonStream;
+import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
-import com.pebbledb.server.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import io.undertow.util.StatusCodes;
+
+import java.util.Set;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class GetNodeProperty {
+public class GetRelationshipTypes {
     public static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
-
-        Object property = graphs[number].getNodeProperty(
-                exchangeEvent.getParameters().get(Constants.ID),
-                exchangeEvent.getParameters().get(Constants.KEY));
-        if (property == null) {
-            exchange.setStatusCode(StatusCodes.NOT_FOUND);
-        } else {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.getResponseSender().send(
-                JsonStream.serialize(property));
-        }
+                JsonStream.serialize(new TypeLiteral<Set<String>>(){}, graphs[number].getRelationshipTypes()));
         exchangeEvent.clear();
     }
 }
