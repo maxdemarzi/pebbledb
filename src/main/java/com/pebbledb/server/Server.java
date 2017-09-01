@@ -1,8 +1,8 @@
 package com.pebbledb.server;
 
-import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WaitStrategy;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.pebbledb.actions.Action;
@@ -14,7 +14,7 @@ import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
 import io.undertow.util.StatusCodes;
-import java.util.concurrent.ThreadFactory;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 

@@ -1,3 +1,4 @@
+before_install: echo "MAVEN_OPTS='-Xmx3072m'" > ~/.mavenrc
 sudo: required
 language: java
 jdk:
