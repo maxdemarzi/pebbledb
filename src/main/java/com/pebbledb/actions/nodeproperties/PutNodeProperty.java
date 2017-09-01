@@ -1,9 +1,9 @@
 package com.pebbledb.actions.nodeproperties;
 
 import com.jsoniter.JsonIterator;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
@@ -21,7 +21,7 @@ public interface PutNodeProperty {
                 exchangeEvent.clear();
             }
         } else {
-            Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>(){});
+            Object property = JsonIterator.deserialize(body, Types.OBJECT);
             succeeded = graphs[number].updateNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
                     exchangeEvent.getParameters().get(Constants.KEY),
                     property);

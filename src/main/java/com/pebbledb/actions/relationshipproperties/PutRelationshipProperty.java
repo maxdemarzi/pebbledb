@@ -1,9 +1,9 @@
 package com.pebbledb.actions.relationshipproperties;
 
 import com.jsoniter.JsonIterator;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
@@ -27,7 +27,7 @@ public interface PutRelationshipProperty {
             Map<String, String> parameters = exchangeEvent.getParameters();
 
             if (parameters.containsKey(Constants.NUMBER)) {
-                    Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>() {});
+                    Object property = JsonIterator.deserialize(body, Types.OBJECT);
 
                     succeeded = graphs[number].updateRelationshipProperty(
                             parameters.get(Constants.TYPE),
@@ -37,7 +37,7 @@ public interface PutRelationshipProperty {
                             parameters.get(Constants.KEY),
                             property);
             } else {
-                    Object property = JsonIterator.deserialize(body, new TypeLiteral<Object>() {});
+                    Object property = JsonIterator.deserialize(body, Types.OBJECT);
 
                     succeeded = graphs[number].updateRelationshipProperty(
                             parameters.get(Constants.TYPE),

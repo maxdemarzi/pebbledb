@@ -2,15 +2,14 @@ package com.pebbledb.actions.nodeproperties;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
@@ -33,7 +32,7 @@ public interface PutNodeProperties {
         if (body.isEmpty()) {
              succeeded = graphs[number].updateNodeProperties(id, new HashMap());
         } else {
-            HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
+            HashMap<String, Object> properties = JsonIterator.deserialize(body, Types.MAP);
             succeeded = graphs[number].updateNodeProperties(id, properties);
         }
         if (respond) {
@@ -41,8 +40,7 @@ public interface PutNodeProperties {
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.setStatusCode(StatusCodes.CREATED);
                 exchange.getResponseSender().send(
-                        JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
-                        }, graphs[number].getNode(id)));
+                        JsonStream.serialize(Types.MAP, graphs[number].getNode(id)));
             } else {
                 exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
             }

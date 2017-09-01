@@ -2,9 +2,9 @@ package com.pebbledb.actions.relationshipproperties;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
@@ -15,7 +15,6 @@ import java.util.Map;
 import static com.pebbledb.server.Server.graphs;
 
 public interface PutRelationshipProperties {
-    TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
 
     static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
@@ -35,7 +34,7 @@ public interface PutRelationshipProperties {
         if (body.isEmpty()) {
             properties = new HashMap<>();
         } else {
-            properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
+            properties = JsonIterator.deserialize(body, Types.MAP);
         }
 
         succeeded = updateRelationshipProperties(number, parameters, properties);
@@ -45,7 +44,7 @@ public interface PutRelationshipProperties {
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.setStatusCode(StatusCodes.CREATED);
                 exchange.getResponseSender().send(
-                        JsonStream.serialize(MAP, getRelationship(number, parameters)));
+                        JsonStream.serialize(Types.MAP, getRelationship(number, parameters)));
             } else {
                 exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
             }

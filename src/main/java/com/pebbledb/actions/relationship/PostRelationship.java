@@ -2,9 +2,9 @@ package com.pebbledb.actions.relationship;
 
 import com.jsoniter.JsonIterator;
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
@@ -31,8 +31,7 @@ public interface PostRelationship {
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.setStatusCode(StatusCodes.CREATED);
                 exchange.getResponseSender().send(
-                        JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
-                                             },
+                        JsonStream.serialize(Types.MAP,
                                 graphs[number].getRelationship(parameters.get(Constants.TYPE),
                                         parameters.get(Constants.FROM),
                                         parameters.get(Constants.TO))));
@@ -40,7 +39,7 @@ public interface PostRelationship {
             }
         } else {
 
-                HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
+                HashMap<String, Object> properties = JsonIterator.deserialize(body, Types.MAP);
                 graphs[number].addRelationship(parameters.get(Constants.TYPE),
                         parameters.get(Constants.FROM),
                         parameters.get(Constants.TO), properties);
@@ -49,7 +48,7 @@ public interface PostRelationship {
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.setStatusCode(StatusCodes.CREATED);
                 exchange.getResponseSender().send(
-                        JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {},
+                        JsonStream.serialize(Types.MAP,
                                 graphs[number].getRelationship(parameters.get(Constants.TYPE),
                                         parameters.get(Constants.FROM),
                                         parameters.get(Constants.TO))));

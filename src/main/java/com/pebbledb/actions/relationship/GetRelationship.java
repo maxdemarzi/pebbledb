@@ -1,14 +1,13 @@
 package com.pebbledb.actions.relationship;
 
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
@@ -38,7 +37,7 @@ public interface GetRelationship {
         } else {
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(
-                    JsonStream.serialize(new TypeLiteral<HashMap<String, Object>>(){}, relationship));
+                    JsonStream.serialize(Types.MAP, relationship));
         }
         exchangeEvent.clear();
     }

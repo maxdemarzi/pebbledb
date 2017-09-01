@@ -1,21 +1,18 @@
 package com.pebbledb.actions.node;
 
 import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.TypeLiteral;
 import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.server.Constants;
+import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
 public interface GetNode {
-
-    TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
 
     static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
@@ -26,7 +23,7 @@ public interface GetNode {
         } else {
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(
-                    JsonStream.serialize(MAP, node));
+                    JsonStream.serialize(Types.MAP, node));
         }
         exchangeEvent.clear();
     }
