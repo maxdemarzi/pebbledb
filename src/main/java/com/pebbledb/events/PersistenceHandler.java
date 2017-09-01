@@ -17,19 +17,15 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
     private static final ExcerptAppender appender = queue.acquireAppender();
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
-//      System.out.println("Persistence Handler:" + sequence);
         event.setResponder((int) (sequence % Server.THREADS));
 
         if(event.getWrite()) {
-
-            BufferedReader reader = null;
+            
             StringBuilder builder = new StringBuilder();
 
             HttpServerExchange exchange = event.get();
-
-            try {
-                exchange.startBlocking();
-                reader = new BufferedReader(new InputStreamReader(exchange.getInputStream()));
+            exchange.startBlocking();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getInputStream()))) {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -37,14 +33,6 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
 
             event.setBody(builder.toString());

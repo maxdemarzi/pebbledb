@@ -64,11 +64,13 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 case DELETE_RELATIONSHIP_PROPERTY:
                     DeleteRelationshipProperty.handle(event, number, respond);
                     break;
+                default:
+                    break;
             }
         } else if (respond) {
             switch (event.getAction()) {
                 case NOOP:
-                    NoOp.handle(event, number);
+                    NoOp.handle(event);
                     break;
                 case GET_RELATIONSHIP_TYPES:
                     GetRelationshipTypes.handle(event, number);
@@ -92,7 +94,8 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 case GET_RELATIONSHIP_PROPERTY:
                     GetRelationshipProperty.handle(event, number);
                     break;
-
+                default:
+                    break;
             }
 
         }

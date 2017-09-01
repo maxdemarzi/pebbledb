@@ -6,7 +6,7 @@ import io.undertow.util.StatusCodes;
 
 public interface NoOp {
 
-    static void handle(ExchangeEvent exchangeEvent, int number) {
+    static void handle(ExchangeEvent exchangeEvent) {
         HttpServerExchange exchange = exchangeEvent.get();
         exchange.setStatusCode(StatusCodes.OK);
         exchangeEvent.clear();

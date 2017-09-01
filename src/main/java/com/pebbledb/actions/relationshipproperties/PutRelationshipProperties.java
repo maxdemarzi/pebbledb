@@ -14,21 +14,18 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public interface PutRelationshipProperties {
+public final class PutRelationshipProperties {
+    private static final TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
 
-    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
         Map<String, String> parameters = exchangeEvent.getParameters();
-        boolean succeeded = false;
+        boolean succeeded;
         Map<String, Object> relationship;
 
         if(parameters.containsKey(Constants.NUMBER)) {
-            relationship = graphs[number].getRelationship(
-                    parameters.get(Constants.TYPE),
-                    parameters.get(Constants.FROM),
-                    parameters.get(Constants.TO),
-                    Integer.parseInt(parameters.get(Constants.NUMBER)));
+            relationship = getRelationshipWithNumber(number, parameters);
             if(relationship == null) {
                 if (respond) {
                     exchange.setStatusCode(StatusCodes.NOT_FOUND);
@@ -38,28 +35,17 @@ public interface PutRelationshipProperties {
             }
 
             if (body.isEmpty()) {
-                    succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
-                            parameters.get(Constants.FROM),
-                            parameters.get(Constants.TO),
-                            Integer.parseInt(parameters.get(Constants.NUMBER)), new HashMap<>());
+                succeeded = updateRelationshipPropertiesWithNumber(number, parameters, new HashMap<>());
             } else {
                     HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
-                    succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
-                            parameters.get(Constants.FROM),
-                            parameters.get(Constants.TO),
-                            Integer.parseInt(parameters.get(Constants.NUMBER)), properties);
+                    succeeded = updateRelationshipPropertiesWithNumber(number, parameters, properties);
             }
             if (respond) {
                 if (succeeded) {
                     exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                     exchange.setStatusCode(StatusCodes.CREATED);
                     exchange.getResponseSender().send(
-                            JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
-                                                 },
-                                    graphs[0].getRelationship(parameters.get(Constants.TYPE),
-                                            parameters.get(Constants.FROM),
-                                            parameters.get(Constants.TO),
-                                            Integer.parseInt(parameters.get(Constants.NUMBER)))));
+                            JsonStream.serialize(MAP, getRelationshipWithNumber(0, parameters)));
                 } else {
                     exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
                 }
@@ -67,10 +53,7 @@ public interface PutRelationshipProperties {
             }
 
         } else {
-            relationship = graphs[number].getRelationship(
-                    parameters.get(Constants.TYPE),
-                    parameters.get(Constants.FROM),
-                    parameters.get(Constants.TO));
+            relationship = getRelationship(number, parameters);
             if(relationship == null) {
                 if (respond) {
                     exchange.setStatusCode(StatusCodes.NOT_FOUND);
@@ -79,26 +62,17 @@ public interface PutRelationshipProperties {
             }
 
             if (body.isEmpty()) {
-                    succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
-                            parameters.get(Constants.FROM),
-                            parameters.get(Constants.TO),
-                            new HashMap<>());
+                succeeded = updateRelationshipProperties(number, parameters, new HashMap<>());
             } else {
                     HashMap<String, Object> properties = JsonIterator.deserialize(body, new TypeLiteral<HashMap<String, Object>>(){});
-                    succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
-                            parameters.get(Constants.FROM),
-                            parameters.get(Constants.TO),
-                            properties);
+                succeeded = updateRelationshipProperties(number, parameters, properties);
             }
             if (respond) {
                 if (succeeded) {
                     exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                     exchange.setStatusCode(StatusCodes.CREATED);
-                    exchange.getResponseSender().send(JsonStream.serialize(new TypeLiteral<Map<String, Object>>() {
-                                                                           },
-                            graphs[0].getRelationship(parameters.get(Constants.TYPE),
-                                    parameters.get(Constants.FROM),
-                                    parameters.get(Constants.TO))));
+                    exchange.getResponseSender().send(
+                            JsonStream.serialize(MAP, getRelationship(number, parameters)));
                 } else {
                     exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
                 }
@@ -106,5 +80,42 @@ public interface PutRelationshipProperties {
             }
         }
 
+    }
+
+    private static boolean updateRelationshipProperties(int number, Map<String, String> parameters, HashMap<String, Object> properties) {
+        boolean succeeded;
+        succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
+                parameters.get(Constants.FROM),
+                parameters.get(Constants.TO),
+                properties);
+        return succeeded;
+    }
+
+    private static Map<String, Object> getRelationship(int number, Map<String, String> parameters) {
+        Map<String, Object> relationship;
+        relationship = graphs[number].getRelationship(
+                parameters.get(Constants.TYPE),
+                parameters.get(Constants.FROM),
+                parameters.get(Constants.TO));
+        return relationship;
+    }
+
+    private static boolean updateRelationshipPropertiesWithNumber(int number, Map<String, String> parameters, Map<String, Object> map) {
+        boolean succeeded;
+        succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
+                parameters.get(Constants.FROM),
+                parameters.get(Constants.TO),
+                Integer.parseInt(parameters.get(Constants.NUMBER)), map);
+        return succeeded;
+    }
+
+    private static Map<String, Object> getRelationshipWithNumber(int number, Map<String, String> parameters) {
+        Map<String, Object> relationship;
+        relationship = graphs[number].getRelationship(
+                parameters.get(Constants.TYPE),
+                parameters.get(Constants.FROM),
+                parameters.get(Constants.TO),
+                Integer.parseInt(parameters.get(Constants.NUMBER)));
+        return relationship;
     }
 }
