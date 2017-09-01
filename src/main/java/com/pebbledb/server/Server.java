@@ -18,6 +18,8 @@ import io.undertow.util.StatusCodes;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static com.pebbledb.server.Constants.*;
+
 public class Server {
 
 	public static final int THREADS = Runtime.getRuntime().availableProcessors();
@@ -66,38 +68,37 @@ public class Server {
                 .setIoThreads(1)
                 .setHandler(new RoutingHandler()
 
-                        .add(Constants.GET, "/db/relationship_types", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
-                        .add(Constants.GET, "/db/relationship_types/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
-                        .add(Constants.GET, "/db/relationship_types/{type}/count", new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
+                        .add(GET, PATH_REL_TYPES, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
+                        .add(GET, PATH_REL_TYPES_COUNT, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
+                        .add(GET, PATH_REL_TYPE_COUNT, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
 
-                        .add(Constants.GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
-                        .add(Constants.GET, "/db/test2", new RequestHandler(false, Action.NOOP))
-                        .add(Constants.GET, "/db/node/{id}", new RequestHandler(false, Action.GET_NODE))
-                        .add(Constants.POST, "/db/node/{id}", new RequestHandler(true, Action.POST_NODE))
-                        .add(Constants.DELETE, "/db/node/{id}", new RequestHandler(true, Action.DELETE_NODE))
-                        .add(Constants.PUT, "/db/node/{id}/properties", new RequestHandler(true, Action.PUT_NODE_PROPERTIES))
-                        .add(Constants.DELETE, "/db/node/{id}/properties", new RequestHandler(true, Action.DELETE_NODE_PROPERTIES))
-                        .add(Constants.GET, "/db/node/{id}/property/{key}", new RequestHandler(false, Action.GET_NODE_PROPERTY))
-                        .add(Constants.PUT, "/db/node/{id}/property/{key}", new RequestHandler(true, Action.PUT_NODE_PROPERTY))
-                        .add(Constants.DELETE, "/db/node/{id}/property/{key}", new RequestHandler(true, Action.DELETE_NODE_PROPERTY))
+                        .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
+                        .add(GET, "/db/test2", new RequestHandler(false, Action.NOOP))
+                        .add(GET, PATH_NODE, new RequestHandler(false, Action.GET_NODE))
+                        .add(POST, PATH_NODE, new RequestHandler(true, Action.POST_NODE))
+                        .add(DELETE, PATH_NODE, new RequestHandler(true, Action.DELETE_NODE))
+                        .add(PUT, PATH_NODE_PROPERTIES, new RequestHandler(true, Action.PUT_NODE_PROPERTIES))
+                        .add(DELETE, PATH_NODE_PROPERTIES, new RequestHandler(true, Action.DELETE_NODE_PROPERTIES))
+                        .add(GET, PATH_NODE_PROPERTY, new RequestHandler(false, Action.GET_NODE_PROPERTY))
+                        .add(PUT, PATH_NODE_PROPERTY, new RequestHandler(true, Action.PUT_NODE_PROPERTY))
+                        .add(DELETE, PATH_NODE_PROPERTY, new RequestHandler(true, Action.DELETE_NODE_PROPERTY))
 
-                        .add(Constants.GET,"/db/relationship/{type}/{from}/{to}", new RequestHandler(false, Action.GET_RELATIONSHIP))
-                        .add(Constants.POST,"/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.POST_RELATIONSHIP))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.DELETE_RELATIONSHIP))
-                        .add(Constants.PUT,"/db/relationship/{type}/{from}/{to}/properties", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}/properties", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
-                        .add(Constants.GET,"/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
-                        .add(Constants.PUT,"/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}/property/{key}", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
+                        .add(GET, PATH_REL, new RequestHandler(false, Action.GET_RELATIONSHIP))
+                        .add(POST, PATH_REL, new RequestHandler(true, Action.POST_RELATIONSHIP))
+                        .add(DELETE, PATH_REL, new RequestHandler(true, Action.DELETE_RELATIONSHIP))
+                        .add(PUT, PATH_REL_PROPERTIES, new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
+                        .add(DELETE, PATH_REL_PROPERTIES, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
+                        .add(GET, PATH_REL_PROPERTY, new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
+                        .add(PUT, PATH_REL_PROPERTY, new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
+                        .add(DELETE, PATH_REL_PROPERTY, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
                         // Additional Relationships
-                        .add(Constants.GET,"/db/relationship/{type}/{from}/{to}/{number}", new RequestHandler(false, Action.GET_RELATIONSHIP))
-                        .add(Constants.POST,"/db/relationship/{type}/{from}/{to}", new RequestHandler(true, Action.POST_RELATIONSHIP))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}/{number}", new RequestHandler(true, Action.DELETE_RELATIONSHIP))
-                        .add(Constants.PUT,"/db/relationship/{type}/{from}/{to}/{number}/properties", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}/{number}/properties", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
-                        .add(Constants.GET,"/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
-                        .add(Constants.PUT,"/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
-                        .add(Constants.DELETE,"/db/relationship/{type}/{from}/{to}/{number}/property/{key}", new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
+                        .add(GET, PATH_ADD_REL, new RequestHandler(false, Action.GET_RELATIONSHIP))
+                        .add(DELETE, PATH_ADD_REL, new RequestHandler(true, Action.DELETE_RELATIONSHIP))
+                        .add(PUT, PATH_ADD_REL_PROPERTIES, new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTIES))
+                        .add(DELETE, PATH_ADD_REL_PROPERTIES, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTIES))
+                        .add(GET, PATH_ADD_REL_PROPERTY, new RequestHandler(false, Action.GET_RELATIONSHIP_PROPERTY))
+                        .add(PUT, PATH_ADD_REL_PROPERTY, new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
+                        .add(DELETE, PATH_ADD_REL_PROPERTY, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
 
                 )
                 .build();
