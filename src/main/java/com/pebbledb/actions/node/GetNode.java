@@ -13,11 +13,11 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public final class GetNode {
+public interface GetNode {
 
-    private static final TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
+    TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
 
-    public static void handle(ExchangeEvent exchangeEvent, int number) {
+    static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
 
         Map<String, Object> node = graphs[number].getNode(exchangeEvent.getParameters().get(Constants.ID));

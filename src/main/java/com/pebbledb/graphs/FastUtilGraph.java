@@ -12,7 +12,7 @@ public class FastUtilGraph implements Graph {
     private Object2IntOpenHashMap<String> keys;
     private ObjectArrayList<Map<String, Object>> nodes;
     private Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
-    private Object2ObjectOpenHashMap<String, ReversibleMultiMap<Integer>> related;
+    private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
     private Object2IntArrayMap<String> relationshipCounts;
     private Object2IntOpenHashMap<String> relatedCounts;
 
@@ -75,7 +75,7 @@ public class FastUtilGraph implements Graph {
         if(keys.containsKey(key)) {
             nodes.remove(id);
             for (String type : related.keySet()) {
-                ReversibleMultiMap<Integer> rels = related.get(type);
+                ReversibleMultiMap rels = related.get(type);
                 int outgoingCount = 0;
                 int incomingCount = 0;
                 for (Integer value : rels.get(id)) {
@@ -156,7 +156,7 @@ public class FastUtilGraph implements Graph {
 
     // Relationships
     public boolean addRelationship(String type, String from, String to) {
-        related.putIfAbsent(type, new ReversibleMultiMap<>());
+        related.putIfAbsent(type, new ReversibleMultiMap());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
@@ -176,7 +176,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public boolean addRelationship(String type, String from, String to, Map<String, Object> properties) {
-        related.putIfAbsent(type, new ReversibleMultiMap<>());
+        related.putIfAbsent(type, new ReversibleMultiMap());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
@@ -408,7 +408,7 @@ public class FastUtilGraph implements Graph {
 
         int count = 0;
         List<String> relTypes;
-        if (types.size() == 0) {
+        if (types.isEmpty()) {
             relTypes = new ArrayList<>(related.keySet());
         } else {
             types.retainAll(related.keySet());
@@ -416,13 +416,11 @@ public class FastUtilGraph implements Graph {
         }
 
         for (String type : relTypes) {
-            ReversibleMultiMap<Integer> rels = related.get(type);
+            ReversibleMultiMap rels = related.get(type);
             if (direction.equals("all") || direction.equals("out")) {
                 count += rels.get(id).size();
-                //rels.get(id).stream().distinct().forEach(node2 -> count[0] += relatedCounts.getInt(id + "-" + node2 + type));
             }
             if (direction.equals("all") || direction.equals("in")) {
-                //rels.getKeysByValue(id).stream().distinct().forEach(node2 -> count[0] += relatedCounts.getInt(node2 + "-" + id + type));
                 count += rels.getKeysByValue(id).size();
             }
         }

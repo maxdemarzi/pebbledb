@@ -10,11 +10,11 @@ import java.util.*;
 
 public class ReversibleMultiMapTest {
 
-    private ReversibleMultiMap<Integer> reversibleMultiMap;
+    private ReversibleMultiMap reversibleMultiMap;
 
     @Before
     public void setup() throws IOException {
-        reversibleMultiMap = new ReversibleMultiMap<>();
+        reversibleMultiMap = new ReversibleMultiMap();
         reversibleMultiMap.put(1,1);
         reversibleMultiMap.put(1,2);
         reversibleMultiMap.put(3,4);
@@ -54,7 +54,7 @@ public class ReversibleMultiMapTest {
         Assert.assertEquals(true, reversibleMultiMap.containsEntry(3,4));
         Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,9));
 
-        ReversibleMultiMap<Integer> reversibleMultiMap2 = new ReversibleMultiMap<>();
+        ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
         reversibleMultiMap2.put(8,8);
         reversibleMultiMap.putAll(reversibleMultiMap2);
         Assert.assertEquals(true, reversibleMultiMap.containsEntry(8,8));
@@ -70,7 +70,7 @@ public class ReversibleMultiMapTest {
 
     @Test
     public void shouldCheckRMMClearAll() {
-        ReversibleMultiMap<Integer> reversibleMultiMap2 = new ReversibleMultiMap<>();
+        ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
         reversibleMultiMap2.put(8,8);
         Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,8));
         reversibleMultiMap2.clear();

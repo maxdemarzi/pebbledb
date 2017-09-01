@@ -20,7 +20,7 @@ public class PersistenceHandler implements EventHandler<ExchangeEvent> {
         event.setResponder((int) (sequence % Server.THREADS));
 
         if(event.getWrite()) {
-            
+
             StringBuilder builder = new StringBuilder();
 
             HttpServerExchange exchange = event.get();

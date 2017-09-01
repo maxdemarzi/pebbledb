@@ -14,10 +14,10 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public final class PutRelationshipProperties {
-    private static final TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
+public interface PutRelationshipProperties {
+    TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
 
-    public static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
+    static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
         Map<String, String> parameters = exchangeEvent.getParameters();
@@ -82,7 +82,7 @@ public final class PutRelationshipProperties {
 
     }
 
-    private static boolean updateRelationshipProperties(int number, Map<String, String> parameters, HashMap<String, Object> properties) {
+    static boolean updateRelationshipProperties(int number, Map<String, String> parameters, HashMap<String, Object> properties) {
         boolean succeeded;
         succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
                 parameters.get(Constants.FROM),
@@ -91,7 +91,7 @@ public final class PutRelationshipProperties {
         return succeeded;
     }
 
-    private static Map<String, Object> getRelationship(int number, Map<String, String> parameters) {
+    static Map<String, Object> getRelationship(int number, Map<String, String> parameters) {
         Map<String, Object> relationship;
         relationship = graphs[number].getRelationship(
                 parameters.get(Constants.TYPE),
@@ -100,7 +100,7 @@ public final class PutRelationshipProperties {
         return relationship;
     }
 
-    private static boolean updateRelationshipPropertiesWithNumber(int number, Map<String, String> parameters, Map<String, Object> map) {
+    static boolean updateRelationshipPropertiesWithNumber(int number, Map<String, String> parameters, Map<String, Object> map) {
         boolean succeeded;
         succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
                 parameters.get(Constants.FROM),
@@ -109,7 +109,7 @@ public final class PutRelationshipProperties {
         return succeeded;
     }
 
-    private static Map<String, Object> getRelationshipWithNumber(int number, Map<String, String> parameters) {
+    static Map<String, Object> getRelationshipWithNumber(int number, Map<String, String> parameters) {
         Map<String, Object> relationship;
         relationship = graphs[number].getRelationship(
                 parameters.get(Constants.TYPE),
