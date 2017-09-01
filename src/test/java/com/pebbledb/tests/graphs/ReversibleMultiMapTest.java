@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 public class ReversibleMultiMapTest {
 
@@ -53,5 +53,56 @@ public class ReversibleMultiMapTest {
         reversibleMultiMap.putAll(3, new ArrayList<Integer>() {{add(4); add(5);}});
         Assert.assertEquals(true, reversibleMultiMap.containsEntry(3,4));
         Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,9));
+
+        ReversibleMultiMap<Integer> reversibleMultiMap2 = new ReversibleMultiMap<>();
+        reversibleMultiMap2.put(8,8);
+        reversibleMultiMap.putAll(reversibleMultiMap2);
+        Assert.assertEquals(true, reversibleMultiMap.containsEntry(8,8));
+        Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,9));
+    }
+
+    @Test
+    public void shouldCheckRMMReplaceValues() {
+        reversibleMultiMap.replaceValues(3, new ArrayList<Integer>() {{add(7); add(8);}});
+        Assert.assertEquals(true, reversibleMultiMap.containsEntry(3,8));
+        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9,9));
+    }
+
+    @Test
+    public void shouldCheckRMMClearAll() {
+        ReversibleMultiMap<Integer> reversibleMultiMap2 = new ReversibleMultiMap<>();
+        reversibleMultiMap2.put(8,8);
+        Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,8));
+        reversibleMultiMap2.clear();
+        Assert.assertEquals(false, reversibleMultiMap2.containsEntry(8,8));
+    }
+
+    @Test
+    public void shouldCheckRMMKeySet() {
+        Assert.assertEquals(new HashSet<Integer>(){{add(1); add(3);}}, reversibleMultiMap.keySet());
+    }
+
+    @Test
+    public void shouldCheckRMMKeys() {
+        Assert.assertArrayEquals(new Integer[] { 1,3 } , reversibleMultiMap.keySet().toArray());
+    }
+
+    @Test
+    public void shouldCheckRMMValues() {
+        Assert.assertArrayEquals(new Integer[] { 1,2,4 } , reversibleMultiMap.values().toArray());
+    }
+
+    @Test
+    public void shouldCheckRMMEntries() {
+        Assert.assertEquals(3 , reversibleMultiMap.entries().size());
+    }
+
+    @Test
+    public void shouldCheckRMMAsMap() {
+        Map<Integer, Collection<Integer>> expected = new HashMap<>();
+        expected.put(1, new ArrayList<Integer>() {{add(1); add(2);}});
+        expected.put(3, new ArrayList<Integer>() {{add(4); }});
+
+        Assert.assertEquals(expected , reversibleMultiMap.asMap());
     }
 }
