@@ -1,0 +1,22 @@
+sudo: required
+language: java
+jdk:
+- oraclejdk8
+script: mvn test -B -q
+services:
+- docker
+env:
+  global:
+  - COMMIT=${TRAVIS_COMMIT::8}
+  - secure: vj/q1Z7lBrqzEMZSwCpr6YgxlUnSFVuhAv1hxMFltRiSaa5flJJPI0VY+htKlqHr8PcGlWRatr4njxIj8WvZOGP3RoyUMOaA/9TNaa3qFIXx8G6FitdsDBZGvsK10ISTRksAubI0qkOOaDUfcVzTI0uTgJbmuIqD8fV2WWPgZasdyzVORYsHAV7hGjQ1SAzlPzm/pDKOs9eRUDe1xwEDx3MX0SVDeUv+CRHIobxh8HUOc9e9GVeNK+u+q1DvRJwCzr/eDLrKPBx9N5hL9SOfq9niWIQu/M6Juc74OF/ujI5qzBRLZV/2WgQkE4SVJ1Irj+wqWRTP7BoDH6WAMHFx1jj0yuc2CjS6su8YwwCfcMJ+nxOwUBG887Oslwh+w+xp1EH9OYG1sO0A8CyrNeVp8zva2f5tkLTDQ+8jyj38lYwVTwKUg3Rx1ySwkdafFIlT2eVROoA6BLxzTweoCGB/wAokSdJmcY+rzqzHFPLYfosTGa3bFtkQCIGcmfPromprh9ZAb0dt/bnzHzLnE6uL+9BXT9NIxn//KAvJpsQ118fcssk4TZnyNWzoN/iUnbhO78+1myeGctm4kQeBdMLDrJndwSM0kUD7+QcnHZ6P9SziaBxjnr7VEzBJLcLnDwqbW6Z9O1a0CI2AjU/6vnvDEeoJMisE1JKYd3yLZVX2oi4=
+  - secure: tw73i55bCqDFt8Rn58o0P53RvnDrjnGnmtvpnA7MoJbLtZ1EIkCXfyPIHRT3hZD9Lfjdv6xLI9dUO3Efb7PNjzoVh5OL9323udlNxJNXwvAOb2cyyOuSr43jO/rjdWAb80iJ1XGehPG33vUVbNqbIJRP3gb8Yz9VpJGJ0xPp8/6P8QM86f7lS0zm9yqJ/H2EzeZjiL2MDBtmpH7K/nUEg568PBU+dhTvU/2lBoaU+rtTndza2n5ECbkTrTie5WUmlg7icBHMGRf2yF8I6nsvAj3/gWaxD9HnoEknEcZvfEv679lkse098AlOEjC+4OG0SrLHD4ztGXmv1AS1V3YfEjbEjGElHH9CTwrlcd40T9GY8AoAmdo7A0LtDd5Nenhn6EFWJU4xEBDDvWHE4yOgp/cufOyhai674M39IyznN2/JXvlfIfyOtSFvq73Ut270u86EpYJIfHFUFAQHNmb1Q5XipjNU9hTsnn1ruXNlx8I5IunE0Q13l+8mlMCltomG8qBeDBHtuGaELmeC7rqofZswwSfP4bOAdV5Xc80yTNj1kgspj/pnHXKshTtoYL3DiQNE+FrvYKoc+2tklOHz0mt3U9dky0EpP7vPmRTTQEZivJ2tf89wvw1p6B3479OaB5MQ7rQHVF4dvXn8OaQQaqcglrzLkpVk5OcUf5LqTmg=
+after_success:
+- mvn test jacoco:report coveralls:report
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- export REPO=maxdemarzi/pebbledb
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $REPO:$COMMIT .
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO
