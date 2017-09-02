@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import static com.pebbledb.server.Server.graphs;
@@ -18,7 +17,7 @@ public class NodeTest {
     static Server server;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         server = new Server();
         server.buildAndStartServer(8080, "127.0.0.1");
         HashMap<String, Object> property =  new HashMap<String, Object>() {{ put("property", "Value"); }};

@@ -13,8 +13,12 @@ import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.util.StatusCodes;
 
+import javax.servlet.ServletException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -26,7 +30,7 @@ public class Server {
     private static final int THREADS = Runtime.getRuntime().availableProcessors();
     public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
     static RingBuffer<ExchangeEvent> ringBuffer;
-
+    static DeploymentManager manager;
 
     public Server() {
         for (int i = -1; ++i < graphs.length; ) {
@@ -53,15 +57,30 @@ public class Server {
 
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
         ringBuffer = disruptor.start();
+
+
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws ServletException {
+        DeploymentInfo servletBuilder = Servlets.deployment().setClassLoader(Server.class.getClassLoader())
+                .setDeploymentName("openapi").setContextPath("/openapi")
+                .addServlets(Servlets.servlet("openapi",
+                        Bootstrap.class).addMapping("/openapi"));
 
+//                        new HttpServlet() {
+//                            @Override
+//                            protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//                                response.getWriter().write("Hello World!");
+//                            }
+//                        }.getClass()).addMapping("/openapi"));
+        manager = Servlets.defaultContainer().addDeployment(servletBuilder);
+        manager.deploy();
         Server pebbleServer = new Server();
         pebbleServer.buildAndStartServer(8080, "localhost");
     }
 
-    public void buildAndStartServer(int port, String host) {
+    public void buildAndStartServer(int port, String host) throws ServletException {
+
         undertow = Undertow.builder()
                 .addHttpListener(port, host)
                 .setBufferSize(16 * 1024)
@@ -69,12 +88,16 @@ public class Server {
                 .setIoThreads(1)
                 .setHandler(new RoutingHandler()
 
+                        .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
+                        .add(GET, "/db/test2", new RequestHandler(false, Action.NOOP))
+
+                        .add(GET, "/swagger", new SwaggerHandler())
+                        .add(GET, "/openapi", manager.start())
+
                         .add(GET, PATH_REL_TYPES, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
                         .add(GET, PATH_REL_TYPES_COUNT, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))
                         .add(GET, PATH_REL_TYPE_COUNT, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPE_COUNT))
 
-                        .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
-                        .add(GET, "/db/test2", new RequestHandler(false, Action.NOOP))
                         .add(GET, PATH_NODE, new RequestHandler(false, Action.GET_NODE))
                         .add(POST, PATH_NODE, new RequestHandler(true, Action.POST_NODE))
                         .add(DELETE, PATH_NODE, new RequestHandler(true, Action.DELETE_NODE))

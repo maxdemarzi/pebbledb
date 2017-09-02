@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,7 +16,7 @@ public class RelationshipTypesTest {
     static Server server;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         server = new Server();
         server.buildAndStartServer(8080, "127.0.0.1");
 

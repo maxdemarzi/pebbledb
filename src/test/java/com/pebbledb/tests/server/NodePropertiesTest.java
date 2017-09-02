@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import static com.pebbledb.server.Server.graphs;
@@ -17,7 +16,7 @@ public class NodePropertiesTest {
     static Server server;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         server = new Server();
         server.buildAndStartServer(8080, "127.0.0.1");
         for (int i = -1; ++i < graphs.length; ) {
