@@ -6,7 +6,6 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import net.openhft.chronicle.wire.DocumentContext;
-import com.pebbledb.server.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,9 +14,10 @@ import java.io.InputStreamReader;
 public class PersistenceHandler implements EventHandler<ExchangeEvent> {
     private static final ChronicleQueue queue = SingleChronicleQueueBuilder.binary("events").build();
     private static final ExcerptAppender appender = queue.acquireAppender();
+    private static final int threads = Runtime.getRuntime().availableProcessors();
 
     public void onEvent(ExchangeEvent event, long sequence, boolean endOfBatch) {
-        event.setResponder((int) (sequence % Server.THREADS));
+        event.setResponder((int) (sequence % threads));
 
         if(event.getWrite()) {
 

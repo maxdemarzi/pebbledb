@@ -22,10 +22,11 @@ import static com.pebbledb.server.Constants.*;
 
 public class Server {
 
-	public static final int THREADS = Runtime.getRuntime().availableProcessors();
-    public static final Graph[] graphs = new Graph[THREADS];
+    private static Undertow undertow;
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
+    public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
     static RingBuffer<ExchangeEvent> ringBuffer;
-    private Undertow undertow;
+
 
     public Server() {
         for (int i = -1; ++i < graphs.length; ) {
