@@ -58,10 +58,6 @@ public class Server {
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
         ringBuffer = disruptor.start();
 
-
-    }
-
-    public static void main(final String[] args) throws ServletException {
         DeploymentInfo servletBuilder = Servlets.deployment().setClassLoader(Server.class.getClassLoader())
                 .setDeploymentName("openapi").setContextPath("/openapi")
                 .addServlets(Servlets.servlet("openapi",
@@ -75,6 +71,9 @@ public class Server {
 //                        }.getClass()).addMapping("/openapi"));
         manager = Servlets.defaultContainer().addDeployment(servletBuilder);
         manager.deploy();
+    }
+
+    public static void main(final String[] args) throws ServletException {
         Server pebbleServer = new Server();
         pebbleServer.buildAndStartServer(8080, "localhost");
     }

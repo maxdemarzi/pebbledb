@@ -16,6 +16,8 @@
 - [ ] Finish Graph Tests
 - [ ] Add Server
 - [ ] Verify all return codes for http requests
+- [ ] Add Labels
+- [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (Lucene and http://mg4j.di.unimi.it/)
     
