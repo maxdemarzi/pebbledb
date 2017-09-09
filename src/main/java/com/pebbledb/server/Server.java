@@ -11,6 +11,8 @@ import com.pebbledb.events.ExchangeEvent;
 import com.pebbledb.events.PersistenceHandler;
 import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
 import io.undertow.servlet.Servlets;
@@ -75,16 +77,16 @@ public class Server {
 
     public static void main(final String[] args) throws ServletException {
         Server pebbleServer = new Server();
-        pebbleServer.buildAndStartServer(8080, "localhost");
+        pebbleServer.buildAndStartServer();
     }
 
-    public void buildAndStartServer(int port, String host) throws ServletException {
-
+    public void buildAndStartServer() throws ServletException {
+        Config conf = ConfigFactory.load("pebble");
         undertow = Undertow.builder()
-                .addHttpListener(port, host)
-                .setBufferSize(16 * 1024)
-                .setWorkerThreads(1)
-                .setIoThreads(1)
+                .addHttpListener(conf.getInt("pebble.server.port"), conf.getString("pebble.server.host"))
+                .setBufferSize(conf.getInt("pebble.server.buffer_size"))
+                .setWorkerThreads(THREADS)
+                .setIoThreads(2 * THREADS)
                 .setHandler(new RoutingHandler()
 
                         .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
@@ -92,6 +94,7 @@ public class Server {
 
                         .add(GET, "/swagger", new SwaggerHandler())
                         .add(GET, "/openapi", manager.start())
+                        .add(GET, "/webjars/*", new SwaggerUIHandler())
 
                         .add(GET, PATH_REL_TYPES, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES))
                         .add(GET, PATH_REL_TYPES_COUNT, new RequestHandler(false, Action.GET_RELATIONSHIP_TYPES_COUNT))

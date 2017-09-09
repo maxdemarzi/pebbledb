@@ -17,10 +17,13 @@
         <fastutil.version>8.1.0</fastutil.version>
         <brownies.version>0.9.13</brownies.version>
         <guava.version>20.0</guava.version>
+        <typesafe.version>1.3.1</typesafe.version>
         <undertow.version>1.4.18.Final</undertow.version>
         <disruptor.version>3.3.6</disruptor.version>
         <chronicle-queue.version>4.5.27</chronicle-queue.version>
         <jackson.version>2.9.0</jackson.version>
+        <swagger-ui.version>3.1.7</swagger-ui.version>
+        <swagger.version>2.0.0-rc1</swagger.version>
         <maven-compiler.version>3.6.0</maven-compiler.version>
         <coveralls.version>4.3.0</coveralls.version>
         <jacoco.version>0.7.9</jacoco.version>
@@ -29,23 +32,30 @@
 
     <dependencies>
 
+        <!-- Config -->
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>${typesafe.version}</version>
+        </dependency>
+
         <!-- Swagger -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>2.0.0-rc1</version>
+            <version>${swagger.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>2.0.0-rc1</version>
+            <version>${swagger.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
-            <version>3.1.7</version>
+            <version>${swagger-ui.version}</version>
         </dependency>
 
         <!-- Jsoniter -->
