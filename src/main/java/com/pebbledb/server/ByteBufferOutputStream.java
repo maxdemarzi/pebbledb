@@ -56,7 +56,9 @@ public class ByteBufferOutputStream extends OutputStream {
     }
 
     public void write (byte[] bytes, int offset, int length) throws IOException {
-        if (byteBuffer.remaining() < length) flush();
+        if (byteBuffer.remaining() < length) {
+            flush();
+        }
         byteBuffer.put(bytes, offset, length);
     }
 }

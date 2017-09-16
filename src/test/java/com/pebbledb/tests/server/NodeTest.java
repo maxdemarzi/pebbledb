@@ -19,7 +19,7 @@ public class NodeTest {
     @Before
     public void setup() throws Exception {
         server = new Server();
-        server.buildAndStartServer(8080, "127.0.0.1");
+        server.buildAndStartServer();
         HashMap<String, Object> property =  new HashMap<String, Object>() {{ put("property", "Value"); }};
         HashMap<String, Object> props =  new HashMap<>();
         props.put("city", "Chicago");

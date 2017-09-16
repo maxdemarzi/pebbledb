@@ -1,6 +1,8 @@
 package com.pebbledb.tests.server;
 
 import com.pebbledb.server.Server;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +19,9 @@ public class NodePropertiesTest {
 
     @Before
     public void setup() throws Exception {
-        server = new Server();
-        server.buildAndStartServer(8080, "127.0.0.1");
+        Config conf = ConfigFactory.load("pebble");
+        server = new Server(conf);
+        server.buildAndStartServer(conf);
         for (int i = -1; ++i < graphs.length; ) {
             HashMap<String, Object> property = new HashMap<String, Object>() {{ put("property", "Value"); }};
             HashMap<String, Object> props =  new HashMap<String, Object>(){{

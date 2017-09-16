@@ -60,7 +60,7 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean addNode (String key, Map properties)  {
+    public boolean addNode (String key, Map<String, Object> properties)  {
         if (keys.containsKey(key)) {
             return false;
         } else {
@@ -116,7 +116,7 @@ public class FastUtilGraph implements Graph {
         return nodes.get(id).get(property);
     }
 
-    public boolean updateNodeProperties(String key, Map properties) {
+    public boolean updateNodeProperties(String key, Map<String, Object> properties) {
         int id = keys.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> current = nodes.get(id);
@@ -243,7 +243,7 @@ public class FastUtilGraph implements Graph {
         int node2 = keys.getInt(to);
         Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
         if (rel == null) {
-            if (related.get(type).get(node1 ).contains(node2)) {
+            if (related.get(type).get(node1).contains(node2)) {
                 return new HashMap<>();
             } else {
                 return null;
@@ -421,6 +421,77 @@ public class FastUtilGraph implements Graph {
     }
 
     // Traversing
+
+    public List<Map<String,Object>> getOutgoingRelationships(String type, String from) {
+        int node1 = keys.getInt(from);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).get(node1);
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (int node2 : nodeIds) {
+            int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+            Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
+            rel.put("_outgoing_node_id", node2);
+            nodeRelationships.add(rel);
+            for (int i = 2; i <= count; i++) {
+                Map<String, Object> rel2 = relationships.get(node1 + "-" + node2 + type + count);
+                rel2.put("_outgoing_node_id", node2);
+                nodeRelationships.add(rel2);
+            }
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String,Object>> getOutgoingRelationships(String type, int from) {
+        List<Integer> nodeIds = (List<Integer>)related.get(type).get(from);
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (int node2 : nodeIds) {
+            int count = relatedCounts.getInt(from + "-" + node2 + type);
+            Map<String, Object> rel = relationships.get(from + "-" + node2 + type);
+            rel.put("_outgoing_node_id", node2);
+            nodeRelationships.add(rel);
+            for (int i = 2; i <= count; i++) {
+                Map<String, Object> rel2 = relationships.get(from + "-" + node2 + type + count);
+                rel2.put("_outgoing_node_id", node2);
+                nodeRelationships.add(rel2);
+            }
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String,Object>> getIncomingRelationships(String type, String from) {
+        int node2 = keys.getInt(from);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(node2);
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (int node1 : nodeIds) {
+            int count = relatedCounts.getInt(node1 + "-" + node2 + type);
+            Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
+            rel.put("_incoming_node_id", node1);
+            nodeRelationships.add(rel);
+            for (int i = 2; i <= count; i++) {
+                Map<String, Object> rel2 = relationships.get(node1 + "-" + node2 + type + count);
+                rel2.put("_incoming_node_id", node1);
+                nodeRelationships.add(rel2);
+            }
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String,Object>> getIncomingRelationships(String type, int to) {
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(to);
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (int node1 : nodeIds) {
+            int count = relatedCounts.getInt(node1 + "-" + to + type);
+            Map<String, Object> rel = relationships.get(node1 + "-" + to + type);
+            rel.put("_incoming_node_id", node1);
+            nodeRelationships.add(rel);
+            for (int i = 2; i <= count; i++) {
+                Map<String, Object> rel2 = relationships.get(node1 + "-" + to + type + count);
+                rel2.put("_incoming_node_id", node1);
+                nodeRelationships.add(rel2);
+            }
+        }
+        return nodeRelationships;
+    }
+
     public Object[] getOutgoingRelationshipNodes(String type, String from) {
         List<Integer> nodeIds = (List<Integer>)related.get(type).get(keys.getInt(from));
         int size = nodeIds.size();

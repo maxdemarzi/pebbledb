@@ -35,17 +35,20 @@ public class Server {
     static DeploymentManager manager;
 
     public Server() {
+        Config conf = ConfigFactory.load("pebble");
+        new Server(conf);
+    }
+
+    public Server(Config conf) {
         for (int i = -1; ++i < graphs.length; ) {
-            graphs[i]= new FastUtilGraph();
+            graphs[i] = new FastUtilGraph();
         }
 
-        // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024 * 2;
         Executor executor = Executors.newCachedThreadPool();
 
         // Construct the Disruptor
         WaitStrategy waitStrategy = new YieldingWaitStrategy();
-        Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, bufferSize, executor,
+        Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, conf.getInt("pebble.disruptor.ring_buffer_size"), executor,
                 ProducerType.SINGLE, waitStrategy);
 
         DatabaseEventHandler[] handlers = new DatabaseEventHandler[THREADS];
@@ -64,24 +67,23 @@ public class Server {
                 .setDeploymentName("openapi").setContextPath("/openapi")
                 .addServlets(Servlets.servlet("openapi",
                         Bootstrap.class).addMapping("/openapi"));
-
-//                        new HttpServlet() {
-//                            @Override
-//                            protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//                                response.getWriter().write("Hello World!");
-//                            }
-//                        }.getClass()).addMapping("/openapi"));
         manager = Servlets.defaultContainer().addDeployment(servletBuilder);
         manager.deploy();
     }
 
     public static void main(final String[] args) throws ServletException {
-        Server pebbleServer = new Server();
-        pebbleServer.buildAndStartServer();
+        Config conf = ConfigFactory.load("pebble");
+        Server pebbleServer = new Server(conf);
+        pebbleServer.buildAndStartServer(conf);
     }
 
     public void buildAndStartServer() throws ServletException {
         Config conf = ConfigFactory.load("pebble");
+        buildAndStartServer(conf);
+}
+
+    public void buildAndStartServer(Config conf) throws ServletException {
+
         undertow = Undertow.builder()
                 .addHttpListener(conf.getInt("pebble.server.port"), conf.getString("pebble.server.host"))
                 .setBufferSize(conf.getInt("pebble.server.buffer_size"))

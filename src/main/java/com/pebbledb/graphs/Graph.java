@@ -20,7 +20,7 @@ public interface Graph {
 
     // Node Properties
     Object getNodeProperty(String key, String property);
-    boolean updateNodeProperties(String key, Map properties);
+    boolean updateNodeProperties(String key, Map<String, Object> properties);
     boolean deleteNodeProperties(String key);
     boolean updateNodeProperty(String key, String property, Object value);
     boolean deleteNodeProperty(String key, String property);
@@ -51,6 +51,15 @@ public interface Graph {
     int getNodeDegree(String key, String direction, List<String> types);
 
     // Traversing
+    //List<Map<String, Object>> getOutgoingRelationships(String from);
+    //List<Map<String, Object>> getOutgoingRelationships(int from);
+    List<Map<String, Object>> getOutgoingRelationships(String type, String from);
+    List<Map<String, Object>> getOutgoingRelationships(String type, int from);
+    //List<Map<String, Object>> getIncomingRelationships(String from);
+    //List<Map<String, Object>> getIncomingRelationships(int from);
+    List<Map<String, Object>> getIncomingRelationships(String type, String from);
+    List<Map<String, Object>> getIncomingRelationships(String type, int from);
+
     List<Integer> getOutgoingRelationshipNodeIds(String type, String from);
     List<Integer> getOutgoingRelationshipNodeIds(String type, Integer from);
     Object[] getOutgoingRelationshipNodes(String type, String from);

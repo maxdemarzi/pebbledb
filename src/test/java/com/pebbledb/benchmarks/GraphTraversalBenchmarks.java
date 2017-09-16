@@ -40,7 +40,9 @@ public class GraphTraversalBenchmarks {
         for (int person = 0; person < personCount; person++) {
             db.addNode("person" + person);
             for (int like = 0; like < likesCount; like++) {
-                db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
+                HashMap<String, Object> props  = new HashMap<>();
+                props.put("weight", rand.nextInt(10));
+                db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount), props);
             }
         }
     }
@@ -63,9 +65,43 @@ public class GraphTraversalBenchmarks {
 
             }
         }
-        occurrences.remove(itemsYouLike);
+        itemsYouLike.forEach(occurrences::remove);
         List<Map.Entry<Integer, LongAdder>> itemList = new ArrayList<>(occurrences.entrySet());
-        Collections.sort(itemList, (a, b) -> ( b.getValue().intValue() - a.getValue().intValue() ));
+        itemList.sort((a, b) -> (b.getValue().intValue() - a.getValue().intValue()));
+        return itemList.subList(0, Math.min(itemList.size(), 10));
+    }
+
+    @Benchmark
+    @Warmup(iterations = 10)
+    @Measurement(iterations = 10)
+    @Fork(1)
+    @Threads(1)
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    public List measureRecommendationRelationshipPropertiesTraversal() throws IOException {
+        Collection<Integer> itemsYouLike = new HashSet<>();
+        Collection<Map<String,Object>> likes = db.getOutgoingRelationships("LIKES", "person" + rand.nextInt(personCount));
+        Map<Integer, LongAdder> occurrences = new HashMap<>();
+        for (Map<String,Object> like : likes) {
+            //if ((int) like.get("weight") > 8 ) {
+                int item = (int)like.get("_outgoing_node_id");
+                itemsYouLike.add(item);
+                for (Map<String, Object> like2 : db.getIncomingRelationships("LIKES", item)) {
+                    //if ((int) like2.get("weight") > 8 ) {
+                        int person = (int)like.get("_incoming_node_id");
+                        for ( Map<String, Object> like3 : db.getOutgoingRelationships("LIKES", person)){
+                            //if ((int) like3.get("weight") > 8 ) {
+                                occurrences.computeIfAbsent((int)like3.get("_outgoing_node_id"), (t) -> new LongAdder())
+                                        .increment();
+                            //}
+                        }
+                    //}
+                }
+            //}
+        }
+        itemsYouLike.forEach(occurrences::remove);
+        List<Map.Entry<Integer, LongAdder>> itemList = new ArrayList<>(occurrences.entrySet());
+        itemList.sort((a, b) -> (b.getValue().intValue() - a.getValue().intValue()));
         return itemList.subList(0, Math.min(itemList.size(), 10));
     }
 }

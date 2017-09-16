@@ -13,13 +13,16 @@
 ### Todos
      
 - [ ] Build Graph
+- [ ] Switch relationships to an Array. Use [nodeId,relId]
 - [ ] Finish Graph Tests
 - [ ] Add Server
 - [ ] Verify all return codes for http requests
 - [ ] Add Labels
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
-- [ ] Compare Search Capabilities (Lucene and http://mg4j.di.unimi.it/)
+- [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
+- [ ] Add Metrics ( http://metrics.dropwizard.io/3.1.0/getting-started/ )
+- [ ] Add Dagger for DI of Metrics and others
     
 
 ### Benchmarks
@@ -47,15 +50,25 @@ Writes:
 
 Traversal:
 
-    Benchmark                                                (itemCount)  (likesCount)  (personCount)   Mode  Cnt     Score     Error  Units
-    GraphTraversalBenchmarks.measureRecommendationTraversal          200            10           1000  thrpt   10  1695.320 ±  77.257  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal          200            10          10000  thrpt   10   164.601 ±   5.097  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal          200           100           1000  thrpt   10     3.635 ±   0.111  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal          200           100          10000  thrpt   10     0.385 ±   0.046  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal         2000            10           1000  thrpt   10  9033.580 ± 418.925  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal         2000            10          10000  thrpt   10  1035.752 ±  13.313  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100           1000  thrpt   10    19.120 ±   0.816  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal         2000           100          10000  thrpt   10     2.012 ±   0.085  ops/s
+    Benchmark                                                                      (itemCount)  (likesCount)  (personCount)   Mode  Cnt      Score       Error  Units
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200            10           1000  thrpt   10  24316.347 ±  3053.061  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200            10          10000  thrpt   10   1727.841 ±   206.528  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200           100           1000  thrpt   10     26.716 ±     2.758  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200           100          10000  thrpt   10      2.483 ±     0.978  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000            10           1000  thrpt   10  87614.324 ± 10836.725  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000            10          10000  thrpt   10  13897.220 ±  1696.789  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000           100           1000  thrpt   10    436.264 ±    41.306  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000           100          10000  thrpt   10     44.421 ±     6.708  ops/s
+    Without filter, it is very slow. 726 ops/s for 200/10/1000, then 63 ops/s, 0.326 and finally 0.029 for 200/100/10000
+    
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10           1000  thrpt   10   4807.570 ±   202.806  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10          10000  thrpt   10    464.484 ±    35.171  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100           1000  thrpt   10      8.246 ±     0.298  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100          10000  thrpt   10      0.710 ±     0.015  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10           1000  thrpt   10  15637.761 ±   668.101  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10          10000  thrpt   10   1789.728 ±   116.874  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100           1000  thrpt   10     61.024 ±     2.187  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100          10000  thrpt   10      5.115 ±     0.190  ops/s
 
 Aggregation:
 

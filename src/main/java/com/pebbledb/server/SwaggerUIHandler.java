@@ -18,14 +18,25 @@ public class SwaggerUIHandler implements HttpHandler {
             return;
         }
 
-        String html = "resources/" + exchange.getRequestPath();
+        //String html = "resources" + exchange.getRequestPath();
+        String html = exchange.getRequestPath();
+        html = html.substring(1,html.length() );
+        //webjars/swagger-ui/favicon-32x32.png
 
+//        Reflections reflections = new Reflections(null, new ResourcesScanner());
+//        Set<String> resourceList = reflections.getResources(x -> true);
+//        for (String resource : resourceList) {
+//            if (resource.contains("swagger")) {
+//                System.out.println(resource);
+//            }
+//        }
+        //System.out.println(resourceList);
         try {
             if(html.endsWith(".png")) {
                 exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, "image/png");
             } else {
                 exchange.getResponseHeaders().add(Headers.CONTENT_ENCODING, Headers.GZIP.toString());
-                html += ".gz";
+               // html += ".gz";
 
                 if (html.endsWith(".css")) {
                     exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, "text/css");
@@ -38,7 +49,12 @@ public class SwaggerUIHandler implements HttpHandler {
 
             // Allocate 5 kilobytes for index.html
             ByteBufferOutputStream bbos = new ByteBufferOutputStream(5*1024);
+
+
             BufferedInputStream in = new BufferedInputStream(this.getClass().getClassLoader().getResourceAsStream(html));
+            //BufferedInputStream in = new BufferedInputStream(this.getClass().getClassLoader().getResourceAsStream("webjars/swagger-ui/index.html"));
+
+            //BufferedInputStream in = new BufferedInputStream(this.getClass().getClassLoader().getResourceAsStream("META-INF/resources/webjars/swagger-ui/3.1.7"));
             byte[] buff = new byte[5*1024]; //or some size, can try out different sizes for performance
 
             int n = 0;
@@ -53,5 +69,5 @@ public class SwaggerUIHandler implements HttpHandler {
             System.out.println("error in: " + html);
             e.printStackTrace();
         }
-    }
+        }
 }
