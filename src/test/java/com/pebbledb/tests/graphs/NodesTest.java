@@ -57,6 +57,32 @@ public class NodesTest {
     }
 
     @Test
+    public void shouldRemoveNodeInMiddle() {
+        HashMap<String, Object> node1props = new HashMap<>();
+        node1props.put("id", "node1");
+        HashMap<String, Object> node2props = new HashMap<>();
+        node2props.put("id", "node2");
+        HashMap<String, Object> node3props = new HashMap<>();
+        node3props.put("id", "node3");
+        HashMap<String, Object> node4props = new HashMap<>();
+        node3props.put("id", "node4");
+
+        boolean result = db.addNode("node1", node1props);
+        db.addNode("node2", node2props);
+        db.addNode("node3", node3props);
+        Assert.assertTrue(result);
+        int node2Id = db.getNodeId("node2");
+        result = db.removeNode("node2");
+        Assert.assertTrue(result);
+        Assert.assertTrue(db.getNode("node2") == null);
+        Assert.assertEquals(node1props, db.getNode("node1"));
+        Assert.assertEquals(node3props, db.getNode("node3"));
+        db.addNode("node4", node4props);
+        Assert.assertEquals(node4props, db.getNode("node4"));
+        Assert.assertEquals(node2Id, db.getNodeId("node4"));
+    }
+
+    @Test
     public void shouldRemoveNodeRelationships() {
         db.addNode("one");
         db.addNode("two");

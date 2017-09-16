@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 
@@ -15,6 +16,7 @@ public class FastUtilGraph implements Graph {
     private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
     private Object2IntArrayMap<String> relationshipCounts;
     private Object2IntOpenHashMap<String> relatedCounts;
+    private RoaringBitmap deleted;
 
     public FastUtilGraph() {
         keys = new Object2IntOpenHashMap<>();
@@ -24,6 +26,7 @@ public class FastUtilGraph implements Graph {
         related = new Object2ObjectOpenHashMap<>();
         relationshipCounts = new Object2IntArrayMap<>();
         relatedCounts = new Object2IntOpenHashMap<>();
+        deleted = new RoaringBitmap();
     }
 
     public void clear() {
@@ -34,6 +37,7 @@ public class FastUtilGraph implements Graph {
         relationshipCounts.clear();
         relationshipCounts.defaultReturnValue(0);
         relatedCounts.clear();
+        deleted.clear();
     }
 
     // Relationship Types
@@ -54,8 +58,15 @@ public class FastUtilGraph implements Graph {
         if (keys.containsKey(key)) {
             return false;
         } else {
-            nodes.add(new HashMap<>());
-            keys.put(key, nodes.size()-1);
+            if (deleted.isEmpty()) {
+                nodes.add(new HashMap<>());
+                keys.put(key, nodes.size() - 1);
+            } else {
+                int id = deleted.first();
+                nodes.set(id, new HashMap<>());
+                keys.put(key, id);
+                deleted.remove(id);
+            }
         }
         return true;
     }
@@ -64,8 +75,15 @@ public class FastUtilGraph implements Graph {
         if (keys.containsKey(key)) {
             return false;
         } else {
-            nodes.add(properties);
-            keys.put(key, nodes.size()-1);
+            if (deleted.isEmpty()) {
+                nodes.add(properties);
+                keys.put(key, nodes.size() - 1);
+            } else {
+                int id = deleted.first();
+                nodes.set(id, properties);
+                keys.put(key, id);
+                deleted.remove(id);
+            }
             return true;
         }
     }
@@ -76,7 +94,8 @@ public class FastUtilGraph implements Graph {
         }
 
         int id = keys.getInt(key);
-        nodes.remove(id);
+        nodes.set(id, null);
+        deleted.add(id);
 
         for (String type : related.keySet()) {
             ReversibleMultiMap rels = related.get(type);
