@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Math.toIntExact;
+
 public class RelationshipsTest {
     private Graph db;
 
@@ -30,6 +32,23 @@ public class RelationshipsTest {
     @After
     public void tearDown() {
         db = null;
+    }
+
+
+    @Test
+    public void shouldResolveIds() {
+        int node1 = 7;
+        int rel = 5;
+        long combo;
+
+        combo = node1;
+        combo = combo << 32;
+        combo += rel;
+        int nodeId = toIntExact(combo >> 32);
+        int relId = toIntExact((combo << 32) >> 32);
+        Assert.assertEquals(nodeId, node1);
+        Assert.assertEquals(rel, relId);
+
     }
 
 

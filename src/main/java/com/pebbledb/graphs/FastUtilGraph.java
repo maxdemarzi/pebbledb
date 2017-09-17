@@ -1,43 +1,47 @@
 package com.pebbledb.graphs;
 
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 
 public class FastUtilGraph implements Graph {
 
-    private Object2IntOpenHashMap<String> keys;
+    private Object2IntOpenHashMap<String> nodeKeys;
     private ObjectArrayList<Map<String, Object>> nodes;
-    private Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
+    private Object2IntOpenHashMap<String> relationshipKeys;
+    private ObjectArrayList<Map<String, Object>> relationships;
+    //private Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
     private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
     private Object2IntArrayMap<String> relationshipCounts;
     private Object2IntOpenHashMap<String> relatedCounts;
-    private RoaringBitmap deleted;
+    private RoaringBitmap deletedNodes;
+    private RoaringBitmap deletedRelationships;
 
     public FastUtilGraph() {
-        keys = new Object2IntOpenHashMap<>();
-        keys.defaultReturnValue(-1);
+        nodeKeys = new Object2IntOpenHashMap<>();
+        nodeKeys.defaultReturnValue(-1);
         nodes = new ObjectArrayList<>();
-        relationships = new Object2ObjectOpenHashMap<>();
+        relationshipKeys = new Object2IntOpenHashMap<>();
+        relationshipKeys.defaultReturnValue(-1);
+        relationships = new ObjectArrayList<>();
         related = new Object2ObjectOpenHashMap<>();
         relationshipCounts = new Object2IntArrayMap<>();
         relatedCounts = new Object2IntOpenHashMap<>();
-        deleted = new RoaringBitmap();
+        deletedNodes = new RoaringBitmap();
+        deletedRelationships = new RoaringBitmap();
     }
 
     public void clear() {
-        keys.clear();
+        nodeKeys.clear();
         nodes.clear();
         relationships.clear();
         related.clear();
         relationshipCounts.clear();
         relationshipCounts.defaultReturnValue(0);
         relatedCounts.clear();
-        deleted.clear();
+        deletedNodes.clear();
+        deletedRelationships.clear();
     }
 
     // Relationship Types
@@ -55,88 +59,91 @@ public class FastUtilGraph implements Graph {
 
     // Nodes
     public boolean addNode (String key) {
-        if (keys.containsKey(key)) {
+        if (nodeKeys.containsKey(key)) {
             return false;
         } else {
-            if (deleted.isEmpty()) {
+            if (deletedNodes.isEmpty()) {
                 nodes.add(new HashMap<>());
-                keys.put(key, nodes.size() - 1);
+                nodeKeys.put(key, nodes.size() - 1);
             } else {
-                int id = deleted.first();
+                int id = deletedNodes.first();
                 nodes.set(id, new HashMap<>());
-                keys.put(key, id);
-                deleted.remove(id);
+                nodeKeys.put(key, id);
+                deletedNodes.remove(id);
             }
         }
         return true;
     }
 
     public boolean addNode (String key, Map<String, Object> properties)  {
-        if (keys.containsKey(key)) {
+        if (nodeKeys.containsKey(key)) {
             return false;
         } else {
-            if (deleted.isEmpty()) {
+            if (deletedNodes.isEmpty()) {
                 nodes.add(properties);
-                keys.put(key, nodes.size() - 1);
+                nodeKeys.put(key, nodes.size() - 1);
             } else {
-                int id = deleted.first();
+                int id = deletedNodes.first();
                 nodes.set(id, properties);
-                keys.put(key, id);
-                deleted.remove(id);
+                nodeKeys.put(key, id);
+                deletedNodes.remove(id);
             }
             return true;
         }
     }
 
     public boolean removeNode(String key) {
-        if(!keys.containsKey(key)) {
+        if(!nodeKeys.containsKey(key)) {
             return false;
         }
 
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         nodes.set(id, null);
-        deleted.add(id);
+        deletedNodes.add(id);
 
         for (String type : related.keySet()) {
             ReversibleMultiMap rels = related.get(type);
             int outgoingCount = 0;
             int incomingCount = 0;
-            for (Integer value : rels.get(id)) {
-                outgoingCount = relatedCounts.getInt(id + "-" + value + type);
-                relationships.remove(id + "-" + value + type);
+            // TODO: 9/17/17 relete rels 
+            for (Integer value : rels.getRels(id)) {
+                outgoingCount++;
+                relationships.set(value, null);
+                deletedRelationships.add(value);
             }
-            for (Integer value : rels.getKeysByValue(id)) {
-                incomingCount = relatedCounts.getInt(value + "-" + id + type);
-                relationships.remove(value + "-" + id + type);
+            for (Integer value : rels.getRelsByValue(id)) {
+                incomingCount++;
+                relationships.set(value, null);
+                deletedRelationships.add(value);
             }
             rels.removeAll(id);
             relationshipCounts.put(type, relationshipCounts.getInt(type) - (outgoingCount + incomingCount));
         }
-        keys.removeInt(key);
+        nodeKeys.removeInt(key);
 
 
         return true;
     }
 
     public Map<String, Object> getNode(String key) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return null; }
-        return nodes.get(keys.getInt(key));
+        return nodes.get(nodeKeys.getInt(key));
     }
 
     public int getNodeId(String key) {
-        return keys.getInt(key);
+        return nodeKeys.getInt(key);
     }
 
     // Node Properties
     public Object getNodeProperty(String key, String property) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return null; }
         return nodes.get(id).get(property);
     }
 
     public boolean updateNodeProperties(String key, Map<String, Object> properties) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> current = nodes.get(id);
         current.putAll(properties);
@@ -144,14 +151,14 @@ public class FastUtilGraph implements Graph {
     }
 
     public boolean deleteNodeProperties(String key) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return false; }
         nodes.add(id, new HashMap<>());
         return true;
     }
 
     public boolean updateNodeProperty(String key, String property, Object value) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> properties = nodes.get(id);
         properties.put(property, value);
@@ -159,7 +166,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public boolean deleteNodeProperty(String key, String property) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> properties = nodes.get(id);
         properties.remove(property);
@@ -172,18 +179,16 @@ public class FastUtilGraph implements Graph {
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if (count == 0) {
-            relatedCounts.put(node1 + "-" + node2 + type,1);
-            related.get(type).put(node1, node2);
-        } else {
-            relatedCounts.put(node1 + "-" + node2 + type,count + 1);
-            related.get(type).put(node1, node2);
-        }
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
+        relationships.add(new HashMap<>());
+        relatedCounts.put(node1 + "-" + node2 + "-" + type, count);
+        related.get(type).put(node1, node2, relationships.size() -1);
+        relationshipKeys.put(node1 + "-" + node2 + "-" + type + "-" + count, relationships.size() - 1);
+
         return true;
     }
 
@@ -192,20 +197,15 @@ public class FastUtilGraph implements Graph {
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0) {
-            relatedCounts.put(node1 + "-" + node2 + type,1);
-            relationships.put(node1 + "-" + node2 + type, properties);
-            related.get(type).put(node1, node2);
-        } else {
-            relationships.put(node1 + "-" + node2 + type + (count + 1), properties);
-            relatedCounts.put(node1 + "-" + node2 + type,count + 1);
-            related.get(type).put(node1, node2);
-        }
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
+        relationships.add(properties);
+        relatedCounts.put(node1 + "-" + node2 + "-" + type, count);
+        related.get(type).put(node1, node2, relationships.size() - 1);
+        relationshipKeys.put(node1 + "-" + node2 + "-" + type + "-" + count, relationships.size() - 1);
 
         return true;
     }
@@ -214,194 +214,186 @@ public class FastUtilGraph implements Graph {
         if(!related.containsKey(type)) {
             return false;
         }
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0) {
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0) {
             return false;
         }
-        related.get(type).remove(node1, node2);
         relationshipCounts.put(type, relationshipCounts.getInt(type) - 1);
-        if ( count == 1) {
-            relationships.remove(node1 + "-" + node2 + type);
-        } else {
-            relationships.remove(node1 + "-" + node2 + type, count);
-        }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        related.get(type).removeRelationship(node1, node2, relId);
+        relationships.set(relId, null);
+        relationshipKeys.removeInt(node1 + "-" + node2 + "-" + type + "-" + count);
 
         return true;
     }
-    
+
     public boolean removeRelationship(String type, String from, String to, int number) {
         if(!related.containsKey(type)) {
             return false;
         }
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 || count < number) {
             return false;
         }
-        related.get(type).remove(node1, node2);
         relationshipCounts.put(type, relationshipCounts.getInt(type) - 1);
-        if ( count == 1) {
-            relationships.remove(node1 + "-" + node2 + type);
-        } else {
-            if (count != number) {
-                relationships.put(node1 + "-" + node2 + type + number, relationships.get(node1 + "-" + node2 + type + count));
-            }
-            relationships.remove(node1 + "-" + node2 + type + count);
-        }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        related.get(type).removeRelationship(node1, node2, relId);
+        relationships.set(relId, null);
+        relationshipKeys.removeInt(node1 + "-" + node2 + "-" + type + "-" + count);
 
         return true;
     }
-    
-    public Map<String, Object> getRelationship(String type, String from, String to) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
-        Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
-        if (rel == null) {
-            if (related.get(type).get(node1).contains(node2)) {
-                return new HashMap<>();
-            } else {
-                return null;
-            }
-        }
-        return rel;
-    }
-    
-    public Map<String, Object> getRelationship(String type, String from, String to, int number) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
 
-        Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type + number);
-        if (rel == null) {
-            if (related.get(type).get(node1).contains(node2)) {
-                return new HashMap<>();
-            } else {
-                return null;
-            }
-        }
-        return rel;
+    public Map<String, Object> getRelationship(String type, String from, String to) {
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+
+        return relationships.get(relId);
+    }
+
+    public Map<String, Object> getRelationship(String type, String from, String to, int number) {
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
+
+        return relationships.get(relId);
     }
 
     // Relationship Properties
-    
+
     public Object getRelationshipProperty(String type, String from, String to, String property) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
-        return relationships.get(node1 + "-" + node2 + type).get(property);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0) { return null; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        return relationships.get(relId).get(property);
     }
 
     public Object getRelationshipProperty(String type, String from, String to, int number, String property) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
-            return null;
-        }
-        return relationships.get(node1 + "-" + node2 + type + number).get(property);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 || count < number) { return null; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        return relationships.get(relId).get(property);
     }
-    
+
     public boolean updateRelationshipProperties(String type, String from, String to, Map<String, Object> properties) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        relationships.put(node1 + "-" + node2 + type, properties);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.set(relId, properties);
         return true;
     }
 
-    
+
     public boolean updateRelationshipProperties(String type, String from, String to, int number, Map<String, Object> properties) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
-            return false;
-        }
-        relationships.put(node1 + "-" + node2 + type + number, properties);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 || count < number) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.set(relId, properties);
         return true;
     }
-    
+
     public boolean deleteRelationshipProperties(String type, String from, String to) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 ) {
-            return false;
-        }
-        relationships.remove(node1 + "-" + node2 + type);
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 ) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.set(relId, null);
         return true;
     }
-    
+
     public boolean deleteRelationshipProperties(String type, String from, String to, int number) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
-            return false;
-        }
-
-        relationships.remove(node1 + "-" + node2 + type + count);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 || count < number) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.set(relId, null);
         return true;
     }
 
     public boolean updateRelationshipProperty(String type, String from, String to, String property, Object value) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        relationships.computeIfAbsent(node1 + "-" + node2 + type, k -> new HashMap<>());
-        relationships.get(node1 + "-" + node2 + type).put(property, value);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.get(relId).put(property, value);
         return true;
     }
-    
+
     public boolean updateRelationshipProperty(String type, String from, String to, int number, String property, Object value) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
-            return false;
-        }
-        relationships.computeIfAbsent(node1 + "-" + node2 + type + number, k -> new HashMap<>());
-        relationships.get(node1 + "-" + node2 + type + number).put(property, value);
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0 || count < number) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+        relationships.get(relId).put(property, value);
         return true;
     }
 
     public boolean deleteRelationshipProperty(String type, String from, String to, String property) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        Map<String, Object> properties = relationships.get(node1 + "-" + node2 + type);
+
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if (count == 0) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+
+        Map<String, Object> properties = relationships.get(relId);
         if (properties.containsKey(property)) {
             properties.remove(property);
             return true;
         }
         return false;
     }
-    
+
     public boolean deleteRelationshipProperty(String type, String from, String to, int number, String property) {
-        int node1 = keys.getInt(from);
-        int node2 = keys.getInt(to);
+        int node1 = nodeKeys.getInt(from);
+        int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-        if ( count == 0 || count < number) {
-            return false;
+        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        if ( count == 0 || count < number) { return false; }
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
+
+        Map<String, Object> properties = relationships.get(relId);
+        if (properties.containsKey(property)) {
+            properties.remove(property);
+            return true;
         }
-        relationships.get(node1 + "-" + node2 + type + number).remove(property);
         return true;
     }
 
@@ -415,7 +407,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public int getNodeDegree(String key, String direction, List<String> types) {
-        int id = keys.getInt(key);
+        int id = nodeKeys.getInt(key);
         if (id == -1) { return -1; }
 
         int count = 0;
@@ -442,77 +434,52 @@ public class FastUtilGraph implements Graph {
     // Traversing
 
     public List<Map<String,Object>> getOutgoingRelationships(String type, String from) {
-        int node1 = keys.getInt(from);
-        List<Integer> nodeIds = (List<Integer>)related.get(type).get(node1);
+        int node1 = nodeKeys.getInt(from);
+        
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (int node2 : nodeIds) {
-            int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-            Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
-            rel.put("_outgoing_node_id", node2);
+        for (Long nodeRel :related.get(type).get(node1)) {
+            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
+            rel.put("_outgoing_node_id", ReversibleMultiMap.getNode(nodeRel));
             nodeRelationships.add(rel);
-            for (int i = 2; i <= count; i++) {
-                Map<String, Object> rel2 = relationships.get(node1 + "-" + node2 + type + count);
-                rel2.put("_outgoing_node_id", node2);
-                nodeRelationships.add(rel2);
-            }
         }
         return nodeRelationships;
     }
 
-    public List<Map<String,Object>> getOutgoingRelationships(String type, int from) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).get(from);
+    public List<Map<String,Object>> getOutgoingRelationships(String type, int node) {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (int node2 : nodeIds) {
-            int count = relatedCounts.getInt(from + "-" + node2 + type);
-            Map<String, Object> rel = relationships.get(from + "-" + node2 + type);
-            rel.put("_outgoing_node_id", node2);
+        for (Long nodeRel :related.get(type).get(node)) {
+            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
+            rel.put("_outgoing_node_id", ReversibleMultiMap.getNode(nodeRel));
             nodeRelationships.add(rel);
-            for (int i = 2; i <= count; i++) {
-                Map<String, Object> rel2 = relationships.get(from + "-" + node2 + type + count);
-                rel2.put("_outgoing_node_id", node2);
-                nodeRelationships.add(rel2);
-            }
         }
         return nodeRelationships;
     }
 
     public List<Map<String,Object>> getIncomingRelationships(String type, String from) {
-        int node2 = keys.getInt(from);
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(node2);
+        int node2 = nodeKeys.getInt(from);
+
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (int node1 : nodeIds) {
-            int count = relatedCounts.getInt(node1 + "-" + node2 + type);
-            Map<String, Object> rel = relationships.get(node1 + "-" + node2 + type);
-            rel.put("_incoming_node_id", node1);
+        for (Long nodeRel :related.get(type).getKeysByValue(node2)) {
+            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
+            rel.put("_incoming_node_id", ReversibleMultiMap.getNode(nodeRel));
             nodeRelationships.add(rel);
-            for (int i = 2; i <= count; i++) {
-                Map<String, Object> rel2 = relationships.get(node1 + "-" + node2 + type + count);
-                rel2.put("_incoming_node_id", node1);
-                nodeRelationships.add(rel2);
-            }
         }
         return nodeRelationships;
     }
 
-    public List<Map<String,Object>> getIncomingRelationships(String type, int to) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(to);
+    public List<Map<String,Object>> getIncomingRelationships(String type, int node) {
+
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (int node1 : nodeIds) {
-            int count = relatedCounts.getInt(node1 + "-" + to + type);
-            Map<String, Object> rel = relationships.get(node1 + "-" + to + type);
-            rel.put("_incoming_node_id", node1);
+        for (Long nodeRel :related.get(type).getKeysByValue(node)) {
+            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
+            rel.put("_incoming_node_id", ReversibleMultiMap.getNode(nodeRel));
             nodeRelationships.add(rel);
-            for (int i = 2; i <= count; i++) {
-                Map<String, Object> rel2 = relationships.get(node1 + "-" + to + type + count);
-                rel2.put("_incoming_node_id", node1);
-                nodeRelationships.add(rel2);
-            }
         }
         return nodeRelationships;
     }
 
     public Object[] getOutgoingRelationshipNodes(String type, String from) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).get(keys.getInt(from));
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodes(nodeKeys.getInt(from));
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -522,7 +489,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public Object[] getIncomingRelationshipNodes(String type, String to) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(keys.getInt(to));
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodesByValue(nodeKeys.getInt(to));
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -532,7 +499,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public Object[] getOutgoingRelationshipNodes(String type, Integer from) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).get(from);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodes(from);
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -542,7 +509,7 @@ public class FastUtilGraph implements Graph {
     }
 
     public Object[] getIncomingRelationshipNodes(String type, Integer to) {
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getKeysByValue(to);
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodesByValue(to);
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -552,19 +519,19 @@ public class FastUtilGraph implements Graph {
     }
 
     public List<Integer> getOutgoingRelationshipNodeIds(String type, Integer from) {
-        return (List<Integer>)related.get(type).get(from);
+        return (List<Integer>)related.get(type).getNodes(from);
     }
 
     public List<Integer> getOutgoingRelationshipNodeIds(String type, String from) {
-        return (List<Integer>)related.get(type).get(keys.getInt(from));
+        return (List<Integer>)related.get(type).getNodesByValue(nodeKeys.getInt(from));
     }
 
     public List<Integer> getIncomingRelationshipNodeIds(String type, Integer to) {
-        return (List<Integer>)related.get(type).getKeysByValue(to);
+        return (List<Integer>)related.get(type).getNodesByValue(to);
     }
 
     public List<Integer> getIncomingRelationshipNodeIds(String type, String to) {
-        return (List<Integer>)related.get(type).getKeysByValue(keys.getInt(to));
+        return (List<Integer>)related.get(type).getNodesByValue(nodeKeys.getInt(to));
     }
 
     public Iterator<Map<String, Object>> getAllNodes() {
