@@ -85,8 +85,11 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
         otherValue = otherValue << 32;
         otherValue += rel;
 
+        Long value = from.longValue();
+        value = value << 32;
+        value += rel;
 
-        value2key.put(to, otherValue);
+        value2key.put(to, value);
         return key2Value.put(from, otherValue);
     }
     @Override
@@ -95,9 +98,18 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
         return key2Value.remove(key, value);
     }
 
-    public boolean removeRelationship(int from, int to, int id) {
-        value2key.remove(to, getOtherValue(from, id));
-        return key2Value.remove(from, getOtherValue(to, id));
+    public boolean removeRelationship(Integer from, Integer to, Integer id) {
+        Long otherValue = to.longValue();
+        otherValue = otherValue << 32;
+        otherValue += id;
+
+        Long value = from.longValue();
+        value = value << 32;
+        value += id;
+
+
+        value2key.remove(to, value);
+        return key2Value.remove(from, otherValue);
     }
 
     @Override
