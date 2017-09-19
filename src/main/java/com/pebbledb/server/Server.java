@@ -88,7 +88,7 @@ public class Server {
                 .addHttpListener(conf.getInt("pebble.server.port"), conf.getString("pebble.server.host"))
                 .setBufferSize(conf.getInt("pebble.server.buffer_size"))
                 .setWorkerThreads(THREADS)
-                .setIoThreads(2 * THREADS)
+                .setIoThreads(1)
                 .setHandler(new RoutingHandler()
 
                         .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
