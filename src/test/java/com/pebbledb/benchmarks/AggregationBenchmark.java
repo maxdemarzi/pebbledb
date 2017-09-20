@@ -36,8 +36,8 @@ public class AggregationBenchmark {
     @Measurement(iterations = 10)
     @Fork(1)
     @Threads(1)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public void measureAggregation() throws IOException {
         Iterator<Map<String, Object>> iterator = db.getAllNodes();
         HashMap<Integer, LongAdder> ages = new HashMap<>();

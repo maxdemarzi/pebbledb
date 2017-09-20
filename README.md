@@ -14,8 +14,8 @@
 [![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=new_bugs)](https://sonarcloud.io/dashboard/index/pebbledb)
 [![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=new_code_smells)](https://sonarcloud.io/dashboard/index/pebbledb)
 [![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=new_vulnerabilities)](https://sonarcloud.io/dashboard/index/pebbledb)
-[![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=new_vulnerabilities)](https://sonarcloud.io/dashboard/index/pebbledb)
 [![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=sqale_debt_ratio)](https://sonarcloud.io/dashboard/index/pebbledb)
+[![Quality Gate](https://sonarcloud.io/api/badges/measure?key=pebbledb&metric=function_complexity)](https://sonarcloud.io/dashboard/index/pebbledb)
 
 
     
