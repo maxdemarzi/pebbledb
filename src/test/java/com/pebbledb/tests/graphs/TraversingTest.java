@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TraversingTest {
     private Graph db;
@@ -25,6 +26,113 @@ public class TraversingTest {
         db = null;
     }
 
+    @Test
+    public void shouldGetNodeOutgoingRelationshipsFromKey() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "one", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships("one");
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 2);  }});
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeOutgoingRelationshipsFromId() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "one", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships(0);
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 2);  }});
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeOutgoingRelationshipsOfTypeFromKey() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "one", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships("FRIENDS", "one");
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeOutgoingRelationshipsOfTypeFromId() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "one", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships("FRIENDS",0);
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeIncomingRelationshipsFromKey() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "three", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships("two");
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 2); put("_outgoing_node_id", 1);  }});
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeIncomingRelationshipsFromId() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "three", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships(1);
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 2); put("_outgoing_node_id", 1);  }});
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeIncomingRelationshipsOfTypeFromKey() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "three", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships("FRIENDS", "two");
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldGetNodeIncomingRelationshipsOfTypeFromId() {
+        db.addNode("one");
+        db.addNode("two");
+        db.addNode("three");
+        db.addRelationship("FRIENDS", "one", "two");
+        db.addRelationship("ENEMIES", "three", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships("FRIENDS",1);
+        ArrayList<Map<String, Object>> expected = new ArrayList<>();
+        expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
+        Assert.assertEquals(expected, actual);
+    }
 
     @Test
     public void shouldGetNodeOutgoingRelationshipNodeIds() {

@@ -11,7 +11,6 @@ public class FastUtilGraph implements Graph {
     private ObjectArrayList<Map<String, Object>> nodes;
     private Object2IntOpenHashMap<String> relationshipKeys;
     private ObjectArrayList<Map<String, Object>> relationships;
-    //private Object2ObjectOpenHashMap<String, Map<String, Object>> relationships;
     private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
     private Object2IntArrayMap<String> relationshipCounts;
     private Object2IntOpenHashMap<String> relatedCounts;
@@ -184,7 +183,11 @@ public class FastUtilGraph implements Graph {
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
-        relationships.add(new HashMap<>());
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put("_incoming_node_id", node1);
+        properties.put("_outgoing_node_id", node2);
+
+        relationships.add(properties);
         relatedCounts.put(node1 + "-" + node2 + "-" + type, count);
         related.get(type).put(node1, node2, relationships.size() -1);
         relationshipKeys.put(node1 + "-" + node2 + "-" + type + "-" + count, relationships.size() - 1);
@@ -200,6 +203,8 @@ public class FastUtilGraph implements Graph {
         int node1 = nodeKeys.getInt(from);
         int node2 = nodeKeys.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
+        properties.put("_incoming_node_id", node1);
+        properties.put("_outgoing_node_id", node2);
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
         relationships.add(properties);
@@ -444,15 +449,33 @@ public class FastUtilGraph implements Graph {
     }
 
     // Traversing
+    public List<Map<String, Object>> getOutgoingRelationships(String from) {
+        int node1 = nodeKeys.getInt(from);
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (String type : related.keySet()) {
+            for (Long nodeRel : related.get(type).get(node1)) {
+                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            }
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String, Object>> getOutgoingRelationships(int node1) {
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (String type : related.keySet()) {
+            for (Long nodeRel : related.get(type).get(node1)) {
+                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            }
+        }
+        return nodeRelationships;
+    }
 
     public List<Map<String,Object>> getOutgoingRelationships(String type, String from) {
         int node1 = nodeKeys.getInt(from);
         
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).get(node1)) {
-            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
-            rel.put("_outgoing_node_id", ReversibleMultiMap.getNode(nodeRel));
-            nodeRelationships.add(rel);
+            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -460,9 +483,29 @@ public class FastUtilGraph implements Graph {
     public List<Map<String,Object>> getOutgoingRelationships(String type, int node) {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).get(node)) {
-            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
-            rel.put("_outgoing_node_id", ReversibleMultiMap.getNode(nodeRel));
-            nodeRelationships.add(rel);
+            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String,Object>> getIncomingRelationships(String from) {
+        int node2 = nodeKeys.getInt(from);
+
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (String type : related.keySet()) {
+            for (Long nodeRel : related.get(type).getKeysByValue(node2)) {
+                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            }
+        }
+        return nodeRelationships;
+    }
+
+    public List<Map<String,Object>> getIncomingRelationships(int node2) {
+        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
+        for (String type : related.keySet()) {
+            for (Long nodeRel : related.get(type).getKeysByValue(node2)) {
+                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            }
         }
         return nodeRelationships;
     }
@@ -472,9 +515,7 @@ public class FastUtilGraph implements Graph {
 
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).getKeysByValue(node2)) {
-            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
-            rel.put("_incoming_node_id", ReversibleMultiMap.getNode(nodeRel));
-            nodeRelationships.add(rel);
+            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -483,9 +524,7 @@ public class FastUtilGraph implements Graph {
 
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).getKeysByValue(node)) {
-            Map<String, Object> rel = relationships.get(ReversibleMultiMap.getRel(nodeRel));
-            rel.put("_incoming_node_id", ReversibleMultiMap.getNode(nodeRel));
-            nodeRelationships.add(rel);
+            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
         }
         return nodeRelationships;
     }
