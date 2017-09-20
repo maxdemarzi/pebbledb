@@ -170,7 +170,11 @@ public class RelationshipPropertiesTest {
         db.addNode("one");
         db.addNode("two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
-        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{
+            put("key", "rel2");
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }};
 
         db.addRelationship("LOVES", "one", "two", rel1Properties);
         db.updateRelationshipProperty("LOVES", "one", "two", "key", "rel2");
@@ -199,7 +203,11 @@ public class RelationshipPropertiesTest {
         db.addNode("one");
         db.addNode("two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1"); put("key2", "rel2"); }};
-        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key2", "rel2");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{
+            put("key2", "rel2");
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }};
 
         db.addRelationship("LOVES", "one", "two", rel1Properties);
         db.deleteRelationshipProperty("LOVES", "one", "two", "key");
@@ -214,7 +222,11 @@ public class RelationshipPropertiesTest {
         db.addNode("two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1"); put("key2", "rel2"); }};
         Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2"); put("key2", "rel2"); }};
-        Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key2", "rel2");}};
+        Map<String, Object> rel3Properties = new HashMap<String, Object>() {{
+            put("key2", "rel2");
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }};
 
         db.addRelationship("LOVES", "one", "two", rel1Properties);
         db.addRelationship("LOVES", "one", "two", rel2Properties);
@@ -228,7 +240,11 @@ public class RelationshipPropertiesTest {
     public void shouldUpdateRelationshipPropertyNotThere() {
         db.addNode("one");
         db.addNode("two");
-        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
+        Map<String, Object> rel2Properties = new HashMap<String, Object>() {{
+            put("key", "rel2");
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }};
 
         db.addRelationship("LOVES", "one", "two");
         db.updateRelationshipProperty("LOVES", "one", "two", "key", "rel2");

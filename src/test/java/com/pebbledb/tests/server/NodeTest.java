@@ -3,7 +3,6 @@ package com.pebbledb.tests.server;
 import com.pebbledb.server.Server;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -72,25 +71,6 @@ public class NodeTest {
     }
 
     @Test
-    @Ignore
-    public void integrationTestGetComplexPropertyNode() {
-        HashMap<String, Object> prop =  new HashMap<>();
-        prop.put("property", "Value");
-
-        HashMap<String, Object> props =  new HashMap<>();
-        props.put("city", "Chicago");
-        props.put("prop", prop);
-
-        when().
-                get("/db/node/complexPropertiesNode").
-                then().
-                assertThat()
-                .body("$", equalTo(props))
-                .statusCode(200)
-                .contentType("application/json;charset=UTF-8");
-    }
-
-    @Test
     public void integrationTestCreateEmptyNode() {
         given().
                 contentType("application/json;charset=UTF-8").
@@ -122,27 +102,6 @@ public class NodeTest {
     }
 
     @Test
-    @Ignore
-    public void integrationTestCreateComplexPropertyNode() {
-        HashMap<String, Object> prop =  new HashMap<>();
-        prop.put("property", "Value");
-
-        HashMap<String, Object> props =  new HashMap<>();
-        props.put("city", "Chicago");
-        props.put("prop", prop);
-
-        given().
-                contentType("application/json;charset=UTF-8").
-                body(props).
-                when().
-                post("/db/node/complexPropertiesNode").
-                then().
-                assertThat().
-                body("$", equalTo(props)).
-                statusCode(201);
-    }
-
-    @Test
     public void integrationTestPutNodeNotThere() {
         when().
                 put("/db/node/notThere/properties").
@@ -164,27 +123,6 @@ public class NodeTest {
                 then().
                 assertThat().
                 statusCode(204);
-    }
-
-    @Test
-    @Ignore
-    public void integrationTestUpdateComplexPropertyNode() {
-        HashMap<String, Object> prop =  new HashMap<>();
-        prop.put("property", "Value");
-
-        HashMap<String, Object> props =  new HashMap<>();
-        props.put("city", "Miami");
-        props.put("prop", prop);
-
-        given().
-                contentType("application/json;charset=UTF-8").
-                body(props).
-                when().
-                put("/db/node/complexPropertiesNode").
-                then().
-                assertThat().
-                body("$", equalTo(props)).
-                statusCode(201);
     }
 
     @Test

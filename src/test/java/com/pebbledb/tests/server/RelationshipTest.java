@@ -54,7 +54,7 @@ public class RelationshipTest {
                 get("/db/relationship/FOLLOWS/node1/node2").
                 then().
                 assertThat().
-                body("$", equalTo(new HashMap<>())).
+                body("$", equalTo(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1); }})).
                 statusCode(200).
                 contentType("application/json");
     }
@@ -63,6 +63,8 @@ public class RelationshipTest {
     public void integrationTestGetSinglePropertyRelationship() {
         HashMap<String, Object> prop =  new HashMap<>();
         prop.put("stars", 5);
+        prop.put("_incoming_node_id", 0);
+        prop.put("_outgoing_node_id", 2);
 
         when().
                 get("/db/relationship/FOLLOWS/node1/node3").
@@ -81,7 +83,7 @@ public class RelationshipTest {
                 post("/db/relationship/FOLLOWS/node2/node1").
                 then().
                 assertThat().
-                body("$", equalTo(new HashMap<>())).
+                body("$", equalTo(new HashMap<String, Object>(){{ put("_incoming_node_id", 1); put("_outgoing_node_id", 0); }})).
                 statusCode(201).
                 contentType("application/json");
     }
@@ -90,6 +92,8 @@ public class RelationshipTest {
     public void integrationTestCreateSinglePropertyRelationship() {
         HashMap<String, Object> prop =  new HashMap<>();
         prop.put("stars", 5);
+        prop.put("_incoming_node_id", 0);
+        prop.put("_outgoing_node_id", 2);
 
         given().
                 contentType("application/json").

@@ -81,8 +81,14 @@ public class RelationshipsTest {
         Assert.assertTrue(created);
         Integer expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("MULTIPLE"));
-        Assert.assertEquals(new HashMap<String, Object>(), db.getRelationship("MULTIPLE", "one", "two"));
-        Assert.assertEquals(new HashMap<String, Object>(), db.getRelationship("MULTIPLE", "one", "two", 2));
+        Assert.assertEquals(new HashMap<String, Object>(){{
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }}, db.getRelationship("MULTIPLE", "one", "two"));
+        Assert.assertEquals(new HashMap<String, Object>(){{
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }}, db.getRelationship("MULTIPLE", "one", "two", 2));
     }
 
     @Test
@@ -182,7 +188,10 @@ public class RelationshipsTest {
         db.addNode("two");
         db.addRelationship("RATED", "one", "two");
         Object actual = db.getRelationship("RATED", "one", "two");
-        Assert.assertEquals(new HashMap<>(), actual);
+        Assert.assertEquals(new HashMap<String, Object>(){{
+            put("_incoming_node_id", 2);
+            put("_outgoing_node_id", 3);
+        }}, actual);
         Integer expected = 1;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("RATED"));
     }
