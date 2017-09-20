@@ -31,6 +31,7 @@ public class RelationshipTest {
             graphs[i].addNode("node3");
             graphs[i].addRelationship("FOLLOWS", "node1", "node2");
             graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
+            graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
         }
     }
 
@@ -124,4 +125,12 @@ public class RelationshipTest {
                 statusCode(204);
     }
 
+    @Test
+    public void integrationTestDeleteRelationshipWithNumber() {
+        when().
+                delete("/db/relationship/FOLLOWS/node1/node2/1").
+                then().
+                assertThat().
+                statusCode(204);
+    }
 }

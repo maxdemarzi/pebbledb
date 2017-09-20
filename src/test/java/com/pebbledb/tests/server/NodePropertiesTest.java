@@ -116,6 +116,18 @@ public class NodePropertiesTest {
     }
 
     @Test
+    public void integrationTestPutNodePropertyEmptyBody() {
+
+        given().
+                contentType("application/json").
+                when().
+                put("/db/node/node1/property/weight").
+                then().
+                assertThat().
+                statusCode(304);
+    }
+
+    @Test
     public void integrationTestPutNodeProperties() {
         HashMap<String, Object> prop = new HashMap<>();
         prop.put("weight", 220);
