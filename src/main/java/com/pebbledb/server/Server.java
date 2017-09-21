@@ -92,7 +92,7 @@ public class Server {
                 .setHandler(new RoutingHandler()
 
                         .add(GET, "/db/test", e -> e.setStatusCode(StatusCodes.OK))
-                        .add(GET, "/db/test2", new RequestHandler(false, Action.NOOP))
+                        .add(GET, "/db/noop", new RequestHandler(false, Action.NOOP))
 
                         .add(GET, "/swagger", new SwaggerHandler())
                         .add(GET, "/openapi", manager.start())

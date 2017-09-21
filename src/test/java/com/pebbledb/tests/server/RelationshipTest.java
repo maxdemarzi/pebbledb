@@ -61,6 +61,16 @@ public class RelationshipTest {
     }
 
     @Test
+    public void integrationTestGetRelationshipWithNumber() {
+        when().
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3/2").
+                then().
+                assertThat().
+                body("$", equalTo(new HashMap<String, Object>(){{ put("stars", 5); put("_incoming_node_id", 0); put("_outgoing_node_id", 2); }})).
+                statusCode(200);
+    }
+
+    @Test
     public void integrationTestGetSinglePropertyRelationship() {
         HashMap<String, Object> prop =  new HashMap<>();
         prop.put("stars", 5);

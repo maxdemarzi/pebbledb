@@ -33,6 +33,7 @@ public class RelationshipPropertiesTest {
             graphs[i].addNode("Node", "node3");
             graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node2");
             graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
         }
     }
 
@@ -82,6 +83,17 @@ public class RelationshipPropertiesTest {
     }
 
     @Test
+    public void integrationTestGetRelationshipIntegerPropertyWithNumber() {
+        when().
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3/2/property/stars").
+                then().
+                assertThat().
+                body(equalTo("5")).
+                statusCode(200).
+                contentType("application/json");
+    }
+
+    @Test
     public void integrationTestPutRelationshipPropertyNotThere() {
         given().
                 contentType("application/json").
@@ -119,16 +131,40 @@ public class RelationshipPropertiesTest {
         prop.put("stars", 4);
         prop.put("archived", true);
 
-        HashMap<String, Object> properties = new HashMap<>();
-        properties.put("stars", 4);
-        properties.put("since", "2017-01-07");
-        properties.put("archived", true);
-
         given().
                 contentType("application/json").
                 body(prop).
                 when().
                 put("/db/relationship/FOLLOWS/Node/node1/Node/node3/properties").
+                then().
+                assertThat().
+                body("$", equalTo(prop)).
+                statusCode(201).
+                contentType("application/json");
+    }
+
+    @Test
+    public void integrationTestPutRelationshipPropertiesEmpty() {
+        given().
+                contentType("application/json").
+                when().
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/properties").
+                then().
+                assertThat().
+                statusCode(201).
+                contentType("application/json");
+    }
+    @Test
+    public void integrationTestPutRelationshipPropertiesWithNumber() {
+        HashMap<String, Object> prop = new HashMap<>();
+        prop.put("stars", 4);
+        prop.put("archived", true);
+
+        given().
+                contentType("application/json").
+                body(prop).
+                when().
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/2/properties").
                 then().
                 assertThat().
                 body("$", equalTo(prop)).
@@ -172,4 +208,12 @@ public class RelationshipPropertiesTest {
                 statusCode(204);
     }
 
+    @Test
+    public void integrationTestDeleteRelationshipPropertiesWithNumber() {
+        when().
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/2/properties").
+                then().
+                assertThat().
+                statusCode(204);
+    }
 }
