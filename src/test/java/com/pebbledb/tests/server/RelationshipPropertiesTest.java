@@ -107,19 +107,34 @@ public class RelationshipPropertiesTest {
 
     @Test
     public void integrationTestPutRelationshipProperty() {
-        HashMap<String, Object> prop = new HashMap<>();
-        prop.put("archived", true);
-
-        HashMap<String, Object> properties = new HashMap<>();
-        properties.put("stars", 5);
-        properties.put("since", "2017-01-07");
-        properties.put("archived", true);
-
         given().
                 contentType("application/json").
                 body(true).
                 when().
                 put("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/archived").
+                then().
+                assertThat().
+                statusCode(204);
+    }
+
+    @Test
+    public void integrationTestPutEmptyRelationshipProperty() {
+        given().
+                contentType("application/json").
+                when().
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/archived").
+                then().
+                assertThat().
+                statusCode(304);
+    }
+
+    @Test
+    public void integrationTestPutRelationshipPropertyWithNumber() {
+        given().
+                contentType("application/json").
+                body(true).
+                when().
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/2/property/archived").
                 then().
                 assertThat().
                 statusCode(204);
@@ -185,6 +200,15 @@ public class RelationshipPropertiesTest {
     public void integrationTestDeleteRelationshipProperty() {
         when().
                 delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/since").
+                then().
+                assertThat().
+                statusCode(204);
+    }
+
+    @Test
+    public void integrationTestDeleteRelationshipPropertyWithNumber() {
+        when().
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/2/property/since").
                 then().
                 assertThat().
                 statusCode(204);
