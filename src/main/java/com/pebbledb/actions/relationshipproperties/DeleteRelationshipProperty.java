@@ -17,14 +17,18 @@ public interface DeleteRelationshipProperty {
         if(parameters.containsKey(Constants.NUMBER)) {
                 succeeded = graphs[number].deleteRelationshipProperty(
                         parameters.get(Constants.TYPE),
+                        exchangeEvent.getParameters().get(Constants.LABEL1),
                         parameters.get(Constants.FROM),
+                        exchangeEvent.getParameters().get(Constants.LABEL2),
                         parameters.get(Constants.TO),
                         Integer.parseInt(parameters.get(Constants.NUMBER)),
                         parameters.get(Constants.KEY));
         } else {
                 succeeded = graphs[number].deleteRelationshipProperty(
                         parameters.get(Constants.TYPE),
+                        exchangeEvent.getParameters().get(Constants.LABEL1),
                         parameters.get(Constants.FROM),
+                        exchangeEvent.getParameters().get(Constants.LABEL2),
                         parameters.get(Constants.TO),
                         parameters.get(Constants.KEY));
         }

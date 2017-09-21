@@ -24,7 +24,9 @@ public interface PostRelationship {
         if (body.isEmpty()) {
 
             graphs[number].addRelationship(parameters.get(Constants.TYPE),
+                    exchangeEvent.getParameters().get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    exchangeEvent.getParameters().get(Constants.LABEL2),
                     parameters.get(Constants.TO));
 
             if (respond) {
@@ -33,7 +35,9 @@ public interface PostRelationship {
                 exchange.getResponseSender().send(
                         JsonStream.serialize(Types.MAP,
                                 graphs[number].getRelationship(parameters.get(Constants.TYPE),
+                                        exchangeEvent.getParameters().get(Constants.LABEL1),
                                         parameters.get(Constants.FROM),
+                                        exchangeEvent.getParameters().get(Constants.LABEL2),
                                         parameters.get(Constants.TO))));
                 exchangeEvent.clear();
             }
@@ -41,7 +45,9 @@ public interface PostRelationship {
 
                 HashMap<String, Object> properties = JsonIterator.deserialize(body, Types.MAP);
                 graphs[number].addRelationship(parameters.get(Constants.TYPE),
+                        exchangeEvent.getParameters().get(Constants.LABEL1),
                         parameters.get(Constants.FROM),
+                        exchangeEvent.getParameters().get(Constants.LABEL2),
                         parameters.get(Constants.TO), properties);
 
             if (respond) {
@@ -50,7 +56,9 @@ public interface PostRelationship {
                 exchange.getResponseSender().send(
                         JsonStream.serialize(Types.MAP,
                                 graphs[number].getRelationship(parameters.get(Constants.TYPE),
+                                        exchangeEvent.getParameters().get(Constants.LABEL1),
                                         parameters.get(Constants.FROM),
+                                        exchangeEvent.getParameters().get(Constants.LABEL2),
                                         parameters.get(Constants.TO))));
                 exchangeEvent.clear();
             }

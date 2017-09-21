@@ -26,11 +26,11 @@ public class RelationshipTypesTest {
         for (int i = -1; ++i < graphs.length; ) {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("stars", 5);
-            graphs[i].addNode("node1");
-            graphs[i].addNode("node2");
-            graphs[i].addNode("node3");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node2");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
+            graphs[i].addNode("Node", "node1");
+            graphs[i].addNode("Node", "node2");
+            graphs[i].addNode("Node", "node3");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node2");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
         }
     }
 

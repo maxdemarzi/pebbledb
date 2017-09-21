@@ -22,13 +22,17 @@ public interface GetRelationship {
         if(parameters.containsKey(Constants.NUMBER)) {
             relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
+                    exchangeEvent.getParameters().get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    exchangeEvent.getParameters().get(Constants.LABEL1),
                     parameters.get(Constants.TO),
                     Integer.parseInt(parameters.get(Constants.NUMBER)));
         } else {
             relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
+                    exchangeEvent.getParameters().get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    exchangeEvent.getParameters().get(Constants.LABEL2),
                     parameters.get(Constants.TO));
         }
 

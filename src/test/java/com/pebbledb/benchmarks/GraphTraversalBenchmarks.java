@@ -34,15 +34,15 @@ public class GraphTraversalBenchmarks {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("id", item);
             properties.put("itemname", "itemname" + item );
-            db.addNode("item" + item, properties);
+            db.addNode("Item", "item" + item, properties);
         }
 
         for (int person = 0; person < personCount; person++) {
-            db.addNode("person" + person);
+            db.addNode("Person", "person" + person);
             for (int like = 0; like < likesCount; like++) {
                 HashMap<String, Object> props  = new HashMap<>();
                 props.put("weight", rand.nextInt(10));
-                db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount), props);
+                db.addRelationship("LIKES", "Person", "person" + person, "Item", "item" + rand.nextInt(itemCount), props);
             }
         }
     }
@@ -55,7 +55,7 @@ public class GraphTraversalBenchmarks {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public List measureRecommendationTraversal() throws IOException {
-        Collection<Integer> itemsYouLike = db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount));
+        Collection<Integer> itemsYouLike = db.getOutgoingRelationshipNodeIds("LIKES", "Person", "person" + rand.nextInt(personCount));
         Map<Integer, LongAdder> occurrences = new HashMap<>();
         for (Integer item : itemsYouLike) {
             for (Integer person : db.getIncomingRelationshipNodeIds("LIKES", item)) {

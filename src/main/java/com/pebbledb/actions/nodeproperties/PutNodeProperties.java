@@ -19,9 +19,10 @@ public interface PutNodeProperties {
         HttpServerExchange exchange = exchangeEvent.get();
         String body = exchangeEvent.getBody();
         String id = exchangeEvent.getParameters().get(Constants.ID);
+        String label = exchangeEvent.getParameters().get(Constants.LABEL);
         boolean succeeded;
 
-        if (graphs[number].getNode(id) == null) {
+        if (graphs[number].getNode(label, id) == null) {
             if (respond) {
                 exchange.setStatusCode(StatusCodes.NOT_FOUND);
                 exchangeEvent.clear();
@@ -30,17 +31,17 @@ public interface PutNodeProperties {
         }
 
         if (body.isEmpty()) {
-             succeeded = graphs[number].updateNodeProperties(id, new HashMap());
+             succeeded = graphs[number].updateNodeProperties(label, id, new HashMap());
         } else {
             HashMap<String, Object> properties = JsonIterator.deserialize(body, Types.MAP);
-            succeeded = graphs[number].updateNodeProperties(id, properties);
+            succeeded = graphs[number].updateNodeProperties(label, id, properties);
         }
         if (respond) {
             if (succeeded) {
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.setStatusCode(StatusCodes.CREATED);
                 exchange.getResponseSender().send(
-                        JsonStream.serialize(Types.MAP, graphs[number].getNode(id)));
+                        JsonStream.serialize(Types.MAP, graphs[number].getNode(label, id)));
             } else {
                 exchange.setStatusCode(StatusCodes.NOT_MODIFIED);
             }

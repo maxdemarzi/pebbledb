@@ -58,14 +58,18 @@ public interface PutRelationshipProperties {
 
         if(parameters.containsKey(Constants.NUMBER)) {
             succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
+                    parameters.get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    parameters.get(Constants.LABEL2),
                     parameters.get(Constants.TO),
                     Integer.parseInt(parameters.get(Constants.NUMBER)),
                     properties);
         } else {
 
             succeeded = graphs[number].updateRelationshipProperties(parameters.get(Constants.TYPE),
+                    parameters.get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    parameters.get(Constants.LABEL2),
                     parameters.get(Constants.TO),
                     properties);
         }
@@ -77,13 +81,17 @@ public interface PutRelationshipProperties {
         if(parameters.containsKey(Constants.NUMBER)) {
             relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
+                    parameters.get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    parameters.get(Constants.LABEL2),
                     parameters.get(Constants.TO),
                     Integer.parseInt(parameters.get(Constants.NUMBER)));
         } else {
             relationship = graphs[number].getRelationship(
                     parameters.get(Constants.TYPE),
+                    parameters.get(Constants.LABEL1),
                     parameters.get(Constants.FROM),
+                    parameters.get(Constants.LABEL2),
                     parameters.get(Constants.TO));
         }
         return relationship;

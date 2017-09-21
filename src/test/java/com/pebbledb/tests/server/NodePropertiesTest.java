@@ -32,10 +32,10 @@ public class NodePropertiesTest {
                 put("name", "Max"); put("age", 37);
             }};
 
-            graphs[i].addNode("node1", properties);
-            graphs[i].addNode("emptyNode");
-            graphs[i].addNode("singlePropertyNode", property);
-            graphs[i].addNode("complexPropertiesNode", props);
+            graphs[i].addNode("Node", "node1", properties);
+            graphs[i].addNode("Node", "emptyNode");
+            graphs[i].addNode("Node", "singlePropertyNode", property);
+            graphs[i].addNode("Node", "complexPropertiesNode", props);
         }
     }
 
@@ -47,7 +47,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestGetNodePropertyNotThere() {
         when().
-                get("/db/node/node0/property/not_there").
+                get("/db/node/Node/node0/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -56,7 +56,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestGetNodePropertyNotThereInvalidProperty() {
         when().
-                get("/db/node/node1/property/not_there").
+                get("/db/node/Node/node1/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -65,7 +65,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestGetNodeProperty() {
         when().
-                get("/db/node/node1/property/name").
+                get("/db/node/Node/node1/property/name").
                 then().
                 assertThat().
                 body(equalTo("\"Max\"")).
@@ -76,7 +76,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestGetNodeIntegerProperty() {
         when().
-                get("/db/node/node1/property/age").
+                get("/db/node/Node/node1/property/age").
                 then().
                 assertThat().
                 body(equalTo("37")).
@@ -89,7 +89,7 @@ public class NodePropertiesTest {
         given().
                 body(200).
         when().
-                put("/db/node/node0/property/not_there").
+                put("/db/node/Node/node0/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -109,7 +109,7 @@ public class NodePropertiesTest {
                 contentType("application/json").
                 body(200).
                 when().
-                put("/db/node/node1/property/weight").
+                put("/db/node/Node/node1/property/weight").
                 then().
                 assertThat().
                 statusCode(204);
@@ -121,7 +121,7 @@ public class NodePropertiesTest {
         given().
                 contentType("application/json").
                 when().
-                put("/db/node/node1/property/weight").
+                put("/db/node/Node/node1/property/weight").
                 then().
                 assertThat().
                 statusCode(304);
@@ -142,7 +142,7 @@ public class NodePropertiesTest {
                 contentType("application/json").
                 body(prop).
                 when().
-                put("/db/node/node1/properties").
+                put("/db/node/Node/node1/properties").
                 then().
                 assertThat().
                 body("$", equalTo(properties)).
@@ -153,7 +153,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestDeleteNodePropertyNotThere() {
         when().
-                delete("/db/node/node0/property/not_there").
+                delete("/db/node/Node/node0/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -162,7 +162,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestDeleteNodeProperty() {
         when().
-                delete("/db/node/node1/property/name").
+                delete("/db/node/Node/node1/property/name").
                 then().
                 assertThat().
                 statusCode(204);
@@ -171,7 +171,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestDeleteNodeInvalidProperty() {
         when().
-                delete("/db/node/node1/property/not_there").
+                delete("/db/node/Node/node1/property/not_there").
                 then().
                 assertThat().
                 statusCode(204);
@@ -180,7 +180,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestDeleteNodePropertiesNotThere() {
         when().
-                delete("/db/node/notThere/properties").
+                delete("/db/node/Node/notThere/properties").
                 then().
                 assertThat().
                 statusCode(404);
@@ -189,7 +189,7 @@ public class NodePropertiesTest {
     @Test
     public void integrationTestDeleteNodeProperties() {
         when().
-                delete("/db/node/node1/properties").
+                delete("/db/node/Node/node1/properties").
                 then().
                 assertThat().
                 statusCode(204);

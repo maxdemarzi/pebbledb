@@ -18,11 +18,11 @@ public class NodesTest {
     @Before
     public void setup() throws IOException {
         db = new FastUtilGraph();
-        db.addNode("empty");
+        db.addNode("Node",  "empty");
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        db.addNode("existing", properties);
+        db.addNode("Node", "existing", properties);
     }
 
     @After
@@ -32,9 +32,9 @@ public class NodesTest {
 
     @Test
     public void shouldAddNode() {
-        boolean created = db.addNode("key");
+        boolean created = db.addNode("Node", "key");
         Assert.assertTrue(created);
-        Assert.assertEquals(new HashMap<>(), db.getNode("key"));
+        Assert.assertEquals(new HashMap<>(), db.getNode("Node", "key"));
     }
 
     @Test
@@ -42,18 +42,18 @@ public class NodesTest {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        boolean created = db.addNode("max", properties);
+        boolean created = db.addNode("Node", "max", properties);
         Assert.assertTrue(created);
-        Assert.assertEquals(properties, db.getNode("max"));
+        Assert.assertEquals(properties, db.getNode("Node", "max"));
     }
 
     @Test
     public void shouldRemoveNode() {
-        boolean result = db.addNode("simple");
+        boolean result = db.addNode("Node", "simple");
         Assert.assertTrue(result);
-        result = db.removeNode("simple");
+        result = db.removeNode("Node","simple");
         Assert.assertTrue(result);
-        Assert.assertTrue(db.getNode("simple") == null);
+        Assert.assertTrue(db.getNode("Node", "simple") == null);
     }
 
     @Test
@@ -67,36 +67,36 @@ public class NodesTest {
         HashMap<String, Object> node4props = new HashMap<>();
         node3props.put("id", "node4");
 
-        boolean result = db.addNode("node1", node1props);
-        db.addNode("node2", node2props);
-        db.addNode("node3", node3props);
+        boolean result = db.addNode("Node", "node1", node1props);
+        db.addNode("Node", "node2", node2props);
+        db.addNode("Node", "node3", node3props);
         Assert.assertTrue(result);
-        int node2Id = db.getNodeId("node2");
-        result = db.removeNode("node2");
+        int node2Id = db.getNodeId("Node", "node2");
+        result = db.removeNode("Node", "node2");
         Assert.assertTrue(result);
-        Assert.assertTrue(db.getNode("node2") == null);
-        Assert.assertEquals(node1props, db.getNode("node1"));
-        Assert.assertEquals(node3props, db.getNode("node3"));
-        db.addNode("node4", node4props);
-        Assert.assertEquals(node4props, db.getNode("node4"));
-        Assert.assertEquals(node2Id, db.getNodeId("node4"));
+        Assert.assertTrue(db.getNode("Node", "node2") == null);
+        Assert.assertEquals(node1props, db.getNode("Node", "node1"));
+        Assert.assertEquals(node3props, db.getNode("Node", "node3"));
+        db.addNode("Node", "node4", node4props);
+        Assert.assertEquals(node4props, db.getNode("Node", "node4"));
+        Assert.assertEquals(node2Id, db.getNodeId("Node", "node4"));
     }
 
     @Test
     public void shouldRemoveNodeRelationships() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("FRIENDS", "three", "one");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("FRIENDS", "Node", "three", "Node", "one");
 
-        boolean result = db.removeNode("one");
+        boolean result = db.removeNode("Node", "one");
         Assert.assertTrue(result);
         Integer expected = 0;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("FRIENDS"));
 
-        Assert.assertEquals(null, db.getRelationship("FRIENDS", "one", "two"));
-        Assert.assertEquals(null, db.getRelationship("FRIENDS", "three", "one"));
+        Assert.assertEquals(null, db.getRelationship("FRIENDS", "Node", "one", "Node", "two"));
+        Assert.assertEquals(null, db.getRelationship("FRIENDS", "Node", "three", "Node", "one"));
     }
 
     @Test
@@ -111,14 +111,14 @@ public class NodesTest {
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
         properties.put("address", address);
-        boolean created = db.addNode("complex", properties);
+        boolean created = db.addNode("Node", "complex", properties);
         Assert.assertTrue(created);
-        Assert.assertEquals(properties, db.getNode("complex"));
+        Assert.assertEquals(properties, db.getNode("Node", "complex"));
     }
 
     @Test
     public void shouldGetEmptyNode() {
-        Assert.assertEquals(new HashMap<>(), db.getNode("empty"));
+        Assert.assertEquals(new HashMap<>(), db.getNode("Node", "empty"));
     }
 
     @Test
@@ -126,40 +126,40 @@ public class NodesTest {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        Assert.assertEquals(properties, db.getNode("existing"));
+        Assert.assertEquals(properties, db.getNode("Node", "existing"));
     }
 
     @Test
     public void shouldGetNodeId() {
-        int actual = db.getNodeId("empty");
+        int actual = db.getNodeId("Node", "empty");
         Assert.assertEquals(0, actual);
-        actual = db.getNodeId("existing");
+        actual = db.getNodeId("Node", "existing");
         Assert.assertEquals(1, actual);
     }
 
     @Test
     public void shouldNotAddNodeAlreadyThere() {
-        boolean created = db.addNode("key");
+        boolean created = db.addNode("Node", "key");
         Assert.assertTrue(created);
-        Assert.assertEquals(new HashMap<>(), db.getNode("key"));
-        created = db.addNode("key");
+        Assert.assertEquals(new HashMap<>(), db.getNode("Node", "key"));
+        created = db.addNode("Node", "key");
         Assert.assertFalse(created);
     }
 
     @Test
     public void shouldNotGetNodeNotThere() {
-        Assert.assertEquals(null, db.getNode("NotThere"));
+        Assert.assertEquals(null, db.getNode("Node", "notThere"));
     }
 
     @Test
     public void shouldNotRemoveNodeNotThere() {
-        boolean result = db.removeNode("not_there");
+        boolean result = db.removeNode("Node", "not_there");
         Assert.assertFalse(result);
     }
 
     @Test
     public void shouldNotGetNodeIdOfNodeNotThere() {
-        int actual = db.getNodeId("not-empty");
+        int actual = db.getNodeId("Node", "not-empty");
         Assert.assertEquals(-1, actual);
     }
 

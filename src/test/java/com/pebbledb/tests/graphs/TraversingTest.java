@@ -28,12 +28,12 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeOutgoingRelationshipsFromKey() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "one", "three");
-        List<Map<String, Object>> actual = db.getOutgoingRelationships("one");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "one", "Node", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships("Node", "one");
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 2);  }});
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
@@ -42,11 +42,11 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeOutgoingRelationshipsFromId() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "one", "three");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "one", "Node", "three");
         List<Map<String, Object>> actual = db.getOutgoingRelationships(0);
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 2);  }});
@@ -56,12 +56,12 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeOutgoingRelationshipsOfTypeFromKey() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "one", "three");
-        List<Map<String, Object>> actual = db.getOutgoingRelationships("FRIENDS", "one");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "one", "Node", "three");
+        List<Map<String, Object>> actual = db.getOutgoingRelationships("FRIENDS", "Node", "one");
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
         Assert.assertEquals(expected, actual);
@@ -69,11 +69,11 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeOutgoingRelationshipsOfTypeFromId() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "one", "three");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "one", "Node", "three");
         List<Map<String, Object>> actual = db.getOutgoingRelationships("FRIENDS",0);
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
@@ -82,12 +82,12 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeIncomingRelationshipsFromKey() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "three", "two");
-        List<Map<String, Object>> actual = db.getIncomingRelationships("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "three", "Node", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships("Node", "two");
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 2); put("_outgoing_node_id", 1);  }});
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
@@ -96,11 +96,11 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeIncomingRelationshipsFromId() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "three", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "three", "Node", "two");
         List<Map<String, Object>> actual = db.getIncomingRelationships(1);
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 2); put("_outgoing_node_id", 1);  }});
@@ -110,12 +110,12 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeIncomingRelationshipsOfTypeFromKey() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "three", "two");
-        List<Map<String, Object>> actual = db.getIncomingRelationships("FRIENDS", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "three", "Node", "two");
+        List<Map<String, Object>> actual = db.getIncomingRelationships("FRIENDS", "Node", "two");
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
         Assert.assertEquals(expected, actual);
@@ -123,11 +123,11 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeIncomingRelationshipsOfTypeFromId() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("ENEMIES", "three", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("ENEMIES", "Node", "three", "Node", "two");
         List<Map<String, Object>> actual = db.getIncomingRelationships("FRIENDS",1);
         ArrayList<Map<String, Object>> expected = new ArrayList<>();
         expected.add(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1);  }});
@@ -136,29 +136,29 @@ public class TraversingTest {
 
     @Test
     public void shouldGetNodeOutgoingRelationshipNodeIds() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("FRIENDS", "one", "three");
-        List<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "one");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("FRIENDS","Node",  "one", "Node", "three");
+        List<Integer> actual = db.getOutgoingRelationshipNodeIds("FRIENDS", "Node", "one");
         ArrayList<Integer> expected = new ArrayList<>();
-        expected.add(db.getNodeId("two"));
-        expected.add(db.getNodeId("three"));
+        expected.add(db.getNodeId("Node", "two"));
+        expected.add(db.getNodeId("Node", "three"));
         Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void shouldGetNodeIncomingRelationshipNodeIds() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addNode("three");
-        db.addRelationship("FRIENDS", "two", "one");
-        db.addRelationship("FRIENDS", "three", "one");
-        List<Integer> actual = db.getIncomingRelationshipNodeIds("FRIENDS", "one");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addNode("Node", "three");
+        db.addRelationship("FRIENDS", "Node", "two", "Node", "one");
+        db.addRelationship("FRIENDS", "Node", "three", "Node", "one");
+        List<Integer> actual = db.getIncomingRelationshipNodeIds("FRIENDS", "Node", "one");
         ArrayList<Integer> expected = new ArrayList<>();
-        expected.add(db.getNodeId("two"));
-        expected.add(db.getNodeId("three"));
+        expected.add(db.getNodeId("Node", "two"));
+        expected.add(db.getNodeId("Node", "three"));
 
         Assert.assertEquals(expected, actual);
     }
@@ -168,13 +168,13 @@ public class TraversingTest {
         HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
         HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
 
-        db.addNode("one");
-        db.addNode("two", node2props);
-        db.addNode("three", node3props);
+        db.addNode("Node", "one");
+        db.addNode("Node", "two", node2props);
+        db.addNode("Node", "three", node3props);
 
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("FRIENDS", "one", "three");
-        Object[] actual = db.getOutgoingRelationshipNodes("FRIENDS", "one");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "three");
+        Object[] actual = db.getOutgoingRelationshipNodes("FRIENDS", "Node", "one");
         Object[] expected = new Object[2];
         expected[0] = node2props;
         expected[1] = node3props;
@@ -188,13 +188,13 @@ public class TraversingTest {
         HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
         HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
 
-        db.addNode("one", node1props);
-        db.addNode("two", node2props);
-        db.addNode("three", node3props);
+        db.addNode("Node", "one", node1props);
+        db.addNode("Node", "two", node2props);
+        db.addNode("Node", "three", node3props);
 
-        db.addRelationship("FRIENDS", "two", "one");
-        db.addRelationship("FRIENDS", "three", "one");
-        Object[] actual = db.getIncomingRelationshipNodes("FRIENDS", "one");
+        db.addRelationship("FRIENDS", "Node", "two","Node",  "one");
+        db.addRelationship("FRIENDS", "Node", "three","Node",  "one");
+        Object[] actual = db.getIncomingRelationshipNodes("FRIENDS", "Node", "one");
         Object[] expected = new Object[2];
         expected[0] = node2props;
         expected[1] = node3props;
@@ -207,13 +207,13 @@ public class TraversingTest {
         HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
         HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
 
-        db.addNode("one");
-        db.addNode("two", node2props);
-        db.addNode("three", node3props);
+        db.addNode("Node", "one");
+        db.addNode("Node", "two", node2props);
+        db.addNode("Node", "three", node3props);
 
-        db.addRelationship("FRIENDS", "one", "two");
-        db.addRelationship("FRIENDS", "one", "three");
-        int one = db.getNodeId("one");
+        db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
+        db.addRelationship("FRIENDS", "Node", "one","Node",  "three");
+        int one = db.getNodeId("Node", "one");
         Object[] actual = db.getOutgoingRelationshipNodes("FRIENDS", one);
         Object[] expected = new Object[2];
         expected[0] = node2props;
@@ -228,13 +228,13 @@ public class TraversingTest {
         HashMap<String, Object> node2props = new HashMap<String, Object> (){{ put("two", "node two"); }};
         HashMap<String, Object> node3props = new HashMap<String, Object> (){{ put("property1", 3); }};
 
-        db.addNode("one", node1props);
-        db.addNode("two", node2props);
-        db.addNode("three", node3props);
+        db.addNode("Node", "one", node1props);
+        db.addNode("Node", "two", node2props);
+        db.addNode("Node", "three", node3props);
 
-        db.addRelationship("FRIENDS", "two", "one");
-        db.addRelationship("FRIENDS", "three", "one");
-        int one = db.getNodeId("one");
+        db.addRelationship("FRIENDS", "Node", "two", "Node", "one");
+        db.addRelationship("FRIENDS", "Node", "three", "Node", "one");
+        int one = db.getNodeId("Node", "one");
         Object[] actual = db.getIncomingRelationshipNodes("FRIENDS", one);
         Object[] expected = new Object[2];
         expected[0] = node2props;

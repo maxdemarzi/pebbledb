@@ -19,13 +19,17 @@ public interface DeleteRelationship {
 
         if(parameters.containsKey(Constants.NUMBER)) {
                 succeeded = graphs[number].removeRelationship(parameters.get(Constants.TYPE),
+                        exchangeEvent.getParameters().get(Constants.LABEL1),
                         parameters.get(Constants.FROM),
+                        exchangeEvent.getParameters().get(Constants.LABEL2),
                         parameters.get(Constants.TO),
                         Integer.parseInt(parameters.get(Constants.NUMBER)));
 
         } else {
                 succeeded = graphs[number].removeRelationship(parameters.get(Constants.TYPE),
+                        exchangeEvent.getParameters().get(Constants.LABEL1),
                         parameters.get(Constants.FROM),
+                        exchangeEvent.getParameters().get(Constants.LABEL2),
                         parameters.get(Constants.TO));
 
         }

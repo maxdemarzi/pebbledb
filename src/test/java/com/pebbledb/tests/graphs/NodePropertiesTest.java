@@ -17,11 +17,11 @@ public class NodePropertiesTest {
     @Before
     public void setup() throws IOException {
         db = new FastUtilGraph();
-        db.addNode("empty");
+        db.addNode("Node","empty");
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        db.addNode("existing", properties);
+        db.addNode("Node","existing", properties);
     }
 
     @After
@@ -31,19 +31,19 @@ public class NodePropertiesTest {
 
     @Test
     public void shouldGetNodeProperty() {
-        Object property = db.getNodeProperty("existing", "name");
+        Object property = db.getNodeProperty("Node","existing", "name");
         Assert.assertEquals("max", property);
     }
 
     @Test
     public void shouldNotGetNodePropertyNotThere() {
-        Object property = db.getNodeProperty("existing", "eman");
+        Object property = db.getNodeProperty("Node","existing", "eman");
         Assert.assertEquals(null, property);
     }
 
     @Test
     public void shouldNotGetNodePropertyNodeNotThere() {
-        Object property = db.getNodeProperty("not-existing", "name");
+        Object property = db.getNodeProperty("Node","not-existing", "name");
         Assert.assertEquals(null, property);
     }
 
@@ -51,10 +51,10 @@ public class NodePropertiesTest {
     public void shouldUpdateNodeProperties() {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("property", "this");
-        db.addNode("this", properties);
+        db.addNode("Node","this", properties);
         properties.put("property", "that");
-        db.updateNodeProperties("this", properties);
-        Object property = db.getNodeProperty("this", "property");
+        db.updateNodeProperties("Node","this", properties);
+        Object property = db.getNodeProperty("Node","this", "property");
         Assert.assertEquals("that", property);
     }
 
@@ -62,18 +62,18 @@ public class NodePropertiesTest {
     public void shouldDeleteNodeProperties() {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("property", "this");
-        db.addNode("this", properties);
-        db.deleteNodeProperties("this");
-        Assert.assertEquals(new HashMap<>(), db.getNode("this"));
+        db.addNode("Node","this", properties);
+        db.deleteNodeProperties("Node","this");
+        Assert.assertEquals(new HashMap<>(), db.getNode("Node","this"));
     }
 
     @Test
     public void shouldUpdateNodeProperty() {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("property", "this");
-        db.addNode("this", properties);
-        db.updateNodeProperty("this", "property", "that");
-        Object property = db.getNodeProperty("this", "property");
+        db.addNode("Node","this", properties);
+        db.updateNodeProperty("Node","this", "property", "that");
+        Object property = db.getNodeProperty("Node","this", "property");
         Assert.assertEquals("that", property);
     }
 
@@ -82,9 +82,9 @@ public class NodePropertiesTest {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("property", "this");
         properties.put("other", "that");
-        db.addNode("this", properties);
-        db.deleteNodeProperty("this", "other");
-        Map<String, Object> node = db.getNode("this");
+        db.addNode("Node","this", properties);
+        db.deleteNodeProperty("Node","this", "other");
+        Map<String, Object> node = db.getNode("Node","this");
         Assert.assertEquals("this", node.get("property"));
         Assert.assertTrue(node.get("other") == null);
     }

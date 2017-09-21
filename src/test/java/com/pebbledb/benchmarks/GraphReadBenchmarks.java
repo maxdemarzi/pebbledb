@@ -37,13 +37,13 @@ public class GraphReadBenchmarks {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("id", item);
             properties.put("itemname", "itemname" + item );
-            db.addNode("item" + item, properties);
+            db.addNode("Item", "item" + item, properties);
         }
 
         for (int person = 0; person < personCount; person++) {
-            db.addNode("person" + person);
+            db.addNode("Person", "person" + person);
             for (int like = 0; like < likesCount; like++) {
-                db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
+                db.addRelationship("LIKES","Person",  "person" + person, "Item",  "item" + rand.nextInt(itemCount));
             }
         }
 
@@ -59,7 +59,7 @@ public class GraphReadBenchmarks {
     public int measureTraverse() throws IOException {
         int person;
         for (person = 0; person < personCount; person++) {
-            db.getOutgoingRelationshipNodeIds("LIKES", "person" + person);
+            db.getOutgoingRelationshipNodeIds("LIKES", "Person", "person" + person);
         }
         return person;
     }
@@ -74,7 +74,7 @@ public class GraphReadBenchmarks {
     public int measureTraverseAndGetNodes() throws IOException {
         int person;
         for (person = 0; person < personCount; person++) {
-            db.getOutgoingRelationshipNodes("LIKES", "person" + person);
+            db.getOutgoingRelationshipNodes("LIKES", "Person", "person" + person);
         }
         return person;
     }
@@ -89,7 +89,7 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public int measureRandomSingleTraversalIds() throws IOException {
         int person = 0;
-        person += db.getOutgoingRelationshipNodeIds("LIKES", "person" + rand.nextInt(personCount)).size();
+        person += db.getOutgoingRelationshipNodeIds("LIKES", "Person", "person" + rand.nextInt(personCount)).size();
         return person;
     }
 
@@ -102,7 +102,7 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public int measureFixedSingleTraversalIds() throws IOException {
         int person = 0;
-        person += db.getOutgoingRelationshipNodeIds("LIKES", "person0").size();
+        person += db.getOutgoingRelationshipNodeIds("LIKES", "Person", "person0").size();
         return person;
     }
 
@@ -114,7 +114,7 @@ public class GraphReadBenchmarks {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureFixedSingleTraversalAndGetNodes() throws IOException {
-        db.getOutgoingRelationshipNodes("LIKES", "person0");
+        db.getOutgoingRelationshipNodes("LIKES", "Person", "person0");
     }
 
     @Benchmark
@@ -126,7 +126,7 @@ public class GraphReadBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public int measureSingleTraversalAndGetNodes() throws IOException {
         int person = 0;
-        person += db.getOutgoingRelationshipNodes("LIKES", "person" + rand.nextInt(personCount)).length;
+        person += db.getOutgoingRelationshipNodes("LIKES", "Person", "person" + rand.nextInt(personCount)).length;
         return person;
     }
 

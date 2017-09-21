@@ -17,11 +17,11 @@ public class NodeDegreeTest {
     @Before
     public void setup() throws IOException {
         db = new FastUtilGraph();
-        db.addNode("empty");
+        db.addNode("Node", "empty");
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        db.addNode("existing", properties);
+        db.addNode("Node", "existing", properties);
     }
 
     @After
@@ -31,68 +31,68 @@ public class NodeDegreeTest {
 
     @Test
     public void shouldGetNodeDegree() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "four", "five");
-        db.addRelationship("ENEMIES", "four", "six");
-        Integer actual = db.getNodeDegree("four");
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS","Node",  "four", "Node", "five");
+        db.addRelationship("ENEMIES","Node",  "four", "Node", "six");
+        Integer actual = db.getNodeDegree("Node", "four");
         Assert.assertEquals(Integer.valueOf(2), actual);
     }
 
     @Test
     public void shouldGetNodeIncomingDegree() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "four", "five");
-        db.addRelationship("ENEMIES", "six", "four");
-        Integer actual = db.getNodeDegree("four", "out");
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
+        db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
+        Integer actual = db.getNodeDegree("Node", "four", "out");
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
     @Test
     public void shouldGetNodeOutgoingDegree() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "four", "five");
-        db.addRelationship("ENEMIES", "six", "four");
-        Integer actual = db.getNodeDegree("four", "out");
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
+        db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
+        Integer actual = db.getNodeDegree("Node", "four", "out");
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
     @Test
     public void shouldGetNodeIncomingTypedDegree() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "five", "four");
-        db.addRelationship("ENEMIES", "six", "four");
-        Integer actual = db.getNodeDegree("four", "in", new ArrayList<String>(){{add("ENEMIES");}});
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS", "Node", "five", "Node", "four");
+        db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
+        Integer actual = db.getNodeDegree("Node", "four", "in", new ArrayList<String>(){{add("ENEMIES");}});
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
     @Test
     public void shouldGetNodeOutgoingTypedDegree() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "four", "five");
-        db.addRelationship("ENEMIES", "four", "six");
-        Integer actual = db.getNodeDegree("four", "out", new ArrayList<String>(){{add("ENEMIES");}});
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
+        db.addRelationship("ENEMIES", "Node", "four", "Node", "six");
+        Integer actual = db.getNodeDegree("Node", "four", "out", new ArrayList<String>(){{add("ENEMIES");}});
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
     @Test
     public void shouldGetNodeDegreeMultiple() {
-        db.addNode("four");
-        db.addNode("five");
-        db.addNode("six");
-        db.addRelationship("FRIENDS", "four", "five");
-        db.addRelationship("ENEMIES", "four", "six");
-        db.addRelationship("FRIENDS", "four", "five");
-        Integer actual = db.getNodeDegree("four");
+        db.addNode("Node", "four");
+        db.addNode("Node", "five");
+        db.addNode("Node", "six");
+        db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
+        db.addRelationship("ENEMIES", "Node", "four", "Node", "six");
+        db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
+        Integer actual = db.getNodeDegree("Node", "four");
         Assert.assertEquals(Integer.valueOf(3), actual);
     }
 

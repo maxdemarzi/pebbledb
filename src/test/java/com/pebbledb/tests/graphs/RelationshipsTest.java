@@ -19,14 +19,14 @@ public class RelationshipsTest {
     @Before
     public void setup() throws IOException {
         db = new FastUtilGraph();
-        db.addNode("empty");
+        db.addNode("Node", "empty");
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("name", "max");
         properties.put("email", "maxdemarzi@hotmail.com");
-        db.addNode("existing", properties);
+        db.addNode("Node", "existing", properties);
         HashMap<String, Object> relProperties = new HashMap<>();
         relProperties.put("weight", 5);
-        db.addRelationship("RELATED", "empty", "existing", relProperties);
+        db.addRelationship("RELATED", "Node", "empty", "Node", "existing", relProperties);
     }
 
     @After
@@ -54,19 +54,19 @@ public class RelationshipsTest {
 
     @Test
     public void shouldAddRelationship() {
-        db.addNode("one");
-        db.addNode("two");
-        boolean created = db.addRelationship("FRIENDS", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        boolean created = db.addRelationship("FRIENDS", "Node", "one", "Node", "two");
         Assert.assertTrue(created);
     }
 
     @Test
     public void shouldAddRelationshipWithProperties() {
         HashMap<String, Object> properties = new HashMap<String, Object>() {{ put("stars", 5); }};
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("RATED", "one", "two", properties);
-        Object actual = db.getRelationship("RATED", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addRelationship("RATED", "Node", "one", "Node", "two", properties);
+        Object actual = db.getRelationship("RATED", "Node", "one", "Node", "two");
         Assert.assertEquals(properties, actual);
         Integer expected = 1;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("RATED"));
@@ -74,120 +74,120 @@ public class RelationshipsTest {
 
     @Test
     public void shouldAddMultipleRelationshipsSameType() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("MULTIPLE", "one", "two");
-        boolean created = db.addRelationship("MULTIPLE", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addRelationship("MULTIPLE", "Node", "one", "Node", "two");
+        boolean created = db.addRelationship("MULTIPLE", "Node", "one", "Node", "two");
         Assert.assertTrue(created);
         Integer expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("MULTIPLE"));
         Assert.assertEquals(new HashMap<String, Object>(){{
             put("_incoming_node_id", 2);
             put("_outgoing_node_id", 3);
-        }}, db.getRelationship("MULTIPLE", "one", "two"));
+        }}, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two"));
         Assert.assertEquals(new HashMap<String, Object>(){{
             put("_incoming_node_id", 2);
             put("_outgoing_node_id", 3);
-        }}, db.getRelationship("MULTIPLE", "one", "two", 2));
+        }}, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two", 2));
     }
 
     @Test
     public void shouldAddMultipleRelationshipsSameTypeWithProperties() {
-        db.addNode("one");
-        db.addNode("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
         Map rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
         Map rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
-        db.addRelationship("MULTIPLE", "one", "two", rel1Properties);
-        boolean created = db.addRelationship("MULTIPLE", "one", "two", rel2Properties);
+        db.addRelationship("MULTIPLE", "Node", "one", "Node", "two", rel1Properties);
+        boolean created = db.addRelationship("MULTIPLE", "Node", "one", "Node", "two", rel2Properties);
         Assert.assertTrue(created);
         Integer expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("MULTIPLE"));
-        Assert.assertEquals(rel1Properties, db.getRelationship("MULTIPLE", "one", "two"));
-        Assert.assertEquals(rel2Properties, db.getRelationship("MULTIPLE", "one", "two", 2));
+        Assert.assertEquals(rel1Properties, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two"));
+        Assert.assertEquals(rel2Properties, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two", 2));
     }
 
     @Test
     public void shouldRemoveRelationship() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("LIKES", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addRelationship("LIKES", "Node", "one", "Node", "two");
         Integer expected = 1;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LIKES"));
-        db.removeRelationship("LIKES", "one", "two");
+        db.removeRelationship("LIKES", "Node", "one", "Node", "two");
         expected = 0;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LIKES"));
     }
 
     @Test
     public void shouldRemoveMultipleRelationshipsSameType() {
-        db.addNode("one");
-        db.addNode("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
         Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
         Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key", "rel3");}};
 
-        db.addRelationship("LOVES", "one", "two", rel1Properties);
-        db.addRelationship("LOVES", "one", "two", rel2Properties);
-        db.addRelationship("LOVES", "one", "two", rel3Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel1Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel2Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel3Properties);
         Integer expected = 3;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        db.removeRelationship("LOVES", "one", "two");
+        db.removeRelationship("LOVES", "Node", "one", "Node", "two");
         expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        Map<String, Object> rel = db.getRelationship("LOVES", "one", "two");
+        Map<String, Object> rel = db.getRelationship("LOVES", "Node", "one", "Node", "two");
         Assert.assertEquals(rel1Properties, rel);
     }
 
     @Test
     public void shouldRemoveMultipleRelationshipsSameTypeLast() {
-        db.addNode("one");
-        db.addNode("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
         Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
         Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key", "rel3");}};
 
-        db.addRelationship("LOVES", "one", "two", rel1Properties);
-        db.addRelationship("LOVES", "one", "two", rel2Properties);
-        db.addRelationship("LOVES", "one", "two", rel3Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel1Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel2Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel3Properties);
         Integer expected = 3;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        db.removeRelationship("LOVES", "one", "two", 3);
+        db.removeRelationship("LOVES", "Node", "one", "Node", "two", 3);
         expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        Map<String, Object> rel = db.getRelationship("LOVES", "one", "two");
+        Map<String, Object> rel = db.getRelationship("LOVES", "Node", "one", "Node", "two");
         Assert.assertEquals(rel1Properties, rel);
-        rel = db.getRelationship("LOVES", "one", "two", 2);
+        rel = db.getRelationship("LOVES", "Node", "one", "Node", "two", 2);
         Assert.assertEquals(rel2Properties, rel);
     }
 
     @Test
     public void shouldRemoveMultipleRelationshipsSameTypeMiddle() {
-        db.addNode("one");
-        db.addNode("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
         Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
         Map<String, Object> rel3Properties = new HashMap<String, Object>() {{ put("key", "rel3");}};
 
-        db.addRelationship("LOVES", "one", "two", rel1Properties);
-        db.addRelationship("LOVES", "one", "two", rel2Properties);
-        db.addRelationship("LOVES", "one", "two", rel3Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel1Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel2Properties);
+        db.addRelationship("LOVES", "Node", "one", "Node", "two", rel3Properties);
         Integer expected = 3;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        db.removeRelationship("LOVES", "one", "two", 2);
+        db.removeRelationship("LOVES", "Node", "one", "Node", "two", 2);
         expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("LOVES"));
-        Map<String, Object> rel = db.getRelationship("LOVES", "one", "two");
+        Map<String, Object> rel = db.getRelationship("LOVES", "Node", "one", "Node", "two");
         Assert.assertEquals(rel1Properties, rel);
-        rel = db.getRelationship("LOVES", "one", "two", 2);
+        rel = db.getRelationship("LOVES", "Node", "one", "Node", "two", 2);
         Assert.assertEquals(rel3Properties, rel);
     }
 
     @Test
     public void shouldGetRelationshipWithoutProperties() {
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("RATED", "one", "two");
-        Object actual = db.getRelationship("RATED", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addRelationship("RATED", "Node", "one", "Node", "two");
+        Object actual = db.getRelationship("RATED", "Node", "one", "Node", "two");
         Assert.assertEquals(new HashMap<String, Object>(){{
             put("_incoming_node_id", 2);
             put("_outgoing_node_id", 3);
@@ -199,10 +199,10 @@ public class RelationshipsTest {
     @Test
     public void shouldGetRelationshipWithProperties() {
         HashMap<String, Object> properties = new HashMap<String, Object>() {{ put("stars", 5); }};
-        db.addNode("one");
-        db.addNode("two");
-        db.addRelationship("RATED", "one", "two", properties);
-        Object actual = db.getRelationship("RATED", "one", "two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
+        db.addRelationship("RATED", "Node", "one", "Node", "two", properties);
+        Object actual = db.getRelationship("RATED", "Node", "one", "Node", "two");
         Assert.assertEquals(properties, actual);
         Integer expected = 1;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("RATED"));
@@ -210,18 +210,18 @@ public class RelationshipsTest {
 
     @Test
     public void shouldGetMultipleRelationshipsSameType() {
-        db.addNode("one");
-        db.addNode("two");
+        db.addNode("Node", "one");
+        db.addNode("Node", "two");
         Map<String, Object> rel1Properties = new HashMap<String, Object>() {{ put("key", "rel1");}};
         Map<String, Object> rel2Properties = new HashMap<String, Object>() {{ put("key", "rel2");}};
 
-        db.addRelationship("MULTIPLE", "one", "two", rel1Properties);
-        boolean created = db.addRelationship("MULTIPLE", "one", "two", rel2Properties);
+        db.addRelationship("MULTIPLE", "Node", "one", "Node", "two", rel1Properties);
+        boolean created = db.addRelationship("MULTIPLE", "Node", "one", "Node", "two", rel2Properties);
         Assert.assertTrue(created);
         Integer expected = 2;
         Assert.assertEquals(expected, db.getRelationshipTypeCount("MULTIPLE"));
-        Assert.assertEquals(rel1Properties, db.getRelationship("MULTIPLE", "one", "two"));
-        Assert.assertEquals(rel2Properties, db.getRelationship("MULTIPLE", "one", "two", 2));
+        Assert.assertEquals(rel1Properties, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two"));
+        Assert.assertEquals(rel2Properties, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two", 2));
     }
 
 }

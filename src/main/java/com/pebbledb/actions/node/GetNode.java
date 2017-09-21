@@ -17,7 +17,7 @@ public interface GetNode {
     static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
 
-        Map<String, Object> node = graphs[number].getNode(exchangeEvent.getParameters().get(Constants.ID));
+        Map<String, Object> node = graphs[number].getNode(exchangeEvent.getParameters().get(Constants.LABEL), exchangeEvent.getParameters().get(Constants.ID));
         if (node == null) {
             exchange.setStatusCode(StatusCodes.NOT_FOUND);
         } else {

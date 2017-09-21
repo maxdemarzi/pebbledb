@@ -28,11 +28,11 @@ public class RelationshipPropertiesTest {
             properties.put("stars", 5);
             properties.put("since", "2017-01-07");
 
-            graphs[i].addNode("node1");
-            graphs[i].addNode("node2");
-            graphs[i].addNode("node3");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node2");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
+            graphs[i].addNode("Node", "node1");
+            graphs[i].addNode("Node", "node2");
+            graphs[i].addNode("Node", "node3");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node2");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
         }
     }
 
@@ -44,7 +44,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestGetRelationshipPropertyNotThere() {
         when().
-                get("/db/relationship/FOLLOWS/node0/node1/property/not_there").
+                get("/db/relationship/FOLLOWS/Node/node0/Node/node1/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -53,7 +53,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestGetRelationshipPropertyInvalidProperty() {
         when().
-                get("/db/relationship/FOLLOWS/node1/node3/property/not_there").
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -62,7 +62,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestGetRelationshipProperty() {
         when().
-                get("/db/relationship/FOLLOWS/node1/node3/property/since").
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/since").
                 then().
                 assertThat().
                 body(equalTo("\"2017-01-07\"")).
@@ -73,7 +73,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestGetRelationshipIntegerProperty() {
         when().
-                get("/db/relationship/FOLLOWS/node1/node3/property/stars").
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/stars").
                 then().
                 assertThat().
                 body(equalTo("5")).
@@ -87,7 +87,7 @@ public class RelationshipPropertiesTest {
                 contentType("application/json").
                 body(2).
         when().
-                put("/db/relationship/FOLLOWS/node0/node3/property/stars").
+                put("/db/relationship/FOLLOWS/Node/node0/Node/node3/property/stars").
                 then().
                 assertThat().
                 statusCode(404);
@@ -107,7 +107,7 @@ public class RelationshipPropertiesTest {
                 contentType("application/json").
                 body(true).
                 when().
-                put("/db/relationship/FOLLOWS/node1/node3/property/archived").
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/archived").
                 then().
                 assertThat().
                 statusCode(204);
@@ -128,7 +128,7 @@ public class RelationshipPropertiesTest {
                 contentType("application/json").
                 body(prop).
                 when().
-                put("/db/relationship/FOLLOWS/node1/node3/properties").
+                put("/db/relationship/FOLLOWS/Node/node1/Node/node3/properties").
                 then().
                 assertThat().
                 body("$", equalTo(prop)).
@@ -139,7 +139,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestDeleteRelationshipPropertyNotThere() {
         when().
-                delete("/db/relationship/FOLLOWS/node0/node1/property/not_there").
+                delete("/db/relationship/FOLLOWS/Node/node0/Node/node1/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -148,7 +148,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestDeleteRelationshipProperty() {
         when().
-                delete("/db/relationship/FOLLOWS/node1/node3/property/since").
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/since").
                 then().
                 assertThat().
                 statusCode(204);
@@ -157,7 +157,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestDeleteRelationshipPropertyInvalidProperty() {
         when().
-                delete("/db/relationship/FOLLOWS/node1/node3/property/not_there").
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/property/not_there").
                 then().
                 assertThat().
                 statusCode(404);
@@ -166,7 +166,7 @@ public class RelationshipPropertiesTest {
     @Test
     public void integrationTestDeleteRelationshipProperties() {
         when().
-                delete("/db/relationship/FOLLOWS/node1/node3/properties").
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node3/properties").
                 then().
                 assertThat().
                 statusCode(204);

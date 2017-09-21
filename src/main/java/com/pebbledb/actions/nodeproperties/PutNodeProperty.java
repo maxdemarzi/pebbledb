@@ -22,7 +22,9 @@ public interface PutNodeProperty {
             }
         } else {
             Object property = JsonIterator.deserialize(body, Types.OBJECT);
-            succeeded = graphs[number].updateNodeProperty(exchangeEvent.getParameters().get(Constants.ID),
+            succeeded = graphs[number].updateNodeProperty(
+                    exchangeEvent.getParameters().get(Constants.LABEL),
+                    exchangeEvent.getParameters().get(Constants.ID),
                     exchangeEvent.getParameters().get(Constants.KEY),
                     property);
             if (respond) {

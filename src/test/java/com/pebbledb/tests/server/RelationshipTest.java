@@ -26,12 +26,12 @@ public class RelationshipTest {
         for (int i = -1; ++i < graphs.length; ) {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("stars", 5);
-            graphs[i].addNode("node1");
-            graphs[i].addNode("node2");
-            graphs[i].addNode("node3");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node2");
-            graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
-            graphs[i].addRelationship("FOLLOWS", "node1", "node3", properties);
+            graphs[i].addNode("Node", "node1");
+            graphs[i].addNode("Node", "node2");
+            graphs[i].addNode("Node", "node3");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node2");
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
+            graphs[i].addRelationship("FOLLOWS", "Node", "node1", "Node", "node3", properties);
         }
     }
 
@@ -43,7 +43,7 @@ public class RelationshipTest {
     @Test
     public void integrationTestGetRelationshipNotThere() {
         when().
-                get("/db/relationship/FOLLOWS/node0/node1").
+                get("/db/relationship/FOLLOWS/Node/node0/Node/node1").
                 then().
                 assertThat().
                 statusCode(404);
@@ -52,7 +52,7 @@ public class RelationshipTest {
     @Test
     public void integrationTestGetEmptyRelationship() {
         when().
-                get("/db/relationship/FOLLOWS/node1/node2").
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node2").
                 then().
                 assertThat().
                 body("$", equalTo(new HashMap<String, Object>(){{ put("_incoming_node_id", 0); put("_outgoing_node_id", 1); }})).
@@ -68,7 +68,7 @@ public class RelationshipTest {
         prop.put("_outgoing_node_id", 2);
 
         when().
-                get("/db/relationship/FOLLOWS/node1/node3").
+                get("/db/relationship/FOLLOWS/Node/node1/Node/node3").
                 then().
                 assertThat().
                 body("$", equalTo(prop)).
@@ -81,7 +81,7 @@ public class RelationshipTest {
         given().
                 contentType("application/json").
                 when().
-                post("/db/relationship/FOLLOWS/node2/node1").
+                post("/db/relationship/FOLLOWS/Node/node2/Node/node1").
                 then().
                 assertThat().
                 body("$", equalTo(new HashMap<String, Object>(){{ put("_incoming_node_id", 1); put("_outgoing_node_id", 0); }})).
@@ -100,7 +100,7 @@ public class RelationshipTest {
                 contentType("application/json").
                 body(prop).
                 when().
-                post("/db/relationship/FOLLOWS/node1/node3").
+                post("/db/relationship/FOLLOWS/Node/node1/Node/node3").
                 then().
                 assertThat().
                 body("$", equalTo(prop)).
@@ -110,7 +110,7 @@ public class RelationshipTest {
     @Test
     public void integrationTestDeleteRelationshipNotThere() {
         when().
-                delete("/db/relationship/NOT_THERE/node0/node1").
+                delete("/db/relationship/NOT_THERE/Node/node0/Node/node1").
                 then().
                 assertThat().
                 statusCode(404);
@@ -119,7 +119,7 @@ public class RelationshipTest {
     @Test
     public void integrationTestDeleteRelationship() {
         when().
-                delete("/db/relationship/FOLLOWS/node1/node2").
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node2").
                 then().
                 assertThat().
                 statusCode(204);
@@ -128,7 +128,7 @@ public class RelationshipTest {
     @Test
     public void integrationTestDeleteRelationshipWithNumber() {
         when().
-                delete("/db/relationship/FOLLOWS/node1/node2/1").
+                delete("/db/relationship/FOLLOWS/Node/node1/Node/node2/1").
                 then().
                 assertThat().
                 statusCode(204);

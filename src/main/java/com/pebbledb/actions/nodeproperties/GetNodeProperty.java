@@ -15,6 +15,7 @@ public interface GetNodeProperty {
         HttpServerExchange exchange = exchangeEvent.get();
 
         Object property = graphs[number].getNodeProperty(
+                exchangeEvent.getParameters().get(Constants.LABEL),
                 exchangeEvent.getParameters().get(Constants.ID),
                 exchangeEvent.getParameters().get(Constants.KEY));
         if (property == null) {

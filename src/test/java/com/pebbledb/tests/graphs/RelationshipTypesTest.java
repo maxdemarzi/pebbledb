@@ -26,14 +26,14 @@ public class RelationshipTypesTest {
 
     @Test
     public void shouldGetRelationshipTypes() {
-        db.addRelationship("FOLLOWS", "one", "two");
+        db.addRelationship("FOLLOWS", "Node", "one", "Node", "two");
         Set<String> types = db.getRelationshipTypes();
         Assert.assertTrue(types.contains("FOLLOWS"));
     }
 
     @Test
     public void shouldGetRelationshipTypesCount() {
-        db.addRelationship("FOLLOWS", "one", "two");
+        db.addRelationship("FOLLOWS", "Node", "one", "Node", "two");
         Map<String, Integer> counts = db.getRelationshipTypesCount();
         Assert.assertTrue(counts.containsKey("FOLLOWS"));
         Assert.assertTrue(counts.get("FOLLOWS").equals(1));
@@ -41,7 +41,7 @@ public class RelationshipTypesTest {
 
     @Test
     public void shouldGetRelationshipTypeCount() {
-        db.addRelationship("FOLLOWS", "one", "two");
+        db.addRelationship("FOLLOWS", "Node", "one", "Node", "two");
         Integer counts = db.getRelationshipTypeCount("FOLLOWS");
         Assert.assertTrue(counts.equals(1));
     }

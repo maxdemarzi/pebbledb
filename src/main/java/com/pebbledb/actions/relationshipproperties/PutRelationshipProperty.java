@@ -31,7 +31,9 @@ public interface PutRelationshipProperty {
 
                     succeeded = graphs[number].updateRelationshipProperty(
                             parameters.get(Constants.TYPE),
+                            parameters.get(Constants.LABEL1),
                             parameters.get(Constants.FROM),
+                            parameters.get(Constants.LABEL2),
                             parameters.get(Constants.TO),
                             Integer.parseInt(parameters.get(Constants.NUMBER)),
                             parameters.get(Constants.KEY),
@@ -41,7 +43,9 @@ public interface PutRelationshipProperty {
 
                     succeeded = graphs[number].updateRelationshipProperty(
                             parameters.get(Constants.TYPE),
+                            parameters.get(Constants.LABEL1),
                             parameters.get(Constants.FROM),
+                            parameters.get(Constants.LABEL2),
                             parameters.get(Constants.TO),
                             parameters.get(Constants.KEY),
                             property);

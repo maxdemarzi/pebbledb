@@ -10,7 +10,7 @@ import static com.pebbledb.server.Server.graphs;
 public interface DeleteNodeProperties {
 
     static void handle(ExchangeEvent exchangeEvent, int number, boolean respond) {
-        boolean succeeded = graphs[number].deleteNodeProperties(exchangeEvent.getParameters().get(Constants.ID));
+        boolean succeeded = graphs[number].deleteNodeProperties(exchangeEvent.getParameters().get(Constants.LABEL), exchangeEvent.getParameters().get(Constants.ID));
 
         if (respond) {
             HttpServerExchange exchange = exchangeEvent.get();

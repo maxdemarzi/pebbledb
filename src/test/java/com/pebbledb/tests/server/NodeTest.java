@@ -25,9 +25,9 @@ public class NodeTest {
         props.put("prop", property);
 
         for (int i = -1; ++i < graphs.length; ) {
-            graphs[i].addNode("emptyNode");
-            graphs[i].addNode("singlePropertyNode", property);
-            graphs[i].addNode("complexPropertiesNode", props);
+            graphs[i].addNode("Node", "emptyNode");
+            graphs[i].addNode("Node", "singlePropertyNode", property);
+            graphs[i].addNode("Node", "complexPropertiesNode", props);
         }
     }
 
@@ -39,7 +39,7 @@ public class NodeTest {
     @Test
     public void integrationTestGetNodeNotThere() {
         when().
-                get("/db/node/notThere").
+                get("/db/node/Node/notThere").
                 then().
                 assertThat().
                 statusCode(404);
@@ -48,7 +48,7 @@ public class NodeTest {
     @Test
     public void integrationTestGetEmptyNode() {
         when().
-                get("/db/node/emptyNode").
+                get("/db/node/Node/emptyNode").
                 then().
                 assertThat()
                 .body(equalTo("{}"))
@@ -62,7 +62,7 @@ public class NodeTest {
         prop.put("property", "Value");
 
         when().
-                get("/db/node/singlePropertyNode").
+                get("/db/node/Node/singlePropertyNode").
                 then().
                 assertThat()
                 .body("$", equalTo(prop))
@@ -76,7 +76,7 @@ public class NodeTest {
                 contentType("application/json;charset=UTF-8").
                 body("{}").
                 when().
-                post("/db/node/emptyNode").
+                post("/db/node/Node/emptyNode").
                 then().
                 assertThat().
                 body("$", equalTo(new HashMap<>())).
@@ -93,7 +93,7 @@ public class NodeTest {
                 contentType("application/json;charset=UTF-8").
                 body(prop).
                 when().
-                post("/db/node/singlePropertyNode").
+                post("/db/node/Node/singlePropertyNode").
                 then().
                 assertThat().
                 body("$", equalTo(prop)).
@@ -104,7 +104,7 @@ public class NodeTest {
     @Test
     public void integrationTestPutNodeNotThere() {
         when().
-                put("/db/node/notThere/properties").
+                put("/db/node/Node/notThere/properties").
                 then().
                 assertThat().
                 statusCode(404);
@@ -119,7 +119,7 @@ public class NodeTest {
                 contentType("application/json;charset=UTF-8").
                 body(prop).
                 when().
-                put("/db/node/singlePropertyNode/property/name").
+                put("/db/node/Node/singlePropertyNode/property/name").
                 then().
                 assertThat().
                 statusCode(204);
@@ -128,7 +128,7 @@ public class NodeTest {
     @Test
     public void integrationTestDeleteNodeNotThere() {
         when().
-                delete("/db/node/notThere").
+                delete("/db/node/Node/notThere").
                 then().
                 assertThat().
                 statusCode(404);
@@ -137,7 +137,7 @@ public class NodeTest {
     @Test
     public void integrationTestDeleteEmptyNode() {
         when().
-                delete("/db/node/emptyNode").
+                delete("/db/node/Node/emptyNode").
                 then().
                 assertThat().
                 statusCode(204);

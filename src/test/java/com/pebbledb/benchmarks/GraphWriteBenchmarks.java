@@ -38,13 +38,13 @@ public class GraphWriteBenchmarks {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("id", item);
             properties.put("itemname", "itemname" + item );
-            db.addNode("item" + item, properties);
+            db.addNode("Item","item" + item, properties);
         }
 
         for (int person = 0; person < personCount; person++) {
-            db.addNode("person" + person);
+            db.addNode("Person","person" + person);
             for (int like = 0; like < likesCount; like++) {
-                db.addRelationship("LIKES", "person" + person, "item" + rand.nextInt(itemCount));
+                db.addRelationship("LIKES", "Person", "person" + person, "Item","item" + rand.nextInt(itemCount));
             }
         }
     }
@@ -57,7 +57,7 @@ public class GraphWriteBenchmarks {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureCreateEmptyNode() throws IOException {
-        db.addNode("user" + rand.nextLong());
+        db.addNode("User","user" + rand.nextLong());
     }
 
     @Benchmark
@@ -71,7 +71,7 @@ public class GraphWriteBenchmarks {
     public int measureCreateEmptyNodes() throws IOException {
         int user;
         for (user = 0; user < userCount; user++) {
-            db.addNode("user" + user);
+            db.addNode("User","user" + user);
         }
         db.clear();
         return user;
@@ -91,7 +91,7 @@ public class GraphWriteBenchmarks {
             properties.put("username", "username" + rand.nextInt() );
             properties.put("age", + rand.nextInt(100) );
             properties.put("weight", rand.nextInt(300) );
-            db.addNode( String.valueOf(rand.nextInt()), properties);
+            db.addNode("User", String.valueOf(rand.nextInt()), properties);
         }
         return user;
     }
@@ -108,7 +108,7 @@ public class GraphWriteBenchmarks {
         properties.put("username", "username" + rand.nextInt() );
         properties.put("age", + rand.nextInt(100) );
         properties.put("weight", rand.nextInt(300) );
-        db.addNode( String.valueOf(rand.nextInt()), properties);
+        db.addNode( "User",String.valueOf(rand.nextInt()), properties);
     }
 
     @Benchmark
@@ -121,11 +121,11 @@ public class GraphWriteBenchmarks {
     public int measureCreateEmptyNodesAndRelationships() throws IOException {
         int user;
         for (user = 0; user < userCount; user++) {
-            db.addNode("user" + user);
+            db.addNode("User","user" + user);
         }
         for (user = 0; user < userCount; user++) {
             for (int like = 0; like < friendsCount; like++) {
-                db.addRelationship("FRIENDS", "user" + user, "user" + rand.nextInt(userCount));
+                db.addRelationship("FRIENDS", "User", "user" + user,"User", "user" + rand.nextInt(userCount));
             }
         }
         return user;
@@ -142,7 +142,7 @@ public class GraphWriteBenchmarks {
         int count = 0;
         for (int person = 0; person < personCount; person++) {
             for (int like = 0; like < friendsCount; like++) {
-                db.addRelationship("FRIENDS", "person" + person, "person" + rand.nextInt(personCount));
+                db.addRelationship("FRIENDS", "Person", "person" + person,"Person", "person" + rand.nextInt(personCount));
                 count++;
             }
         }
@@ -157,7 +157,7 @@ public class GraphWriteBenchmarks {
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void measureCreateRandomRelationship() throws IOException {
-        db.addRelationship("LIKES", "person" + rand.nextInt(personCount), "person" + rand.nextInt(personCount));
+        db.addRelationship("LIKES", "Person", "person" + rand.nextInt(personCount), "Person","person" + rand.nextInt(personCount));
     }
 
 }

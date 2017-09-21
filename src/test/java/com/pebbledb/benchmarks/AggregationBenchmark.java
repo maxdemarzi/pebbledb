@@ -27,7 +27,7 @@ public class AggregationBenchmark {
             HashMap<String, Object> properties = new HashMap<>();
             properties.put("id", personId);
             properties.put("age", rand.nextInt(120));
-            db.addNode("person" + personId, properties);
+            db.addNode("Person", "person" + personId, properties);
         }
     }
 

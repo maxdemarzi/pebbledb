@@ -22,11 +22,10 @@
 ### Todos
      
 - [ ] Build Graph
-- [ ] Switch relationships to an Array. Use [nodeId,relId]
 - [ ] Finish Graph Tests
 - [ ] Add Server
 - [ ] Verify all return codes for http requests
-- [ ] Add Labels
+- [X] Add Labels
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
@@ -89,7 +88,7 @@ Aggregation:
 
 First Create some data:
 
-    curl -H "Content-Type: application/json" -X POST -d '{"name":"Max"}' http://localhost:8080/db/node/max
+    curl -H "Content-Type: application/json" -X POST -d '{"name":"Max"}' http://localhost:8080/db/Node/node/max
 
 Then query it:  
 
@@ -120,4 +119,4 @@ What am I doing wrong?
 
 
 max.json = {"name":"Tim"}
-ab -n 100000 -c 32 -T "application/json"  -u max.json http://127.0.0.1:8080/db/node/max/properties
+ab -n 100000 -c 32 -T "application/json"  -u max.json http://127.0.0.1:8080/db/node/Node/max/properties
