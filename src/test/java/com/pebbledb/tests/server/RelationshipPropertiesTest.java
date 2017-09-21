@@ -159,6 +159,38 @@ public class RelationshipPropertiesTest {
     }
 
     @Test
+    public void integrationTestPutRelationshipPropertiesNotThere() {
+        HashMap<String, Object> prop = new HashMap<>();
+        prop.put("stars", 4);
+        prop.put("archived", true);
+
+        given().
+                contentType("application/json").
+                body(prop).
+                when().
+                put("/db/relationship/FOLLOWS/Node/node2/Node/node3/properties").
+                then().
+                assertThat().
+                statusCode(404);
+    }
+
+    @Test
+    public void integrationTestPutRelationshipPropertiesNodeNotThere() {
+        HashMap<String, Object> prop = new HashMap<>();
+        prop.put("stars", 4);
+        prop.put("archived", true);
+
+        given().
+                contentType("application/json").
+                body(prop).
+                when().
+                put("/db/relationship/FOLLOWS/Node/node2/Node/node4/properties").
+                then().
+                assertThat().
+                statusCode(404);
+    }
+
+    @Test
     public void integrationTestPutRelationshipPropertiesEmpty() {
         given().
                 contentType("application/json").
@@ -169,6 +201,7 @@ public class RelationshipPropertiesTest {
                 statusCode(201).
                 contentType("application/json");
     }
+
     @Test
     public void integrationTestPutRelationshipPropertiesWithNumber() {
         HashMap<String, Object> prop = new HashMap<>();

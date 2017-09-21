@@ -151,6 +151,23 @@ public class NodePropertiesTest {
     }
 
     @Test
+    public void integrationTestPutNodePropertiesEmpty() {
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put("name", "Max");
+        properties.put("age", 37);
+
+        given().
+                contentType("application/json").
+                when().
+                put("/db/node/Node/node1/properties").
+                then().
+                assertThat().
+                body("$", equalTo(properties)).
+                statusCode(201).
+                contentType("application/json");
+    }
+
+    @Test
     public void integrationTestDeleteNodePropertyNotThere() {
         when().
                 delete("/db/node/Node/node0/property/not_there").
