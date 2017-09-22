@@ -80,7 +80,7 @@ public class GraphTraversalBenchmarks {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public List measureRecommendationRelationshipPropertiesTraversal() throws IOException {
         Collection<Integer> itemsYouLike = new HashSet<>();
-        Collection<Map<String,Object>> likes = db.getOutgoingRelationships("LIKES", "person" + rand.nextInt(personCount));
+        Collection<Map<String,Object>> likes = db.getOutgoingRelationships("LIKES", "Person", "person" + rand.nextInt(personCount));
         Map<Integer, LongAdder> occurrences = new HashMap<>();
         for (Map<String,Object> like : likes) {
             //if ((int) like.get("weight") > 8 ) {
@@ -88,7 +88,7 @@ public class GraphTraversalBenchmarks {
                 itemsYouLike.add(item);
                 for (Map<String, Object> like2 : db.getIncomingRelationships("LIKES", item)) {
                     //if ((int) like2.get("weight") > 8 ) {
-                        int person = (int)like.get("_incoming_node_id");
+                        int person = (int)like2.get("_incoming_node_id");
                         for ( Map<String, Object> like3 : db.getOutgoingRelationships("LIKES", person)){
                             //if ((int) like3.get("weight") > 8 ) {
                                 occurrences.computeIfAbsent((int)like3.get("_outgoing_node_id"), (t) -> new LongAdder())

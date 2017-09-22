@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static java.lang.Math.toIntExact;
@@ -224,4 +225,27 @@ public class RelationshipsTest {
         Assert.assertEquals(rel2Properties, db.getRelationship("MULTIPLE", "Node", "one", "Node", "two", 2));
     }
 
+    @Test
+    public void shouldGetAllRelationships() {
+        int count = 0;
+
+        Iterator<Map<String, Object>> iterator = db.getAllRelationships();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        Assert.assertEquals(1, count);
+    }
+
+    @Test
+    public void shouldGetAllTypedRelationships() {
+        int count = 0;
+
+        Iterator<Map<String, Object>> iterator = db.getRelationships("RELATED");
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        Assert.assertEquals(1, count);
+    }
 }

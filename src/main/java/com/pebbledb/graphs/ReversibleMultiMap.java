@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static java.lang.Math.toIntExact;
-
 // Adapted from http://stackoverflow.com/questions/23646186/a-java-multimap-which-allows-fast-lookup-of-key-by-value
 
 public class ReversibleMultiMap implements Multimap<Integer, Long> {
@@ -19,30 +17,20 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
     private Multimap<Integer, Long> key2Value = ArrayListMultimap.create();
     private Multimap<Integer, Long> value2key = ArrayListMultimap.create();
 
-    private Long getOtherValue(Integer key, Long value) {
-        Long otherValue = key.longValue();
-        otherValue = otherValue << 32;
-        otherValue += toIntExact((value << 32) >> 32);
-        return otherValue;
+    private static Long getOtherValue(Integer key, Long value) {
+        return ((long) key << 32 | (value.intValue()) & 0xFFFFFFFFL);
     }
 
-    private Long getOtherValue(Integer key, Object value) {
-        Long otherValue = key.longValue();
-        otherValue = otherValue << 32;
-        otherValue += toIntExact((((Long)value)  << 32) >> 32);
-        return otherValue;
+    public static int getNode(long value) {
+        return (int)(value >> 32);
     }
 
-    public static int getNode(Long value) {
-        return toIntExact(value >> 32);
+    private static int getNode(Object value) {
+        return (int)((long)value >> 32);
     }
 
-    private int getNode(Object value) {
-        return toIntExact(((Long)value) >> 32);
-    }
-
-    public static int getRel(Long value) {
-        return toIntExact((value << 32) >> 32);
+    public static int getRel(long value) {
+        return (int)value;
     }
 
     public Collection<Long> getKeysByValue(Integer value) {
@@ -92,9 +80,10 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
         value2key.put(to, value);
         return key2Value.put(from, otherValue);
     }
+
     @Override
     public boolean remove(Object key, Object value) {
-        value2key.remove(getNode(value), getOtherValue((int)key, value));
+        value2key.remove(getNode((long)value), getOtherValue((int)key, (long)value));
         return key2Value.remove(key, value);
     }
 

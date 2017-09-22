@@ -176,6 +176,18 @@ public class NodesTest {
     }
 
     @Test
+    public void shouldGetAllLabeledNodes() {
+        int count = 0;
+
+        Iterator<Map<String, Object>> iterator = db.getNodes("Node");
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        Assert.assertEquals(2, count);
+    }
+
+    @Test
     public void shouldClearGraph() {
         db.clear();
         int count = 0;

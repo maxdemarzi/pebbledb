@@ -72,5 +72,8 @@ public interface Graph {
 
     // Extras
     Iterator<Map<String, Object>> getAllNodes();
+    Iterator<Map<String, Object>> getNodes(String label);
+    Iterator<Map<String, Object>> getAllRelationships();
+    Iterator<Map<String, Object>> getRelationships(String type);
 
 }

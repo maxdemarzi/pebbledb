@@ -1,6 +1,7 @@
 package com.pebbledb.benchmarks;
 
 import com.pebbledb.graphs.FastUtilGraph;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -130,6 +131,7 @@ public class GraphReadBenchmarks {
         return person;
     }
 
+    @Ignore
     @Benchmark
     @Warmup(iterations = 10)
     @Measurement(iterations = 10)

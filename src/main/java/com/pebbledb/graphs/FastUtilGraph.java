@@ -1,9 +1,14 @@
 package com.pebbledb.graphs;
 
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
+
+import static com.pebbledb.graphs.ReversibleMultiMap.getRel;
 
 public class FastUtilGraph implements Graph {
 
@@ -16,6 +21,7 @@ public class FastUtilGraph implements Graph {
     private Object2IntOpenHashMap<String> relatedCounts;
     private RoaringBitmap deletedNodes;
     private RoaringBitmap deletedRelationships;
+    private Object2ObjectOpenHashMap<String, RoaringBitmap> labels;
 
     public FastUtilGraph() {
         nodeKeys = new Object2IntOpenHashMap<>();
@@ -29,6 +35,7 @@ public class FastUtilGraph implements Graph {
         relatedCounts = new Object2IntOpenHashMap<>();
         deletedNodes = new RoaringBitmap();
         deletedRelationships = new RoaringBitmap();
+        labels = new Object2ObjectOpenHashMap<>();
     }
 
     private static String generateKey(String label, String identifier) {
@@ -66,35 +73,46 @@ public class FastUtilGraph implements Graph {
         if (nodeKeys.containsKey(key)) {
             return false;
         } else {
+            int nodeId;
             if (deletedNodes.isEmpty()) {
                 nodes.add(new HashMap<>());
-                nodeKeys.put(key, nodes.size() - 1);
+                nodeId = nodes.size() - 1;
+                nodeKeys.put(key, nodeId);
             } else {
-                int nodeId = deletedNodes.first();
+                nodeId = deletedNodes.first();
                 nodes.set(nodeId, new HashMap<>());
                 nodeKeys.put(key, nodeId);
                 deletedNodes.remove(nodeId);
             }
+            if (!labels.containsKey(label)) {
+                labels.put(label, new RoaringBitmap());
+            }
+            labels.get(label).add(nodeId);
         }
         return true;
     }
-
-
 
     public boolean addNode (String label, String identifier, Map<String, Object> properties) {
         String key = generateKey(label, identifier);
         if (nodeKeys.containsKey(key)) {
             return false;
         } else {
+            int nodeId;
             if (deletedNodes.isEmpty()) {
                 nodes.add(properties);
-                nodeKeys.put(key, nodes.size() - 1);
+                nodeId = nodes.size() -1;
+                nodeKeys.put(key, nodeId);
             } else {
-                int id = deletedNodes.first();
-                nodes.set(id, properties);
-                nodeKeys.put(key, id);
-                deletedNodes.remove(id);
+                nodeId = deletedNodes.first();
+                nodes.set(nodeId, properties);
+                nodeKeys.put(key, nodeId);
+                deletedNodes.remove(nodeId);
             }
+            if (!labels.containsKey(label)) {
+                labels.put(label, new RoaringBitmap());
+            }
+            labels.get(label).add(nodeId);
+
             return true;
         }
     }
@@ -108,6 +126,7 @@ public class FastUtilGraph implements Graph {
         int id = nodeKeys.getInt(key);
         nodes.set(id, null);
         deletedNodes.add(id);
+        labels.get(label).remove(id);
 
         for (String type : related.keySet()) {
             ReversibleMultiMap rels = related.get(type);
@@ -518,7 +537,7 @@ public class FastUtilGraph implements Graph {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (String type : related.keySet()) {
             for (Long nodeRel : related.get(type).get(node1)) {
-                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+                nodeRelationships.add(relationships.get(getRel(nodeRel)));
             }
         }
         return nodeRelationships;
@@ -528,7 +547,7 @@ public class FastUtilGraph implements Graph {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (String type : related.keySet()) {
             for (Long nodeRel : related.get(type).get(node1)) {
-                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+                nodeRelationships.add(relationships.get(getRel(nodeRel)));
             }
         }
         return nodeRelationships;
@@ -540,7 +559,7 @@ public class FastUtilGraph implements Graph {
         
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).get(node1)) {
-            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            nodeRelationships.add(relationships.get(getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -548,7 +567,7 @@ public class FastUtilGraph implements Graph {
     public List<Map<String,Object>> getOutgoingRelationships(String type, int node) {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).get(node)) {
-            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            nodeRelationships.add(relationships.get(getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -560,7 +579,7 @@ public class FastUtilGraph implements Graph {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (String type : related.keySet()) {
             for (Long nodeRel : related.get(type).getKeysByValue(node2)) {
-                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+                nodeRelationships.add(relationships.get(getRel(nodeRel)));
             }
         }
         return nodeRelationships;
@@ -570,7 +589,7 @@ public class FastUtilGraph implements Graph {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (String type : related.keySet()) {
             for (Long nodeRel : related.get(type).getKeysByValue(node2)) {
-                nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+                nodeRelationships.add(relationships.get(getRel(nodeRel)));
             }
         }
         return nodeRelationships;
@@ -582,7 +601,7 @@ public class FastUtilGraph implements Graph {
 
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).getKeysByValue(node2)) {
-            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            nodeRelationships.add(relationships.get(getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -590,7 +609,7 @@ public class FastUtilGraph implements Graph {
     public List<Map<String,Object>> getIncomingRelationships(String type, int node) {
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Long nodeRel :related.get(type).getKeysByValue(node)) {
-            nodeRelationships.add(relationships.get(ReversibleMultiMap.getRel(nodeRel)));
+            nodeRelationships.add(relationships.get(getRel(nodeRel)));
         }
         return nodeRelationships;
     }
@@ -658,5 +677,68 @@ public class FastUtilGraph implements Graph {
 
     public Iterator<Map<String, Object>> getAllNodes() {
         return nodes.iterator();
+    }
+
+    public Iterator<Map<String,Object>> getNodes(String label) {
+        if (labels.containsKey(label)) {
+            Iterator<Integer> iter = labels.get(label).iterator();
+            return new NodeIterator(iter).invoke();
+        }
+        return null;
+    }
+
+    public Iterator<Map<String, Object>> getAllRelationships() {
+        return relationships.iterator();
+    }
+
+    public Iterator<Map<String, Object>> getRelationships(String type) {
+        if (related.containsKey(type)) {
+           Iterator<Map.Entry<Integer, Long>> iter = related.get(type).entries().iterator();
+           return new RelationshipIterator(iter).invoke();
+        }
+        return null;
+    }
+
+    private class RelationshipIterator {
+        private Iterator<Map.Entry<Integer, Long>> iter;
+
+        RelationshipIterator(Iterator<Map.Entry<Integer, Long>> iter) {
+            this.iter = iter;
+        }
+
+        Iterator<Map<String, Object>> invoke() {
+            return new Iterator<Map<String, Object>>() {
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
+
+                @Override
+                public Map<String, Object> next() {
+                    return relationships.get(getRel(iter.next().getValue()));
+                }
+            };
+        }
+    }
+    private class NodeIterator {
+        private Iterator<Integer> iter;
+
+        NodeIterator(Iterator<Integer> iter) {
+            this.iter = iter;
+        }
+
+        Iterator<Map<String, Object>> invoke() {
+            return new Iterator<Map<String, Object>>() {
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
+
+                @Override
+                public Map<String, Object> next() {
+                    return nodes.get(iter.next());
+                }
+            };
+        }
     }
 }

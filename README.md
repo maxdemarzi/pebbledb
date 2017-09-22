@@ -26,6 +26,7 @@
 - [ ] Add Server
 - [ ] Verify all return codes for http requests
 - [X] Add Labels
+- [ ] Add "related?" capabilities
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
@@ -36,7 +37,7 @@
 ### Benchmarks
 
 Reads:
-
+    todo    rerun
     Benchmark                                                   (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt          Score          Error  Units
     GraphReadBenchmarks.measureFixedSingleTraversalAndGetNodes             100        20000           100            100         1000  thrpt   10    2454065.793 ±    58106.632  ops/s
     GraphReadBenchmarks.measureFixedSingleTraversalIds                     100        20000           100            100         1000  thrpt   10   10697736.498 ±   441124.693  ops/s
@@ -50,39 +51,44 @@ Reads:
 Writes:
 
     Benchmark                                                     (friendsCount)  (itemCount)  (likesCount)  (personCount)  (userCount)   Mode  Cnt        Score        Error  Units
-    GraphWriteBenchmarks.measureCreateEmptyNode                              100        20000           100            100         1000  thrpt   10  1497050.946 ± 113563.892  ops/s
-    GraphWriteBenchmarks.measureCreateEmptyNodes                             100        20000           100            100         1000  thrpt   10    19459.899 ±    551.819  ops/s
-    GraphWriteBenchmarks.measureCreateEmptyNodesAndRelationships             100        20000           100            100         1000  thrpt   10       30.166 ±      1.902  ops/s
-    GraphWriteBenchmarks.measureCreateNodeWithProperties                     100        20000           100            100         1000  thrpt   10   935777.229 ± 622202.214  ops/s
-    GraphWriteBenchmarks.measureCreateNodesWithProperties                    100        20000           100            100         1000  thrpt   10     1054.875 ±    518.271  ops/s
+    GraphWriteBenchmarks.measureCreateEmptyNode                              100        20000           100            100         1000  thrpt   10  1372448.309 ± 214555.792  ops/s
+    GraphWriteBenchmarks.measureCreateEmptyNodes                             100        20000           100            100         1000  thrpt   10     7762.371 ±    255.254  ops/s
+    GraphWriteBenchmarks.measureCreateEmptyNodesAndRelationships             100        20000           100            100         1000  thrpt   10        5.036 ±      0.637  ops/s
+    GraphWriteBenchmarks.measureCreateNodeWithProperties                     100        20000           100            100         1000  thrpt   10   873191.924 ± 449883.862  ops/s
+    GraphWriteBenchmarks.measureCreateNodesWithProperties                    100        20000           100            100         1000  thrpt   10      921.795 ±    478.458  ops/s
+    GraphWriteBenchmarks.measureCreateRandomRelationship                     100        20000           100            100         1000  thrpt   10   528108.357 ±  59303.523  ops/s
+    GraphWriteBenchmarks.measureCreateRelationships                          100        20000           100            100         1000  thrpt   10       62.601 ±      8.537  ops/s
 
 Traversal:
 
-    Benchmark                                                                      (itemCount)  (likesCount)  (personCount)   Mode  Cnt      Score       Error  Units
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200            10           1000  thrpt   10  24316.347 ±  3053.061  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200            10          10000  thrpt   10   1727.841 ±   206.528  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200           100           1000  thrpt   10     26.716 ±     2.758  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)     200           100          10000  thrpt   10      2.483 ±     0.978  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000            10           1000  thrpt   10  87614.324 ± 10836.725  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000            10          10000  thrpt   10  13897.220 ±  1696.789  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000           100           1000  thrpt   10    436.264 ±    41.306  ops/s
-    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal (>8)    2000           100          10000  thrpt   10     44.421 ±     6.708  ops/s
-    Without filter, it is very slow. 726 ops/s for 200/10/1000, then 63 ops/s, 0.326 and finally 0.029 for 200/100/10000
-    
-    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10           1000  thrpt   10   4807.570 ±   202.806  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10          10000  thrpt   10    464.484 ±    35.171  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100           1000  thrpt   10      8.246 ±     0.298  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100          10000  thrpt   10      0.710 ±     0.015  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10           1000  thrpt   10  15637.761 ±   668.101  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10          10000  thrpt   10   1789.728 ±   116.874  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100           1000  thrpt   10     61.024 ±     2.187  ops/s
-    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100          10000  thrpt   10      5.115 ±     0.190  ops/s
+
+    Benchmark                                                                      (itemCount)  (likesCount)  (personCount)   Mode  Cnt      Score     Error  Units
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal          200            10           1000  thrpt   10   1865.560 ± 158.288  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal          200            10          10000  thrpt   10     97.424 ±   7.156  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal          200           100           1000  thrpt   10      2.171 ±   0.232  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal          200           100          10000  thrpt   10      0.231 ±   0.004  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal         2000            10           1000  thrpt   10   9709.429 ± 456.358  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal         2000            10          10000  thrpt   10    684.490 ±  59.421  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal         2000           100           1000  thrpt   10     14.956 ±   1.459  ops/s
+    GraphTraversalBenchmarks.measureRecommendationRelationshipPropertiesTraversal         2000           100          10000  thrpt   10      1.497 ±   0.063  ops/s
+         
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10           1000  thrpt   10   2764.156 ±  91.275  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200            10          10000  thrpt   10    242.720 ±  15.405  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100           1000  thrpt   10      4.203 ±   0.163  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                                200           100          10000  thrpt   10      0.404 ±   0.008  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10           1000  thrpt   10  12503.298 ± 146.924  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000            10          10000  thrpt   10   1428.722 ±  87.747  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100           1000  thrpt   10     40.538 ±   1.402  ops/s
+    GraphTraversalBenchmarks.measureRecommendationTraversal                               2000           100          10000  thrpt   10      3.731 ±   1.005  ops/s
+
+    Node only traversals took a 33%-50% slowdown when using long instead of int in RMM.
+    Relationship based traversals are now 2-10x faster specially for dense graphs, only half the speed of node id only traversals.
 
 Aggregation:
 
-    Benchmark                                (personCount)   Mode  Cnt       Score       Error  Units
-    AggregationBenchmark.measureAggregation            100  thrpt   10  310148.180 ± 17152.734  ops/s
-    AggregationBenchmark.measureAggregation        1632803  thrpt   10      17.588 ±     1.178  ops/s
+    Benchmark                                (personCount)  Mode  Cnt   Score    Error  Units
+    AggregationBenchmark.measureAggregation            100  avgt   10   0.003 ±  0.001  ms/op
+    AggregationBenchmark.measureAggregation        1632803  avgt   10  61.788 ± 46.586  ms/op
 
 ### Server Benchmarks
 
