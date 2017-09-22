@@ -59,8 +59,8 @@ public class ReversibleMultiMapTest {
         ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
         reversibleMultiMap2.put(8,8,1);
         reversibleMultiMap.putAll(reversibleMultiMap2);
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(8,(8L << 32) + 1));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,(9L << 32) + 2));
+        Assert.assertEquals(true, reversibleMultiMap.containsEntry(8,(1L << 32) + 8));
+        Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,(2L << 32) + 9));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ReversibleMultiMapTest {
 
     @Test
     public void shouldCheckRMMClearAll() {
-        Long eight = (8L << 32) + 12;
+        Long eight = (12L << 32) + 8;
         ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
         reversibleMultiMap2.put(8,8, 12);
         Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,eight));
@@ -94,7 +94,7 @@ public class ReversibleMultiMapTest {
 
     @Test
     public void shouldCheckRMMValues() {
-        Assert.assertArrayEquals(new Long[] { (1L << 32) + 1, (2L << 32) + 2, (4L << 32) + 3 } , reversibleMultiMap.values().toArray());
+        Assert.assertArrayEquals(new Long[] { (1L << 32) + 1, (2L << 32) + 2, (3L << 32) + 4 } , reversibleMultiMap.values().toArray());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ReversibleMultiMapTest {
     public void shouldCheckRMMAsMap() {
         Map<Integer, Collection<Long>> expected = new HashMap<>();
         expected.put(1, new ArrayList<Long>() {{add((1L << 32) + 1); add((2L << 32) + 2);}});
-        expected.put(3, new ArrayList<Long>() {{add((4L << 32) + 3); }});
+        expected.put(3, new ArrayList<Long>() {{add((3L << 32) + 4); }});
 
         Assert.assertEquals(expected , reversibleMultiMap.asMap());
     }

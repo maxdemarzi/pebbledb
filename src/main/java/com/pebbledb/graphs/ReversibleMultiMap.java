@@ -18,19 +18,15 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
     private Multimap<Integer, Long> value2key = ArrayListMultimap.create();
 
     private static Long getOtherValue(Integer key, Long value) {
-        return ((long) key << 32 | (value.intValue()) & 0xFFFFFFFFL);
+        return ((long) value.intValue() << 32 | key & 0xFFFFFFFFL);
     }
 
-    public static int getNode(long value) {
-        return (int)(value >> 32);
-    }
-
-    private static int getNode(Object value) {
-        return (int)((long)value >> 32);
+    private static int getNode(long value) {
+        return (int)value;
     }
 
     public static int getRel(long value) {
-        return (int)value;
+        return (int)(value >> 32);
     }
 
     public Collection<Long> getKeysByValue(Integer value) {
@@ -69,16 +65,8 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
     }
 
     public boolean put(Integer from, Integer to, Integer rel) {
-        Long otherValue = to.longValue();
-        otherValue = otherValue << 32;
-        otherValue += rel;
-
-        Long value = from.longValue();
-        value = value << 32;
-        value += rel;
-
-        value2key.put(to, value);
-        return key2Value.put(from, otherValue);
+        value2key.put(to, (long) rel << 32 | from & 0xFFFFFFFFL);
+        return key2Value.put(from, (long) rel << 32 | to & 0xFFFFFFFFL);
     }
 
     @Override
@@ -87,18 +75,9 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
         return key2Value.remove(key, value);
     }
 
-    public boolean removeRelationship(Integer from, Integer to, Integer id) {
-        Long otherValue = to.longValue();
-        otherValue = otherValue << 32;
-        otherValue += id;
-
-        Long value = from.longValue();
-        value = value << 32;
-        value += id;
-
-
-        value2key.remove(to, value);
-        return key2Value.remove(from, otherValue);
+    public boolean removeRelationship(Integer from, Integer to, Integer rel) {
+        value2key.remove(to, (long) rel << 32 | from & 0xFFFFFFFFL);
+        return key2Value.remove(from, (long) rel << 32 | to & 0xFFFFFFFFL);
     }
 
     @Override
