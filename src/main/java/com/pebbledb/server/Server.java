@@ -1,8 +1,8 @@
 package com.pebbledb.server;
 
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.WaitStrategy;
-import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.pebbledb.actions.Action;
@@ -47,7 +47,16 @@ public class Server {
         Executor executor = Executors.newCachedThreadPool();
 
         // Construct the Disruptor
-        WaitStrategy waitStrategy = new YieldingWaitStrategy();
+        //WaitStrategy waitStrategy = new YieldingWaitStrategy(); //55k, 70% cpu
+        WaitStrategy waitStrategy = new SleepingWaitStrategy(5); // 50k, 40% cpu, slow test on empty
+        //WaitStrategy waitStrategy = new TimeoutBlockingWaitStrategy(1, TimeUnit.SECONDS); // 37k, zero cpu
+        //WaitStrategy waitStrategy = new BlockingWaitStrategy(); //35k, zero cpu
+        //WaitStrategy waitStrategy = new BusySpinWaitStrategy();   //30k, high cpu, errors
+        //WaitStrategy waitStrategy = new LiteBlockingWaitStrategy(); //37k, zero cpu
+        //WaitStrategy waitStrategy = new LiteTimeoutBlockingWaitStrategy(1, TimeUnit.SECONDS); // 34k, zero cpu
+        //WaitStrategy waitStrategy = new PhasedBackoffWaitStrategy(1, 1, TimeUnit.SECONDS, new SleepingWaitStrategy(5)); // 30k, half cpu, errors
+        //WaitStrategy waitStrategy = new SleepingWaitStrategy(); // 50k, 40% cpu
+
         Disruptor<ExchangeEvent> disruptor = new Disruptor<>(ExchangeEvent::new, conf.getInt("pebble.disruptor.ring_buffer_size"), executor,
                 ProducerType.SINGLE, waitStrategy);
 

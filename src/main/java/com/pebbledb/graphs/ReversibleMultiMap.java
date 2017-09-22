@@ -2,141 +2,101 @@ package com.pebbledb.graphs;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collection;
 
 // Adapted from http://stackoverflow.com/questions/23646186/a-java-multimap-which-allows-fast-lookup-of-key-by-value
 
 public class ReversibleMultiMap {
 
-    private Multimap<Integer, Long> key2Value = ArrayListMultimap.create();
-    private Multimap<Integer, Long> value2key = ArrayListMultimap.create();
-
-    private static Long getOtherValue(Integer key, Long value) {
-        return ((long) value.intValue() << 32 | key & 0xFFFFFFFFL);
-    }
-
-    private static int getNode(long value) {
-        return (int)value;
-    }
-
-    public static int getRel(long value) {
-        return (int)(value >> 32);
-    }
-
-    public Collection<Long> getKeysByValue(Integer value) {
-        return value2key.get(value);
-    }
+    private Multimap<Integer, Integer> from2to = ArrayListMultimap.create();
+    private Multimap<Integer, Integer> from2rel = ArrayListMultimap.create();
+    private Multimap<Integer, Integer> to2from = ArrayListMultimap.create();
+    private Multimap<Integer, Integer> to2rel = ArrayListMultimap.create();
 
     public int size() {
-        return key2Value.size();
+        return from2to.size();
     }
 
     public boolean isEmpty() {
-        return key2Value.isEmpty();
+        return from2to.isEmpty();
     }
 
     public boolean containsNode(int node) {
-        return key2Value.containsKey(node);
+        return from2to.containsKey(node);
     }
 
     public boolean containsOtherNode(int node) {
-        return value2key.containsKey(node);
+        return to2from.containsKey(node);
     }
 
     public boolean containsEntry(int from, int to, int rel) {
-        return key2Value.containsEntry(from, (long) rel << 32 | to & 0xFFFFFFFFL);
+        return from2to.containsEntry(from, to) && from2rel.containsEntry(from, rel);
     }
 
     public boolean put(Integer from, Integer to, Integer rel) {
-        value2key.put(to, (long) rel << 32 | from & 0xFFFFFFFFL);
-        return key2Value.put(from, (long) rel << 32 | to & 0xFFFFFFFFL);
+        from2to.put(from, to);
+        from2rel.put(from, rel);
+        to2from.put(to, from);
+        return to2rel.put(to, rel);
     }
 
     public boolean removeRelationship(Integer from, Integer to, Integer rel) {
-        value2key.remove(to, (long) rel << 32 | from & 0xFFFFFFFFL);
-        return key2Value.remove(from, (long) rel << 32 | to & 0xFFFFFFFFL);
+        from2rel.remove(from, rel);
+        from2to.remove(from, to);
+        to2from.remove(to, from);
+        return to2rel.remove(to, rel);
     }
 
-    public boolean putAll(Integer key, Iterable<? extends Long> values) {
-        for (Long value : values) {
-            value2key.put(getNode(value), getOtherValue(key, value));
-        }
-        return key2Value.putAll(key, values);
-    }
 
-    public Collection<Long> removeAll(int key) {
-        Collection<Long> removed = key2Value.removeAll(key);
-        for (Long value : removed) {
-            value2key.remove(value, key);
+    public void removeAll(int key) {
+        ArrayList<Integer> removedRels = new ArrayList(from2rel.removeAll(key));
+        Collection<Integer> removed = from2to.removeAll(key);
+        int count = 0;
+        for (Integer value : removed) {
+            to2from.remove(value, key);
+            to2rel.remove(value, removedRels.get(count));
+            count++;
         }
-        for (Long reverse : value2key.removeAll(key)){
-            key2Value.remove(reverse, key);
-        }
-        return removed;
     }
 
     public void clear() {
-        value2key.clear();
-        key2Value.clear();
+        from2to.clear();
+        from2rel.clear();
+        to2from.clear();
+        to2rel.clear();
     }
 
-    public Collection<Long> get(Integer key) {
-        return key2Value.get(key);
+//    public Collection<Long> get(Integer key) {
+//        return key2Value.get(key);
+//    }
+
+    public Collection<Integer> getNodes(Integer from) {
+        return from2to.get(from);
     }
 
-    public Collection<Integer> getNodes(Integer key) {
-        ArrayList<Integer> nodes = new ArrayList<>();
-        for (long value : key2Value.get(key)) {
-            nodes.add((int)value);
-        }
-        return nodes;
+    public Collection<Integer> getNodesByValue(Integer to) {
+        return to2from.get(to);
     }
 
-    public Collection<Integer> getNodesByValue(Integer value) {
-        ArrayList<Integer> nodes = new ArrayList<>();
-        for (long key : value2key.get(value)) {
-            nodes.add((int)key);
-        }
-        return nodes;
+    public Collection<Integer> getRels(Integer from) {
+        return from2rel.get(from);
     }
 
-    public Collection<Integer> getRels(Integer key) {
-        ArrayList<Integer> rels = new ArrayList<>();
-        for (long value : key2Value.get(key)) {
-            rels.add((int)(value >> 32));
-        }
-        return rels;
+    public Collection<Integer> getRelsByValue(Integer to) {
+        return to2rel.get(to);
     }
 
-
-    public Collection<Integer> getRelsByValue(Integer value) {
-        ArrayList<Integer> rels = new ArrayList<>();
-        for (long key : key2Value.get(value)) {
-            rels.add((int)(key >> 32));
-        }
-        return rels;
+    public Collection<Integer> getAllRels() {
+        return from2rel.values();
     }
 
-    public Set<Integer> keySet() {
-        return key2Value.keySet();
+    public int getFromSize(Integer from) {
+        return from2to.get(from).size();
     }
 
-    public Multiset<Integer> keys() {
-        return key2Value.keys();
-    }
-
-    public Collection<Long> values() {
-        return key2Value.values();
-    }
-
-    public Collection<Entry<Integer, Long>> entries() {
-        return key2Value.entries();
-    }
-
-    public Map<Integer, Collection<Long>> asMap() {
-        return key2Value.asMap();
+    public int getToSize(Integer to) {
+        return to2from.get(to).size();
     }
 }
