@@ -32,35 +32,20 @@ public class ReversibleMultiMapTest {
 
     @Test
     public void shouldCheckRMMContainsKey() {
-        Assert.assertEquals(true, reversibleMultiMap.containsKey(1));
-        Assert.assertEquals(false, reversibleMultiMap.containsKey(9));
+        Assert.assertEquals(true, reversibleMultiMap.containsNode(1));
+        Assert.assertEquals(false, reversibleMultiMap.containsNode(9));
     }
 
     @Test
-    public void shouldCheckRMMContainsValue() {
-        Assert.assertEquals(true, reversibleMultiMap.containsValue( (2L << 32) + 2));
-        Assert.assertEquals(false, reversibleMultiMap.containsValue((9L << 32) + 2));
+    public void shouldCheckRMMContainsOtherNode() {
+        Assert.assertEquals(true, reversibleMultiMap.containsOtherNode(4));
+        Assert.assertEquals(false, reversibleMultiMap.containsOtherNode(9));
     }
 
     @Test
     public void shouldCheckRMMContainsEntry() {
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(1,(2L << 32) + 2));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9,(9L << 32) + 2));
-    }
-
-    @Test
-    public void shouldCheckRMMPutAll() {
-        Long four = (4L << 32) + 4;
-        Long five = (5L << 32) + 5;
-        reversibleMultiMap.putAll(3, new ArrayList<Long>(){{add(four); add(five);}});
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(3, (4L << 32) + 4));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(3, (9L << 32) + 2));
-
-        ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
-        reversibleMultiMap2.put(8,8,1);
-        reversibleMultiMap.putAll(reversibleMultiMap2);
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(8,(1L << 32) + 8));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(3,(2L << 32) + 9));
+        Assert.assertEquals(true, reversibleMultiMap.containsEntry(1,2, 2));
+        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9,9, 2));
     }
 
     @Test
@@ -68,8 +53,8 @@ public class ReversibleMultiMapTest {
         Long seven = (7L << 32) + 7;
         Long eight = (8L << 32) + 8;
         reversibleMultiMap.putAll(3, new ArrayList<Long>(){{add(seven); add(eight);}});
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(3, eight));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9, (9L << 32) + 2));
+        Assert.assertEquals(true, reversibleMultiMap.containsEntry(3, 8, 8));
+        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9, 9,+ 2));
     }
 
     @Test
@@ -77,9 +62,9 @@ public class ReversibleMultiMapTest {
         Long eight = (12L << 32) + 8;
         ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
         reversibleMultiMap2.put(8,8, 12);
-        Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,eight));
+        Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,8,12));
         reversibleMultiMap2.clear();
-        Assert.assertEquals(false, reversibleMultiMap2.containsEntry(8,eight));
+        Assert.assertEquals(false, reversibleMultiMap2.containsEntry(8,8,12));
     }
 
     @Test
