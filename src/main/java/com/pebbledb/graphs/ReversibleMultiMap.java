@@ -4,11 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 // Adapted from http://stackoverflow.com/questions/23646186/a-java-multimap-which-allows-fast-lookup-of-key-by-value
 
@@ -134,26 +131,34 @@ public class ReversibleMultiMap implements Multimap<Integer, Long> {
 
     public Collection<Integer> getNodes(Integer key) {
         ArrayList<Integer> nodes = new ArrayList<>();
-        key2Value.get(key).stream().map(ReversibleMultiMap::getNode).forEach(nodes::add);
+        for (long value : key2Value.get(key)) {
+            nodes.add((int)value);
+        }
         return nodes;
     }
 
     public Collection<Integer> getNodesByValue(Integer value) {
         ArrayList<Integer> nodes = new ArrayList<>();
-        value2key.get(value).stream().map(ReversibleMultiMap::getNode).forEach(nodes::add);
+        for (long key : value2key.get(value)) {
+            nodes.add((int)key);
+        }
         return nodes;
     }
 
     public Collection<Integer> getRels(Integer key) {
         ArrayList<Integer> rels = new ArrayList<>();
-        key2Value.get(key).stream().map(ReversibleMultiMap::getRel).forEach(rels::add);
+        for (long value : key2Value.get(key)) {
+            rels.add((int)(value >> 32));
+        }
         return rels;
     }
 
 
     public Collection<Integer> getRelsByValue(Integer value) {
         ArrayList<Integer> rels = new ArrayList<>();
-        value2key.get(value).stream().map(ReversibleMultiMap::getRel).forEach(rels::add);
+        for (long key : key2Value.get(value)) {
+            rels.add((int)(key >> 32));
+        }
         return rels;
     }
 

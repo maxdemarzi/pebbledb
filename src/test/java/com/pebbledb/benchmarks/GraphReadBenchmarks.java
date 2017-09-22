@@ -129,10 +129,10 @@ public class GraphReadBenchmarks {
         person += db.getOutgoingRelationshipNodes("LIKES", "Person", "person" + rand.nextInt(personCount)).length;
         return person;
     }
-    
+
     @Benchmark
-    @Warmup(iterations = 10)
-    @Measurement(iterations = 10)
+    @Warmup(iterations = 1)
+    @Measurement(iterations = 1)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)
