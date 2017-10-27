@@ -8,20 +8,20 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 
-public class FastUtilGraph implements Graph {
+public class FastUtilGraphLong implements Graph {
 
     private Object2IntOpenHashMap<String> nodeKeys;
     private ObjectArrayList<Map<String, Object>> nodes;
     private Object2IntOpenHashMap<String> relationshipKeys;
     private ObjectArrayList<Map<String, Object>> relationships;
-    private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
+    private Object2ObjectOpenHashMap<String, ReversibleMultiMapLong> related;
     private Object2IntArrayMap<String> relationshipCounts;
     private Object2IntOpenHashMap<String> relatedCounts;
     private RoaringBitmap deletedNodes;
     private RoaringBitmap deletedRelationships;
     private Object2ObjectOpenHashMap<String, RoaringBitmap> labels;
 
-    public FastUtilGraph() {
+    public FastUtilGraphLong() {
         nodeKeys = new Object2IntOpenHashMap<>();
         nodeKeys.defaultReturnValue(-1);
         nodes = new ObjectArrayList<>();
@@ -39,7 +39,7 @@ public class FastUtilGraph implements Graph {
     private static String generateKey(String label, String identifier) {
         return label + "-" + identifier;
     }
-
+    
     public void clear() {
         nodeKeys.clear();
         nodes.clear();
@@ -127,7 +127,7 @@ public class FastUtilGraph implements Graph {
         labels.get(label).remove(id);
 
         for (String type : related.keySet()) {
-            ReversibleMultiMap rels = related.get(type);
+            ReversibleMultiMapLong rels = related.get(type);
             int outgoingCount = 0;
             int incomingCount = 0;
             for (Integer value : rels.getRels(id)) {
@@ -208,7 +208,7 @@ public class FastUtilGraph implements Graph {
         String from = generateKey(label1, identifier1);
         String to = generateKey(label2, identifier2);
 
-        related.putIfAbsent(type, new ReversibleMultiMap());
+        related.putIfAbsent(type, new ReversibleMultiMapLong());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
@@ -233,7 +233,7 @@ public class FastUtilGraph implements Graph {
         String from = generateKey(label1, identifier1);
         String to = generateKey(label2, identifier2);
 
-        related.putIfAbsent(type, new ReversibleMultiMap());
+        related.putIfAbsent(type, new ReversibleMultiMapLong());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
@@ -517,7 +517,7 @@ public class FastUtilGraph implements Graph {
         }
 
         for (String type : relTypes) {
-            ReversibleMultiMap rels = related.get(type);
+            ReversibleMultiMapLong rels = related.get(type);
             if (direction.equals("all") || direction.equals("out")) {
                 count += rels.getFromSize(id);
             }
@@ -554,7 +554,7 @@ public class FastUtilGraph implements Graph {
     public List<Map<String,Object>> getOutgoingRelationships(String type, String label, String identifier) {
         String from = generateKey(label, identifier);
         int node1 = nodeKeys.getInt(from);
-
+        
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Integer rel : related.get(type).getRels(node1)) {
             nodeRelationships.add(relationships.get(rel));
@@ -691,8 +691,8 @@ public class FastUtilGraph implements Graph {
 
     public Iterator<Map<String, Object>> getRelationships(String type) {
         if (related.containsKey(type)) {
-            Iterator<Integer> iter = related.get(type).getAllRels().iterator();
-            return new RelationshipIterator(iter).invoke();
+           Iterator<Integer> iter = related.get(type).getAllRels().iterator();
+           return new RelationshipIterator(iter).invoke();
         }
         return null;
     }

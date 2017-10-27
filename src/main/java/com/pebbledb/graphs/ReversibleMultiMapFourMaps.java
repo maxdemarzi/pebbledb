@@ -8,7 +8,7 @@ import java.util.Collection;
 
 // Adapted from http://stackoverflow.com/questions/23646186/a-java-multimap-which-allows-fast-lookup-of-key-by-value
 
-public class ReversibleMultiMap {
+public class ReversibleMultiMapFourMaps {
 
     private Multimap<Integer, Integer> from2to = ArrayListMultimap.create();
     private Multimap<Integer, Integer> from2rel = ArrayListMultimap.create();

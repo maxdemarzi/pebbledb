@@ -22,6 +22,8 @@
 ### Todos
      
 - [ ] Build Graph
+- [ ] Try a compressed int library for keeping nodes/rels instead of Multimap<Integer, Integer>
+- [ ] Try roaring bitmap in rels + nodes in array.
 - [ ] Finish Graph Tests
 - [ ] Add Server
 - [ ] Verify all return codes for http requests
@@ -32,7 +34,8 @@
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
 - [ ] Add Metrics ( http://metrics.dropwizard.io/3.1.0/getting-started/ )
 - [ ] Add Dagger for DI of Metrics and others
-    
+- [ ] Add gRPC
+- [ ] Add GraphQL ( https://www.howtographql.com/graphql-java/0-introduction/ )    
 
 ### Benchmarks
 

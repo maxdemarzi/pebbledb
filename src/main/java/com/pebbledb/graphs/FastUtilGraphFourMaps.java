@@ -8,7 +8,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 
-public class FastUtilGraph implements Graph {
+public class FastUtilGraphFourMaps implements Graph {
 
     private Object2IntOpenHashMap<String> nodeKeys;
     private ObjectArrayList<Map<String, Object>> nodes;
@@ -21,7 +21,7 @@ public class FastUtilGraph implements Graph {
     private RoaringBitmap deletedRelationships;
     private Object2ObjectOpenHashMap<String, RoaringBitmap> labels;
 
-    public FastUtilGraph() {
+    public FastUtilGraphFourMaps() {
         nodeKeys = new Object2IntOpenHashMap<>();
         nodeKeys.defaultReturnValue(-1);
         nodes = new ObjectArrayList<>();
@@ -39,7 +39,7 @@ public class FastUtilGraph implements Graph {
     private static String generateKey(String label, String identifier) {
         return label + "-" + identifier;
     }
-
+    
     public void clear() {
         nodeKeys.clear();
         nodes.clear();
@@ -554,7 +554,7 @@ public class FastUtilGraph implements Graph {
     public List<Map<String,Object>> getOutgoingRelationships(String type, String label, String identifier) {
         String from = generateKey(label, identifier);
         int node1 = nodeKeys.getInt(from);
-
+        
         List<Map<String,Object>> nodeRelationships = new ArrayList<>();
         for (Integer rel : related.get(type).getRels(node1)) {
             nodeRelationships.add(relationships.get(rel));
@@ -691,8 +691,8 @@ public class FastUtilGraph implements Graph {
 
     public Iterator<Map<String, Object>> getRelationships(String type) {
         if (related.containsKey(type)) {
-            Iterator<Integer> iter = related.get(type).getAllRels().iterator();
-            return new RelationshipIterator(iter).invoke();
+           Iterator<Integer> iter = related.get(type).getAllRels().iterator();
+           return new RelationshipIterator(iter).invoke();
         }
         return null;
     }
