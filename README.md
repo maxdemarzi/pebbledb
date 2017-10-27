@@ -21,14 +21,12 @@
     
 ### Todos
      
-- [ ] Build Graph
-- [ ] Try a compressed int library for keeping nodes/rels instead of Multimap<Integer, Integer>
-- [ ] Try roaring bitmap in rels + nodes in array.
-- [ ] Finish Graph Tests
-- [ ] Add Server
+- [X] Build Graph
+- [X] Finish Graph Tests
+- [X] Add Server
 - [ ] Verify all return codes for http requests
 - [X] Add Labels
-- [ ] Add "related?" capabilities
+- [X] Add "related" capabilities
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)

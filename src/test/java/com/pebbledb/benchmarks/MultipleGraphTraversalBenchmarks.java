@@ -163,5 +163,5 @@ public class MultipleGraphTraversalBenchmarks {
         itemList.sort((a, b) -> (b.getValue().intValue() - a.getValue().intValue()));
         return itemList.subList(0, Math.min(itemList.size(), 10));
     }
-    
+
 }

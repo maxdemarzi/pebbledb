@@ -35,6 +35,10 @@ public class ReversibleMultiMap {
         return from2to.containsEntry(from, to) && from2rel.containsEntry(from, rel);
     }
 
+    public boolean containsPair(int from, int to) {
+        return from2to.containsEntry(from, to);
+    }
+
     public boolean put(Integer from, Integer to, Integer rel) {
         from2to.put(from, to);
         from2rel.put(from, rel);

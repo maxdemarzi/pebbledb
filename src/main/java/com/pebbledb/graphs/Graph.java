@@ -76,4 +76,8 @@ public interface Graph {
     Iterator<Map<String, Object>> getAllRelationships();
     Iterator<Map<String, Object>> getRelationships(String type);
 
+    // Related
+    boolean related(String label1, String from, String label2, String to);
+    boolean related(String label1, String from, String label2, String to, String direction, String type);
+    boolean related(String label1, String from, String label2, String to, String direction, List<String> types);
 }

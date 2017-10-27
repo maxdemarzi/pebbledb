@@ -697,6 +697,47 @@ public class FastUtilGraph implements Graph {
         return null;
     }
 
+    public boolean related(String label1, String identifier1, String label2, String identifier2) {
+        return related(label1, identifier1, label2, identifier2, "all", new ArrayList<>());
+    }
+
+    public boolean related(String label1, String identifier1, String label2, String identifier2, String direction, String type) {
+        return related(label1, identifier1, label2, identifier2, direction, new ArrayList<String>(){{ add(type); }});
+    }
+    public boolean related(String label1, String identifier1, String label2, String identifier2, String direction, List<String> types) {
+        String from = generateKey(label1, identifier1);
+        String to = generateKey(label2, identifier2);
+        return related(nodeKeys.getInt(from), nodeKeys.getInt(to), direction, types);
+    }
+
+    public boolean related(int node1, int node2, String direction, List<String> types) {
+        if (node1 == -1 || node2 == -1) { return false; }
+        List<String> relTypes;
+        if (types.isEmpty()) {
+            relTypes = new ArrayList<>(related.keySet());
+        } else {
+            types.retainAll(related.keySet());
+            relTypes = types;
+        }
+
+        for (String type : relTypes) {
+            ReversibleMultiMap rels = related.get(type);
+            if (direction.equals("all") || direction.equals("out")) {
+                if (rels.containsPair(node1, node2)) {
+                    return true;
+                }
+            }
+            if (direction.equals("all") || direction.equals("in")) {
+                if (rels.containsPair(node2, node1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
     private class RelationshipIterator {
         private Iterator<Integer> iter;
 
