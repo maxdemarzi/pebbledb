@@ -137,6 +137,8 @@ public class Server {
                         .add(PUT, PATH_ADD_REL_PROPERTY, new RequestHandler(true, Action.PUT_RELATIONSHIP_PROPERTY))
                         .add(DELETE, PATH_ADD_REL_PROPERTY, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
 
+                        .add(GET, PATH_CONNECTED, new RequestHandler(false, Action.GET_RELATED))
+
                 )
                 .build();
         undertow.start();

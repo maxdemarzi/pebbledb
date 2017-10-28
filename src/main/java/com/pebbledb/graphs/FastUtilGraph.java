@@ -1,16 +1,13 @@
 package com.pebbledb.graphs;
 
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 
 public class FastUtilGraph implements Graph {
 
-    private Object2IntOpenHashMap<String> nodeKeys;
+    private Object2ObjectArrayMap<String, Object2IntOpenHashMap<String>> nodeKeys;
     private ObjectArrayList<Map<String, Object>> nodes;
     private Object2IntOpenHashMap<String> relationshipKeys;
     private ObjectArrayList<Map<String, Object>> relationships;
@@ -19,11 +16,9 @@ public class FastUtilGraph implements Graph {
     private Object2IntOpenHashMap<String> relatedCounts;
     private RoaringBitmap deletedNodes;
     private RoaringBitmap deletedRelationships;
-    private Object2ObjectOpenHashMap<String, RoaringBitmap> labels;
 
     public FastUtilGraph() {
-        nodeKeys = new Object2IntOpenHashMap<>();
-        nodeKeys.defaultReturnValue(-1);
+        nodeKeys = new Object2ObjectArrayMap<>();
         nodes = new ObjectArrayList<>();
         relationshipKeys = new Object2IntOpenHashMap<>();
         relationshipKeys.defaultReturnValue(-1);
@@ -33,11 +28,6 @@ public class FastUtilGraph implements Graph {
         relatedCounts = new Object2IntOpenHashMap<>();
         deletedNodes = new RoaringBitmap();
         deletedRelationships = new RoaringBitmap();
-        labels = new Object2ObjectOpenHashMap<>();
-    }
-
-    private static String generateKey(String label, String identifier) {
-        return label + "-" + identifier;
     }
 
     public void clear() {
@@ -65,66 +55,83 @@ public class FastUtilGraph implements Graph {
         return relationshipCounts.getInt(type);
     }
 
+    private Object2IntOpenHashMap<String> getOrCreateNodeKey(String label) {
+        Object2IntOpenHashMap<String> nodeKey;
+
+        if (!nodeKeys.containsKey(label)) {
+            nodeKey = new Object2IntOpenHashMap<>();
+            nodeKey.defaultReturnValue(-1);
+            nodeKeys.put(label, nodeKey);
+        } else {
+            nodeKey = nodeKeys.get(label);
+        }
+        return nodeKey;
+    }
+    private Object2IntOpenHashMap<String> getNodeKey(String label) {
+        Object2IntOpenHashMap<String> nodeKey;
+
+        if (!nodeKeys.containsKey(label)) {
+            nodeKey = new Object2IntOpenHashMap<>();
+            nodeKey.defaultReturnValue(-1);
+        } else {
+            nodeKey = nodeKeys.get(label);
+        }
+        return nodeKey;
+    }
+    
     // Nodes
-    public boolean addNode (String label, String identifier) {
-        String key = generateKey(label, identifier);
-        if (nodeKeys.containsKey(key)) {
+    public boolean addNode (String label, String key) {
+        Object2IntOpenHashMap<String> nodeKey = getOrCreateNodeKey(label);
+        
+        if (nodeKey.containsKey(key)) {
             return false;
         } else {
             int nodeId;
             if (deletedNodes.isEmpty()) {
                 nodes.add(new HashMap<>());
                 nodeId = nodes.size() - 1;
-                nodeKeys.put(key, nodeId);
+                nodeKey.put(key, nodeId);
             } else {
                 nodeId = deletedNodes.first();
                 nodes.set(nodeId, new HashMap<>());
-                nodeKeys.put(key, nodeId);
+                nodeKey.put(key, nodeId);
                 deletedNodes.remove(nodeId);
             }
-            if (!labels.containsKey(label)) {
-                labels.put(label, new RoaringBitmap());
-            }
-            labels.get(label).add(nodeId);
         }
         return true;
     }
 
-    public boolean addNode (String label, String identifier, Map<String, Object> properties) {
-        String key = generateKey(label, identifier);
-        if (nodeKeys.containsKey(key)) {
+    public boolean addNode (String label, String key, Map<String, Object> properties) {
+        Object2IntOpenHashMap<String> nodeKey = getOrCreateNodeKey(label);
+        
+        if (nodeKey.containsKey(key)) {
             return false;
         } else {
             int nodeId;
             if (deletedNodes.isEmpty()) {
                 nodes.add(properties);
                 nodeId = nodes.size() -1;
-                nodeKeys.put(key, nodeId);
+                nodeKey.put(key, nodeId);
             } else {
                 nodeId = deletedNodes.first();
                 nodes.set(nodeId, properties);
-                nodeKeys.put(key, nodeId);
+                nodeKey.put(key, nodeId);
                 deletedNodes.remove(nodeId);
             }
-            if (!labels.containsKey(label)) {
-                labels.put(label, new RoaringBitmap());
-            }
-            labels.get(label).add(nodeId);
 
             return true;
         }
     }
 
-    public boolean removeNode(String label, String identifier) {
-        String key = generateKey(label, identifier);
-        if(!nodeKeys.containsKey(key)) {
+    public boolean removeNode(String label, String key) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        if(!nodeKey.containsKey(key)) {
             return false;
         }
 
-        int id = nodeKeys.getInt(key);
+        int id = nodeKey.getInt(key);
         nodes.set(id, null);
         deletedNodes.add(id);
-        labels.get(label).remove(id);
 
         for (String type : related.keySet()) {
             ReversibleMultiMap rels = related.get(type);
@@ -143,60 +150,60 @@ public class FastUtilGraph implements Graph {
             rels.removeAll(id);
             relationshipCounts.put(type, relationshipCounts.getInt(type) - (outgoingCount + incomingCount));
         }
-        nodeKeys.removeInt(key);
+        nodeKey.removeInt(key);
 
         return true;
     }
 
-    public Map<String, Object> getNode(String label, String identifier) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public Map<String, Object> getNode(String label, String key) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return null; }
-        return nodes.get(nodeKeys.getInt(key));
+        return nodes.get(nodeKey.getInt(key));
     }
 
-    public int getNodeId(String label, String identifier) {
-        String key = generateKey(label, identifier);
-        return nodeKeys.getInt(key);
+    public int getNodeId(String label, String key) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        return nodeKey.getInt(key);
     }
 
     // Node Properties
-    public Object getNodeProperty(String label, String identifier, String property) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public Object getNodeProperty(String label, String key, String property) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return null; }
         return nodes.get(id).get(property);
     }
 
-    public boolean updateNodeProperties(String label, String identifier, Map<String, Object> properties) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public boolean updateNodeProperties(String label, String key, Map<String, Object> properties) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> current = nodes.get(id);
         current.putAll(properties);
         return true;
     }
 
-    public boolean deleteNodeProperties(String label, String identifier) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public boolean deleteNodeProperties(String label, String key) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return false; }
         nodes.add(id, new HashMap<>());
         return true;
     }
 
-    public boolean updateNodeProperty(String label, String identifier, String property, Object value) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public boolean updateNodeProperty(String label, String key, String property, Object value) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> properties = nodes.get(id);
         properties.put(property, value);
         return true;
     }
 
-    public boolean deleteNodeProperty(String label, String identifier, String property) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public boolean deleteNodeProperty(String label, String key, String property) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int id = nodeKey.getInt(key);
         if (id == -1) { return false; }
         Map<String, Object> properties = nodes.get(id);
         properties.remove(property);
@@ -204,16 +211,16 @@ public class FastUtilGraph implements Graph {
     }
 
     // Relationships
-    public boolean addRelationship(String type, String label1, String identifier1, String label2, String identifier2) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
-
+    public boolean addRelationship(String type, String label1, String from, String label2, String to) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
+        
         related.putIfAbsent(type, new ReversibleMultiMap());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
@@ -229,16 +236,16 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean addRelationship(String type, String label1, String identifier1, String label2, String identifier2, Map<String, Object> properties) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean addRelationship(String type, String label1, String from, String label2, String to, Map<String, Object> properties) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
         related.putIfAbsent(type, new ReversibleMultiMap());
         relationshipCounts.putIfAbsent(type, 0);
         relationshipCounts.put(type, relationshipCounts.getInt(type) + 1);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
         properties.put("_incoming_node_id", node1);
         properties.put("_outgoing_node_id", node2);
@@ -252,15 +259,15 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean removeRelationship (String type, String label1, String identifier1, String label2, String identifier2) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean removeRelationship (String type, String label1, String from, String label2, String to) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
         if(!related.containsKey(type)) {
             return false;
         }
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
         if (count == 0) {
@@ -276,15 +283,15 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean removeRelationship(String type, String label1, String identifier1, String label2, String identifier2, int number) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean removeRelationship(String type, String label1, String from, String label2, String to, int number) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
         if(!related.containsKey(type)) {
             return false;
         }
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
         if (count == 0 || count < number) {
@@ -308,12 +315,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public Map<String, Object> getRelationship(String type, String label1, String identifier1, String label2, String identifier2) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public Map<String, Object> getRelationship(String type, String label1, String from, String label2, String to) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
         if (count == 0) { return null; }
@@ -322,12 +329,12 @@ public class FastUtilGraph implements Graph {
         return relationships.get(relId);
     }
 
-    public Map<String, Object> getRelationship(String type, String label1, String identifier1, String label2, String identifier2, int number) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public Map<String, Object> getRelationship(String type, String label1, String from, String label2, String to, int number) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
 
         return relationships.get(relId);
@@ -335,12 +342,12 @@ public class FastUtilGraph implements Graph {
 
     // Relationship Properties
 
-    public Object getRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, String property) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public Object getRelationshipProperty(String type, String label1, String from, String label2, String to, String property) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -349,12 +356,12 @@ public class FastUtilGraph implements Graph {
         return relationships.get(relId).get(property);
     }
 
-    public Object getRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, int number, String property) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public Object getRelationshipProperty(String type, String label1, String from, String label2, String to, int number, String property) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -363,12 +370,12 @@ public class FastUtilGraph implements Graph {
         return relationships.get(relId).get(property);
     }
 
-    public boolean updateRelationshipProperties(String type, String label1, String identifier1, String label2, String identifier2, Map<String, Object> properties) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean updateRelationshipProperties(String type, String label1, String from, String label2, String to, Map<String, Object> properties) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -379,12 +386,12 @@ public class FastUtilGraph implements Graph {
     }
 
 
-    public boolean updateRelationshipProperties(String type, String label1, String identifier1, String label2, String identifier2, int number, Map<String, Object> properties) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean updateRelationshipProperties(String type, String label1, String from, String label2, String to, int number, Map<String, Object> properties) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -394,12 +401,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean deleteRelationshipProperties(String type, String label1, String identifier1, String label2, String identifier2) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean deleteRelationshipProperties(String type, String label1, String from, String label2, String to) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -409,12 +416,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean deleteRelationshipProperties(String type, String label1, String identifier1, String label2, String identifier2, int number) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean deleteRelationshipProperties(String type, String label1, String from, String label2, String to, int number) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -424,12 +431,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean updateRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, String property, Object value) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean updateRelationshipProperty(String type, String label1, String from, String label2, String to, String property, Object value) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
         if (count == 0) { return false; }
@@ -438,12 +445,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean updateRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, int number, String property, Object value) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean updateRelationshipProperty(String type, String label1, String from, String label2, String to, int number, String property, Object value) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -453,12 +460,12 @@ public class FastUtilGraph implements Graph {
         return true;
     }
 
-    public boolean deleteRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, String property) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean deleteRelationshipProperty(String type, String label1, String from, String label2, String to, String property) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -473,12 +480,12 @@ public class FastUtilGraph implements Graph {
         return false;
     }
 
-    public boolean deleteRelationshipProperty(String type, String label1, String identifier1, String label2, String identifier2, int number, String property) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
+    public boolean deleteRelationshipProperty(String type, String label1, String from, String label2, String to, int number, String property) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
-        int node1 = nodeKeys.getInt(from);
-        int node2 = nodeKeys.getInt(to);
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
         int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
@@ -502,9 +509,10 @@ public class FastUtilGraph implements Graph {
         return getNodeDegree(label, identifier, direction, new ArrayList<>());
     }
 
-    public int getNodeDegree(String label, String identifier, String direction, List<String> types) {
-        String key = generateKey(label, identifier);
-        int id = nodeKeys.getInt(key);
+    public int getNodeDegree(String label, String key, String direction, List<String> types) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+
+        int id = nodeKey.getInt(key);
         if (id == -1) { return -1; }
 
         int count = 0;
@@ -529,16 +537,10 @@ public class FastUtilGraph implements Graph {
     }
 
     // Traversing
-    public List<Map<String, Object>> getOutgoingRelationships(String label, String identifier) {
-        String from = generateKey(label, identifier);
-        int node1 = nodeKeys.getInt(from);
-        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (String type : related.keySet()) {
-            for (Integer rel : related.get(type).getRels(node1)) {
-                nodeRelationships.add(relationships.get(rel));
-            }
-        }
-        return nodeRelationships;
+    public List<Map<String, Object>> getOutgoingRelationships(String label, String from) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node1 = nodeKey.getInt(from);
+        return getOutgoingRelationships(node1);
     }
 
     public List<Map<String, Object>> getOutgoingRelationships(int node1) {
@@ -551,15 +553,10 @@ public class FastUtilGraph implements Graph {
         return nodeRelationships;
     }
 
-    public List<Map<String,Object>> getOutgoingRelationships(String type, String label, String identifier) {
-        String from = generateKey(label, identifier);
-        int node1 = nodeKeys.getInt(from);
-
-        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (Integer rel : related.get(type).getRels(node1)) {
-            nodeRelationships.add(relationships.get(rel));
-        }
-        return nodeRelationships;
+    public List<Map<String,Object>> getOutgoingRelationships(String type, String label, String from) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node1 = nodeKey.getInt(from);
+        return getOutgoingRelationships(type, node1);
     }
 
     public List<Map<String,Object>> getOutgoingRelationships(String type, int node) {
@@ -570,17 +567,10 @@ public class FastUtilGraph implements Graph {
         return nodeRelationships;
     }
 
-    public List<Map<String,Object>> getIncomingRelationships(String label, String identifier) {
-        String to = generateKey(label, identifier);
-        int node2 = nodeKeys.getInt(to);
-
-        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (String type : related.keySet()) {
-            for (Integer rel : related.get(type).getRelsByValue(node2)) {
-                nodeRelationships.add(relationships.get(rel));
-            }
-        }
-        return nodeRelationships;
+    public List<Map<String,Object>> getIncomingRelationships(String label, String to) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node2 = nodeKey.getInt(to);
+        return getIncomingRelationships(node2);
     }
 
     public List<Map<String,Object>> getIncomingRelationships(int node2) {
@@ -593,15 +583,10 @@ public class FastUtilGraph implements Graph {
         return nodeRelationships;
     }
 
-    public List<Map<String,Object>> getIncomingRelationships(String type, String label, String identifier) {
-        String to = generateKey(label, identifier);
-        int node2 = nodeKeys.getInt(to);
-
-        List<Map<String,Object>> nodeRelationships = new ArrayList<>();
-        for (Integer rel : related.get(type).getRelsByValue(node2)) {
-            nodeRelationships.add(relationships.get(rel));
-        }
-        return nodeRelationships;
+    public List<Map<String,Object>> getIncomingRelationships(String type, String label, String to) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node2 = nodeKey.getInt(to);
+        return getIncomingRelationships(type, node2);
     }
 
     public List<Map<String,Object>> getIncomingRelationships(String type, int node) {
@@ -612,10 +597,11 @@ public class FastUtilGraph implements Graph {
         return nodeRelationships;
     }
 
-    public Object[] getOutgoingRelationshipNodes(String type, String label, String identifier) {
-        String from = generateKey(label, identifier);
+    public Object[] getOutgoingRelationshipNodes(String type, String label, String from) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node1 = nodeKey.getInt(from);
 
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodes(nodeKeys.getInt(from));
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodes(node1);
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -624,9 +610,11 @@ public class FastUtilGraph implements Graph {
         return nodeArray;
     }
 
-    public Object[] getIncomingRelationshipNodes(String type, String label, String identifier) {
-        String to = generateKey(label, identifier);
-        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodesByValue(nodeKeys.getInt(to));
+    public Object[] getIncomingRelationshipNodes(String type, String label, String to) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node2 = nodeKey.getInt(to);
+
+        List<Integer> nodeIds = (List<Integer>)related.get(type).getNodesByValue(node2);
         int size = nodeIds.size();
         Object[] nodeArray = new Object[size];
         for(int i=-1; ++i < size;) {
@@ -659,18 +647,20 @@ public class FastUtilGraph implements Graph {
         return (List<Integer>)related.get(type).getNodes(from);
     }
 
-    public List<Integer> getOutgoingRelationshipNodeIds(String type, String label, String identifier) {
-        String from = generateKey(label, identifier);
-        return (List<Integer>)related.get(type).getNodes(nodeKeys.getInt(from));
+    public List<Integer> getOutgoingRelationshipNodeIds(String type, String label, String from) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node1 = nodeKey.getInt(from);
+        return (List<Integer>)related.get(type).getNodes(node1);
     }
 
     public List<Integer> getIncomingRelationshipNodeIds(String type, Integer to) {
         return (List<Integer>)related.get(type).getNodesByValue(to);
     }
 
-    public List<Integer> getIncomingRelationshipNodeIds(String type, String label, String identifier) {
-        String to = generateKey(label, identifier);
-        return (List<Integer>)related.get(type).getNodesByValue(nodeKeys.getInt(to));
+    public List<Integer> getIncomingRelationshipNodeIds(String type, String label, String to) {
+        Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
+        int node2 = nodeKey.getInt(to);
+        return (List<Integer>)related.get(type).getNodesByValue(node2);
     }
 
     public Iterator<Map<String, Object>> getAllNodes() {
@@ -678,10 +668,11 @@ public class FastUtilGraph implements Graph {
     }
 
     public Iterator<Map<String,Object>> getNodes(String label) {
-        if (labels.containsKey(label)) {
-            Iterator<Integer> iter = labels.get(label).iterator();
+        if(nodeKeys.containsKey(label)) {
+            Iterator<Integer> iter = nodeKeys.get(label).values().iterator();
             return new NodeIterator(iter).invoke();
         }
+
         return null;
     }
 
@@ -697,17 +688,21 @@ public class FastUtilGraph implements Graph {
         return null;
     }
 
-    public boolean related(String label1, String identifier1, String label2, String identifier2) {
-        return related(label1, identifier1, label2, identifier2, "all", new ArrayList<>());
+    public boolean related(String label1, String from, String label2, String to) {
+        return related(label1, from, label2, to, "all", new ArrayList<>());
     }
 
-    public boolean related(String label1, String identifier1, String label2, String identifier2, String direction, String type) {
-        return related(label1, identifier1, label2, identifier2, direction, new ArrayList<String>(){{ add(type); }});
+    public boolean related(String label1, String from, String label2, String to, String direction, String type) {
+        return related(label1, from, label2, to, direction, new ArrayList<String>(){{ add(type); }});
     }
-    public boolean related(String label1, String identifier1, String label2, String identifier2, String direction, List<String> types) {
-        String from = generateKey(label1, identifier1);
-        String to = generateKey(label2, identifier2);
-        return related(nodeKeys.getInt(from), nodeKeys.getInt(to), direction, types);
+    public boolean related(String label1, String from, String label2, String to, String direction, List<String> types) {
+        Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
+        Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
+
+        int node1 = node1Key.getInt(from);
+        int node2 = node2Key.getInt(to);
+
+        return related(node1, node2, direction, types);
     }
 
     public boolean related(int node1, int node2, String direction, List<String> types) {

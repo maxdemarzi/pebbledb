@@ -32,5 +32,5 @@ public class Constants {
     static final String PATH_ADD_REL="/db/relationship/{type}/{label1}/{from}/{label2}/{to}/{number}";
     static final String PATH_ADD_REL_PROPERTIES="/db/relationship/{type}/{label1}/{from}/{label2}/{to}/{number}/properties";
     static final String PATH_ADD_REL_PROPERTY="/db/relationship/{type}/{label1}/{from}/{label2}/{to}/{number}/property/{key}";
-
+    static final String PATH_CONNECTED="/db/related/{label1}/{from}/{label2}/{to}";
 }
