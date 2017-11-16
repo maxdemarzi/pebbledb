@@ -737,14 +737,13 @@ public class FastUtilGraph implements Graph {
         }
 
         for (String type : relTypes) {
-            ReversibleMultiMap rels = related.get(type);
             if (direction.equals("all") || direction.equals("out")) {
-                if (rels.containsPair(node1, node2)) {
+                if (relationshipKeys.containsKey(node1 + "-" + node2 + "-" + type + "-1")) {
                     return true;
                 }
             }
             if (direction.equals("all") || direction.equals("in")) {
-                if (rels.containsPair(node2, node1)) {
+                if (relationshipKeys.containsKey(node2 + "-" + node1 + "-" + type + "-1")) {
                     return true;
                 }
             }

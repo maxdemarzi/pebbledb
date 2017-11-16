@@ -29,33 +29,33 @@ public class ReversibleMultiMapTest {
         Assert.assertEquals(false, reversibleMultiMap.isEmpty());
     }
 
-    @Test
-    public void shouldCheckRMMContainsKey() {
-        Assert.assertEquals(true, reversibleMultiMap.containsNode(1));
-        Assert.assertEquals(false, reversibleMultiMap.containsNode(9));
-    }
-
-    @Test
-    public void shouldCheckRMMContainsOtherNode() {
-        Assert.assertEquals(true, reversibleMultiMap.containsOtherNode(4));
-        Assert.assertEquals(false, reversibleMultiMap.containsOtherNode(9));
-    }
-
-    @Test
-    public void shouldCheckRMMContainsEntry() {
-        Assert.assertEquals(true, reversibleMultiMap.containsEntry(1,2, 2));
-        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9,9, 2));
-    }
-
-    @Test
-    public void shouldCheckRMMClearAll() {
-        Long eight = (12L << 32) + 8;
-        ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
-        reversibleMultiMap2.put(8,8, 12);
-        Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,8,12));
-        reversibleMultiMap2.clear();
-        Assert.assertEquals(false, reversibleMultiMap2.containsEntry(8,8,12));
-    }
+//    @Test
+//    public void shouldCheckRMMContainsKey() {
+//        Assert.assertEquals(true, reversibleMultiMap.containsNode(1));
+//        Assert.assertEquals(false, reversibleMultiMap.containsNode(9));
+//    }
+//
+//    @Test
+//    public void shouldCheckRMMContainsOtherNode() {
+//        Assert.assertEquals(true, reversibleMultiMap.containsOtherNode(4));
+//        Assert.assertEquals(false, reversibleMultiMap.containsOtherNode(9));
+//    }
+//
+//    @Test
+//    public void shouldCheckRMMContainsEntry() {
+//        Assert.assertEquals(true, reversibleMultiMap.containsEntry(1,2, 2));
+//        Assert.assertEquals(false, reversibleMultiMap.containsEntry(9,9, 2));
+//    }
+//
+//    @Test
+//    public void shouldCheckRMMClearAll() {
+//        Long eight = (12L << 32) + 8;
+//        ReversibleMultiMap reversibleMultiMap2 = new ReversibleMultiMap();
+//        reversibleMultiMap2.put(8,8, 12);
+//        Assert.assertEquals(true, reversibleMultiMap2.containsEntry(8,8,12));
+//        reversibleMultiMap2.clear();
+//        Assert.assertEquals(false, reversibleMultiMap2.containsEntry(8,8,12));
+//    }
 
 
     @Test
