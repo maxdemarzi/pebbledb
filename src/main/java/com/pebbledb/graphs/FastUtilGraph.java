@@ -1,5 +1,6 @@
 package com.pebbledb.graphs;
 
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -13,7 +14,7 @@ public class FastUtilGraph implements Graph {
     private ObjectArrayList<Map<String, Object>> relationships;
     private Object2ObjectOpenHashMap<String, ReversibleMultiMap> related;
     private Object2IntArrayMap<String> relationshipCounts;
-    private Object2IntOpenHashMap<String> relatedCounts;
+    private Object2ObjectArrayMap<String, Long2IntOpenHashMap> relatedCounts2;
     private RoaringBitmap deletedNodes;
     private RoaringBitmap deletedRelationships;
 
@@ -25,7 +26,8 @@ public class FastUtilGraph implements Graph {
         relationships = new ObjectArrayList<>();
         related = new Object2ObjectOpenHashMap<>();
         relationshipCounts = new Object2IntArrayMap<>();
-        relatedCounts = new Object2IntOpenHashMap<>();
+        relationshipCounts.defaultReturnValue(0);
+        relatedCounts2 = new Object2ObjectArrayMap<>();
         deletedNodes = new RoaringBitmap();
         deletedRelationships = new RoaringBitmap();
     }
@@ -36,8 +38,7 @@ public class FastUtilGraph implements Graph {
         relationships.clear();
         related.clear();
         relationshipCounts.clear();
-        relationshipCounts.defaultReturnValue(0);
-        relatedCounts.clear();
+        relatedCounts2.clear();
         deletedNodes.clear();
         deletedRelationships.clear();
     }
@@ -223,13 +224,16 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
+        relatedCounts2.putIfAbsent(type, new Long2IntOpenHashMap());
+        Long2IntOpenHashMap relatedCount = relatedCounts2.get(type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCount.get(countId) + 1;
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("_incoming_node_id", node1);
         properties.put("_outgoing_node_id", node2);
 
         relationships.add(properties);
-        relatedCounts.put(node1 + "-" + node2 + "-" + type, count);
+        relatedCount.put(countId, count);
         related.get(type).put(node1, node2, relationships.size() -1);
         relationshipKeys.put(node1 + "-" + node2 + "-" + type + "-" + count, relationships.size() - 1);
 
@@ -250,9 +254,13 @@ public class FastUtilGraph implements Graph {
         properties.put("_incoming_node_id", node1);
         properties.put("_outgoing_node_id", node2);
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type) + 1;
+        relatedCounts2.putIfAbsent(type, new Long2IntOpenHashMap());
+        Long2IntOpenHashMap relatedCount = relatedCounts2.get(type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCount.get(countId) + 1;
+
         relationships.add(properties);
-        relatedCounts.put(node1 + "-" + node2 + "-" + type, count);
+        relatedCount.put(countId, count);
         related.get(type).put(node1, node2, relationships.size() - 1);
         relationshipKeys.put(node1 + "-" + node2 + "-" + type + "-" + count, relationships.size() - 1);
 
@@ -269,11 +277,12 @@ public class FastUtilGraph implements Graph {
         int node1 = node1Key.getInt(from);
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) {
             return false;
         }
-        relatedCounts.put(node1 + "-" + node2 + "-" + type, count - 1);
+        relatedCounts2.get(type).put(countId, count - 1);
         relationshipCounts.put(type, relationshipCounts.getInt(type) - 1);
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + count);
         related.get(type).removeRelationship(node1, node2, relId);
@@ -293,11 +302,12 @@ public class FastUtilGraph implements Graph {
         int node1 = node1Key.getInt(from);
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 || count < number) {
             return false;
         }
-        relatedCounts.put(node1 + "-" + node2 + "-" + type, count - 1);
+        relatedCounts2.get(type).put(countId, count - 1);
         relationshipCounts.put(type, relationshipCounts.getInt(type) - 1);
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
         related.get(type).removeRelationship(node1, node2, relId);
@@ -322,9 +332,10 @@ public class FastUtilGraph implements Graph {
         int node1 = node1Key.getInt(from);
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) { return null; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
 
         return relationships.get(relId);
     }
@@ -350,9 +361,10 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) { return null; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
         return relationships.get(relId).get(property);
     }
 
@@ -364,7 +376,8 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return null; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 || count < number) { return null; }
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
         return relationships.get(relId).get(property);
@@ -378,9 +391,10 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) { return false; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
         relationships.set(relId, properties);
         return true;
     }
@@ -394,7 +408,8 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 || count < number) { return false; }
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
         relationships.set(relId, properties);
@@ -409,9 +424,10 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 ) { return false; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
         relationships.set(relId, new HashMap<>());
         return true;
     }
@@ -424,7 +440,8 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 || count < number) { return false; }
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
         relationships.set(relId, new HashMap<>());
@@ -438,9 +455,10 @@ public class FastUtilGraph implements Graph {
         int node1 = node1Key.getInt(from);
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) { return false; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
         relationships.get(relId).put(property, value);
         return true;
     }
@@ -453,7 +471,8 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0 || count < number) { return false; }
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
         relationships.get(relId).put(property, value);
@@ -468,9 +487,10 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if (count == 0) { return false; }
-        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + 1);
+        int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-1");
 
         Map<String, Object> properties = relationships.get(relId);
         if (properties.containsKey(property)) {
@@ -488,7 +508,8 @@ public class FastUtilGraph implements Graph {
         int node2 = node2Key.getInt(to);
         if (node1 == -1 || node2 == -1) { return false; }
 
-        int count = relatedCounts.getInt(node1 + "-" + node2 + "-" + type);
+        long countId = ((long)node1 << 32) + node2;
+        int count = relatedCounts2.get(type).get(countId);
         if ( count == 0 || count < number) { return false; }
         int relId = relationshipKeys.getInt(node1 + "-" + node2 + "-" + type + "-" + number);
 

@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 // Adapted from http://stackoverflow.com/questions/23646186/a-java-multimap-which-allows-fast-lookup-of-key-by-value
 
@@ -84,6 +85,17 @@ public class ReversibleMultiMap {
         return from2rel.get(from);
     }
 
+//    public Collection<Integer> getRelsOfNode(Integer from, Integer to) {
+//        Collection<Integer> rels = new ArrayList<>();
+//        int count = 0;
+//        for (int node : from2to.get(from)) {
+//            if (node == to) {
+//                rels.add()
+//            }
+//        }
+//        return from2rel.get(from);
+//    }
+
     public Collection<Integer> getRelsByValue(Integer to) {
         return to2rel.get(to);
     }
@@ -98,5 +110,13 @@ public class ReversibleMultiMap {
 
     public int getToSize(Integer to) {
         return to2from.get(to).size();
+    }
+
+    public int getCountOf(Integer from, Integer to) {
+        return Collections.frequency(from2to.get(from), to);
+    }
+
+    public int getCountOfByValue(Integer from, Integer to) {
+        return Collections.frequency(to2from.get(to), from);
     }
 }

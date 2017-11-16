@@ -151,7 +151,7 @@ public class GraphWriteBenchmarks {
 
     @Benchmark
     @Warmup(iterations = 10)
-    @Measurement(iterations = 10)
+    @Measurement(iterations = 1000)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)

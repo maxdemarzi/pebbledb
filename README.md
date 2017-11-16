@@ -28,6 +28,7 @@
 - [X] Add Labels
 - [X] Add "related" capabilities
 - [ ] Add "related" http endpoints
+- [ ] Use relationship IDs instead of from-to-type-count and relationshipKeys 
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
