@@ -1,5 +1,6 @@
 package com.pebbledb.tests.graphs;
 
+import com.pebbledb.graphs.Direction;
 import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import org.junit.After;
@@ -39,22 +40,22 @@ public class RelatedTest {
     @Test
     public void shouldFindRelated() {
         Assert.assertTrue(db.related("Node", "empty", "Node", "existing"));
-        Assert.assertTrue(db.related("Node", "empty", "Node", "existing", "all", "RELATED"));
-        Assert.assertTrue(db.related("Node", "empty", "Node", "existing", "all", new ArrayList<String>(){{ add("RELATED");}}));
+        Assert.assertTrue(db.related("Node", "empty", "Node", "existing", Direction.ALL, "RELATED"));
+        Assert.assertTrue(db.related("Node", "empty", "Node", "existing", Direction.ALL, new ArrayList<String>(){{ add("RELATED");}}));
     }
 
     @Test
     public void shouldNotFindUnRelated() {
         Assert.assertFalse(db.related("Node", "empty", "Node", "disconnected"));
-        Assert.assertFalse(db.related("Node", "empty", "Node", "disconnected", "all", "RELATED"));
-        Assert.assertFalse(db.related("Node", "empty", "Node", "disconnected", "all", new ArrayList<String>(){{ add("RELATED");}}));
+        Assert.assertFalse(db.related("Node", "empty", "Node", "disconnected", Direction.ALL, "RELATED"));
+        Assert.assertFalse(db.related("Node", "empty", "Node", "disconnected", Direction.ALL, new ArrayList<String>(){{ add("RELATED");}}));
     }
 
     @Test
     public void shouldNotFindUnFound() {
         Assert.assertFalse(db.related("Node", "empty", "Node", "not_there"));
-        Assert.assertFalse(db.related("Node", "empty", "Node", "not_there", "all", "RELATED"));
-        Assert.assertFalse(db.related("Node", "empty", "Node", "not_there", "all", new ArrayList<String>(){{ add("RELATED");}}));
+        Assert.assertFalse(db.related("Node", "empty", "Node", "not_there", Direction.ALL, "RELATED"));
+        Assert.assertFalse(db.related("Node", "empty", "Node", "not_there", Direction.ALL, new ArrayList<String>(){{ add("RELATED");}}));
     }
 
 }

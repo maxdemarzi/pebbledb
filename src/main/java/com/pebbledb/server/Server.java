@@ -138,6 +138,7 @@ public class Server {
                         .add(DELETE, PATH_ADD_REL_PROPERTY, new RequestHandler(true, Action.DELETE_RELATIONSHIP_PROPERTY))
 
                         .add(GET, PATH_CONNECTED, new RequestHandler(false, Action.GET_RELATED))
+                        .add(GET, PATH_CONNECTED_TYPE, new RequestHandler(false, Action.GET_RELATED))
 
                 )
                 .build();

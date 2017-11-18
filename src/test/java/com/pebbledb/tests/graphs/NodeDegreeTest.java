@@ -1,5 +1,6 @@
 package com.pebbledb.tests.graphs;
 
+import com.pebbledb.graphs.Direction;
 import com.pebbledb.graphs.Graph;
 import com.pebbledb.graphs.FastUtilGraph;
 import org.junit.After;
@@ -47,7 +48,7 @@ public class NodeDegreeTest {
         db.addNode("Node", "six");
         db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
         db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
-        Integer actual = db.getNodeDegree("Node", "four", "out");
+        Integer actual = db.getNodeDegree("Node", "four", Direction.OUT);
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
@@ -58,7 +59,7 @@ public class NodeDegreeTest {
         db.addNode("Node", "six");
         db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
         db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
-        Integer actual = db.getNodeDegree("Node", "four", "out");
+        Integer actual = db.getNodeDegree("Node", "four", Direction.OUT);
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
@@ -69,7 +70,7 @@ public class NodeDegreeTest {
         db.addNode("Node", "six");
         db.addRelationship("FRIENDS", "Node", "five", "Node", "four");
         db.addRelationship("ENEMIES", "Node", "six", "Node", "four");
-        Integer actual = db.getNodeDegree("Node", "four", "in", new ArrayList<String>(){{add("ENEMIES");}});
+        Integer actual = db.getNodeDegree("Node", "four", Direction.IN, new ArrayList<String>(){{add("ENEMIES");}});
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 
@@ -80,7 +81,7 @@ public class NodeDegreeTest {
         db.addNode("Node", "six");
         db.addRelationship("FRIENDS", "Node", "four", "Node", "five");
         db.addRelationship("ENEMIES", "Node", "four", "Node", "six");
-        Integer actual = db.getNodeDegree("Node", "four", "out", new ArrayList<String>(){{add("ENEMIES");}});
+        Integer actual = db.getNodeDegree("Node", "four", Direction.OUT, new ArrayList<String>(){{add("ENEMIES");}});
         Assert.assertEquals(Integer.valueOf(1), actual);
     }
 

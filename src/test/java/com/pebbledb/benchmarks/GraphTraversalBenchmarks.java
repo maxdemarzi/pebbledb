@@ -49,7 +49,7 @@ public class GraphTraversalBenchmarks {
 
     @Benchmark
     @Warmup(iterations = 10)
-    @Measurement(iterations = 1000)
+    @Measurement(iterations = 10)
     @Fork(1)
     @Threads(1)
     @BenchmarkMode(Mode.Throughput)

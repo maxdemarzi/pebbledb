@@ -47,8 +47,9 @@ public interface Graph {
 
     // Node Degree
     int getNodeDegree(String label, String key);
-    int getNodeDegree(String label, String key, String direction);
-    int getNodeDegree(String label, String key, String direction, List<String> types);
+    int getNodeDegree(String label, String key, Direction direction);
+    int getNodeDegree(String label, String key, Direction direction, String type);
+    int getNodeDegree(String label, String key, Direction direction, List<String> types);
 
     // Traversing
     List<Map<String, Object>> getOutgoingRelationships(String label1, String from);
@@ -78,6 +79,6 @@ public interface Graph {
 
     // Related
     boolean related(String label1, String from, String label2, String to);
-    boolean related(String label1, String from, String label2, String to, String direction, String type);
-    boolean related(String label1, String from, String label2, String to, String direction, List<String> types);
+    boolean related(String label1, String from, String label2, String to, Direction direction, String type);
+    boolean related(String label1, String from, String label2, String to, Direction direction, List<String> types);
 }

@@ -523,14 +523,18 @@ public class FastUtilGraph implements Graph {
 
     // Degrees
     public int getNodeDegree(String label, String identifier) {
-        return getNodeDegree(label, identifier, "all", new ArrayList<>());
+        return getNodeDegree(label, identifier, Direction.ALL, new ArrayList<>());
     }
 
-    public int getNodeDegree(String label, String identifier, String direction) {
+    public int getNodeDegree(String label, String identifier, Direction direction) {
         return getNodeDegree(label, identifier, direction, new ArrayList<>());
     }
 
-    public int getNodeDegree(String label, String key, String direction, List<String> types) {
+    public int getNodeDegree(String label, String identifier, Direction direction, String type) {
+        return getNodeDegree(label, identifier, direction, new ArrayList<String>(){{add(type);}});
+    }
+
+    public int getNodeDegree(String label, String key, Direction direction, List<String> types) {
         Object2IntOpenHashMap<String> nodeKey = getNodeKey(label);
 
         int id = nodeKey.getInt(key);
@@ -547,10 +551,10 @@ public class FastUtilGraph implements Graph {
 
         for (String type : relTypes) {
             ReversibleMultiMap rels = related.get(type);
-            if (direction.equals("all") || direction.equals("out")) {
+            if (direction != Direction.IN) {
                 count += rels.getFromSize(id);
             }
-            if (direction.equals("all") || direction.equals("in")) {
+            if (direction != Direction.OUT) {
                 count += rels.getToSize(id);
             }
         }
@@ -710,13 +714,13 @@ public class FastUtilGraph implements Graph {
     }
 
     public boolean related(String label1, String from, String label2, String to) {
-        return related(label1, from, label2, to, "all", new ArrayList<>());
+        return related(label1, from, label2, to, Direction.ALL, new ArrayList<>());
     }
 
-    public boolean related(String label1, String from, String label2, String to, String direction, String type) {
+    public boolean related(String label1, String from, String label2, String to, Direction direction, String type) {
         return related(label1, from, label2, to, direction, new ArrayList<String>(){{ add(type); }});
     }
-    public boolean related(String label1, String from, String label2, String to, String direction, List<String> types) {
+    public boolean related(String label1, String from, String label2, String to, Direction direction, List<String> types) {
         Object2IntOpenHashMap<String> node1Key = getNodeKey(label1);
         Object2IntOpenHashMap<String> node2Key = getNodeKey(label2);
 
@@ -726,7 +730,7 @@ public class FastUtilGraph implements Graph {
         return related(node1, node2, direction, types);
     }
 
-    public boolean related(int node1, int node2, String direction, List<String> types) {
+    public boolean related(int node1, int node2, Direction direction, List<String> types) {
         if (node1 == -1 || node2 == -1) { return false; }
         List<String> relTypes;
         if (types.isEmpty()) {
@@ -737,12 +741,12 @@ public class FastUtilGraph implements Graph {
         }
 
         for (String type : relTypes) {
-            if (direction.equals("all") || direction.equals("out")) {
+            if (direction != Direction.IN) {
                 if (relationshipKeys.containsKey(node1 + "-" + node2 + "-" + type + "-1")) {
                     return true;
                 }
             }
-            if (direction.equals("all") || direction.equals("in")) {
+            if (direction != Direction.OUT) {
                 if (relationshipKeys.containsKey(node2 + "-" + node1 + "-" + type + "-1")) {
                     return true;
                 }

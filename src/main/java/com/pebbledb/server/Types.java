@@ -10,5 +10,5 @@ public final class Types {
 
     public static final TypeLiteral<HashMap<String, Object>> MAP = new TypeLiteral<HashMap<String, Object>>(){};
     public static final TypeLiteral<Set<String>> SET = new TypeLiteral<Set<String>>(){};
-    public static final  TypeLiteral<Object> OBJECT = new TypeLiteral<Object>(){};
+    public static final TypeLiteral<Object> OBJECT = new TypeLiteral<Object>(){};
 }
