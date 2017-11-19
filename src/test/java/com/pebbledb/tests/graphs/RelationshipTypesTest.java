@@ -17,6 +17,8 @@ public class RelationshipTypesTest {
     @Before
     public void setup() throws IOException {
         db = new FastUtilGraph();
+        db.addNode("Node",  "one");
+        db.addNode("Node",  "two");
     }
 
     @After
