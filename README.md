@@ -27,7 +27,7 @@
 - [ ] Verify all return codes for http requests
 - [X] Add Labels
 - [X] Add "related" capabilities
-- [ ] Add "related" http endpoints
+- [X] Add "related" http endpoints
 - [X] Split relationshipKeys by type, try arraylist of count of longs
 - [ ] Use relationship IDs instead of from-to-type-count and relationshipKeys 
 - [ ] Add Swagger UI

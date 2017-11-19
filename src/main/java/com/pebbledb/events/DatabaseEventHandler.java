@@ -5,6 +5,8 @@ import com.pebbledb.actions.node.DeleteNode;
 import com.pebbledb.actions.node.*;
 import com.pebbledb.actions.node.PostNode;
 import com.pebbledb.actions.nodeproperties.*;
+import com.pebbledb.actions.related.GetRelated;
+import com.pebbledb.actions.related.GetRelatedByType;
 import com.pebbledb.actions.relationship.DeleteRelationship;
 import com.pebbledb.actions.relationship.GetRelationship;
 import com.pebbledb.actions.relationship.PostRelationship;
@@ -94,6 +96,11 @@ public class DatabaseEventHandler implements EventHandler<ExchangeEvent> {
                 case GET_RELATIONSHIP_PROPERTY:
                     GetRelationshipProperty.handle(event, number);
                     break;
+                case GET_RELATED:
+                    GetRelated.handle(event, number);
+                    break;
+                case GET_RELATED_TYPE:
+                    GetRelatedByType.handle(event, number);
                 default:
                     break;
             }

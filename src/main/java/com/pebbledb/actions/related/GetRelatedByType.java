@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static com.pebbledb.server.Server.graphs;
 
-public class GetRelatedByType {
+public interface GetRelatedByType {
     static void handle(ExchangeEvent exchangeEvent, int number) {
         HttpServerExchange exchange = exchangeEvent.get();
         Map<String, String> parameters = exchangeEvent.getParameters();
