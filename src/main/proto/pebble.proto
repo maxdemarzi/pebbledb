@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "PebbleDBProto";
+option java_package = "com.pebbledb.proto";
+option objc_class_prefix = "PDB";
+
+package pebbleserver;
+
+service PebbleServer {
+    rpc GetRelationshipTypes(GetRelationshipTypesRequest) returns (stream GetRelationshipTypesResponse) {}
+}
+
+message GetRelationshipTypesRequest {}
+
+message GetRelationshipTypesResponse {
+    string response = 1;
+}

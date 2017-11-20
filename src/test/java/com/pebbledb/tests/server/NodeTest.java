@@ -1,23 +1,23 @@
 package com.pebbledb.tests.server;
 
-import com.pebbledb.server.Server;
+import com.pebbledb.server.PebbleServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static com.pebbledb.server.Server.graphs;
+import static com.pebbledb.server.PebbleServer.graphs;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 
 public class NodeTest {
-    static Server server;
+    static PebbleServer server;
 
     @Before
     public void setup() throws Exception {
-        server = new Server();
+        server = new PebbleServer();
         server.buildAndStartServer();
         HashMap<String, Object> property =  new HashMap<String, Object>() {{ put("property", "Value"); }};
         HashMap<String, Object> props =  new HashMap<>();

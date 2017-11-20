@@ -7,7 +7,7 @@ import com.pebbledb.server.Types;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
-import static com.pebbledb.server.Server.graphs;
+import static com.pebbledb.server.PebbleServer.graphs;
 
 public interface PutNodeProperty {
 

@@ -11,7 +11,7 @@ import io.undertow.util.StatusCodes;
 
 import java.util.HashMap;
 
-import static com.pebbledb.server.Server.graphs;
+import static com.pebbledb.server.PebbleServer.graphs;
 
 public interface PutNodeProperties {
 

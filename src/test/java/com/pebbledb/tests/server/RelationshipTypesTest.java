@@ -1,6 +1,6 @@
 package com.pebbledb.tests.server;
 
-import com.pebbledb.server.Server;
+import com.pebbledb.server.PebbleServer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.After;
@@ -10,17 +10,17 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.pebbledb.server.Server.graphs;
+import static com.pebbledb.server.PebbleServer.graphs;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.equalTo;
 
 public class RelationshipTypesTest {
-    static Server server;
+    static PebbleServer server;
 
     @Before
     public void setup() throws Exception {
         Config conf = ConfigFactory.load("pebble");
-        server = new Server(conf);
+        server = new PebbleServer(conf);
         server.buildAndStartServer(conf);
 
         for (int i = -1; ++i < graphs.length; ) {

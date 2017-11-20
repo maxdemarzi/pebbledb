@@ -1,6 +1,6 @@
 package com.pebbledb.tests.server;
 
-import com.pebbledb.server.Server;
+import com.pebbledb.server.PebbleServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,11 +8,11 @@ import org.junit.Test;
 import static io.restassured.RestAssured.when;
 
 public class NoOpTest {
-    static Server server;
+    static PebbleServer server;
 
     @Before
     public void setup() throws Exception {
-        server = new Server();
+        server = new PebbleServer();
         server.buildAndStartServer();
     }
 

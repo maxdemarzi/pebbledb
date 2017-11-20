@@ -29,13 +29,15 @@
 - [X] Add "related" capabilities
 - [X] Add "related" http endpoints
 - [X] Split relationshipKeys by type, try arraylist of count of longs
+- [ ] Add gRPC
+- [ ] Pipe gRPC through disruptor like web requests
+- [ ] Replace disruptor with Aeron 
 - [ ] Use relationship IDs instead of from-to-type-count and relationshipKeys 
 - [ ] Add Swagger UI
 - [ ] Add Query Language (Cypher, Graphql)
 - [ ] Compare Search Capabilities (http://javatechniques.com/blog/lucene-in-memory-text-search-example/ and http://mg4j.di.unimi.it/)
 - [ ] Add Metrics ( http://metrics.dropwizard.io/3.1.0/getting-started/ )
 - [ ] Add Dagger for DI of Metrics and others
-- [ ] Add gRPC
 - [ ] Add GraphQL ( https://www.howtographql.com/graphql-java/0-introduction/ )    
 
 ### Benchmarks

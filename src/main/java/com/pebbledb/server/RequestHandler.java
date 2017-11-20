@@ -18,13 +18,13 @@ public class RequestHandler implements HttpHandler {
     @Override
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
 
-        final long seq = Server.ringBuffer.next();
-        final ExchangeEvent exchangeEvent = Server.ringBuffer.get(seq);
+        final long seq = PebbleServer.ringBuffer.next();
+        final ExchangeEvent exchangeEvent = PebbleServer.ringBuffer.get(seq);
 
         exchangeEvent.setRequest(write, action, exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY).getParameters());
 
         exchangeEvent.set(exchange);
-        Server.ringBuffer.publish(seq);
+        PebbleServer.ringBuffer.publish(seq);
         // This is deprecated but it works...
         exchange.dispatch();
     }

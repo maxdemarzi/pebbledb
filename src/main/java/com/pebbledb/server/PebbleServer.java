@@ -13,6 +13,8 @@ import com.pebbledb.graphs.FastUtilGraph;
 import com.pebbledb.graphs.Graph;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
 import io.undertow.servlet.Servlets;
@@ -26,20 +28,21 @@ import java.util.concurrent.Executors;
 
 import static com.pebbledb.server.Constants.*;
 
-public class Server {
+public class PebbleServer {
 
     private static Undertow undertow;
+    private static Server grpc;
     private static final int THREADS = Runtime.getRuntime().availableProcessors();
     public static final Graph[] graphs = new Graph[Runtime.getRuntime().availableProcessors()];
     static RingBuffer<ExchangeEvent> ringBuffer;
     static DeploymentManager manager;
 
-    public Server() {
+    public PebbleServer() {
         Config conf = ConfigFactory.load("pebble");
-        new Server(conf);
+        new PebbleServer(conf);
     }
 
-    public Server(Config conf) {
+    public PebbleServer(Config conf) {
         for (int i = -1; ++i < graphs.length; ) {
             graphs[i] = new FastUtilGraph();
         }
@@ -72,7 +75,7 @@ public class Server {
         // Start the Disruptor, get the ring buffer from the Disruptor to be used for publishing.
         ringBuffer = disruptor.start();
 
-        DeploymentInfo servletBuilder = Servlets.deployment().setClassLoader(Server.class.getClassLoader())
+        DeploymentInfo servletBuilder = Servlets.deployment().setClassLoader(PebbleServer.class.getClassLoader())
                 .setDeploymentName("openapi").setContextPath("/openapi")
                 .addServlets(Servlets.servlet("openapi",
                         Bootstrap.class).addMapping("/openapi"));
@@ -82,7 +85,7 @@ public class Server {
 
     public static void main(final String[] args) throws ServletException {
         Config conf = ConfigFactory.load("pebble");
-        Server pebbleServer = new Server(conf);
+        PebbleServer pebbleServer = new PebbleServer(conf);
         pebbleServer.buildAndStartServer(conf);
     }
 
@@ -143,11 +146,17 @@ public class Server {
                 )
                 .build();
         undertow.start();
+
+        grpc = ServerBuilder.forPort(conf.getInt("pebble.grpc.port")).addService(new PebbleGRPCService()).build();
     }
 
     public void stopServer() {
         if (undertow != null) {
             undertow.stop();
+        }
+
+        if (grpc != null) {
+            grpc.shutdown();
         }
     }
 

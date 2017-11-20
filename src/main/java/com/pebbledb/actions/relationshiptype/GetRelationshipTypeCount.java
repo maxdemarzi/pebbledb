@@ -6,7 +6,7 @@ import com.pebbledb.server.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 
-import static com.pebbledb.server.Server.graphs;
+import static com.pebbledb.server.PebbleServer.graphs;
 
 public interface GetRelationshipTypeCount {
 
